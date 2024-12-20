@@ -696,14 +696,9 @@ public class BracoGarra {
         return new InstantAction(() -> {});
     }
 
-    public void upBraco(int quanto) {
-
-        targetPosition = targetPosition + quanto ;
-
-
-    }
-    public void downBraco(int quanto) {
-        targetPosition = targetPosition - quanto;
+    public void upBraco(int som) { this.targetPosition = this.targetPosition + som; }
+    public void downBraco(int sub) {
+        this.targetPosition = this.targetPosition - sub;
 }
 
     public static double motionProfile(double maxAcceleration, double maxVelocity, double distance, double elapsedTime) {
@@ -802,4 +797,5 @@ public class BracoGarra {
         };
     }
 
+    // todo: muitas funções no braco da garra diminuir esse volume
 }

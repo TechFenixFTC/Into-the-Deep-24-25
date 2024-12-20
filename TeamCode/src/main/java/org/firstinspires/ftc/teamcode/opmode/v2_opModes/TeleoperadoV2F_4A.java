@@ -4,18 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.ftc.Actions;
-import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.ConditionalCommand;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.robot.RobotState;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.agregadoras.V2;
@@ -42,7 +35,7 @@ public class TeleoperadoV2F_4A extends OpMode {
         robot = this.createRobot(hardwareMap);
         gamepadEx = new GamepadEx(gamepad2);
         robot.intakeOutake.RobotState = Vertex.vertexState.Initial;
-        Globals.TA_STORED = true;
+        Globals.IS_STORED = true;
 
 
     }
@@ -71,43 +64,43 @@ public class TeleoperadoV2F_4A extends OpMode {
     }
     private void binds(V2 robot) {
 
-        if(gamepadEx.getButton(GamepadKeys.Button.A) || Globals.TA_INTAKE){
+        if(gamepadEx.getButton(GamepadKeys.Button.A) || Globals.IS_INTAKE){
             robot.intakeOutake.IntermediatePosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Intermediate;
 
 
-            Globals.TA_INTAKE = true;
-            Globals.TA_PONTUANDO = false;
-            Globals.TA_STORED = false;
+            Globals.IS_INTAKE = true;
+            Globals.IS_SCORING = false;
+            Globals.IS_STORED = false;
+            Globals.IS_ARMED = false;
         }
-        if(gamepadEx.getButton(GamepadKeys.Button.B) || Globals.TA_STORED){
+        if(gamepadEx.getButton(GamepadKeys.Button.B) || Globals.IS_STORED){
             robot.intakeOutake.InitialPosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Initial;
 
-            Globals.TA_INTAKE = false;
-            Globals.TA_PONTUANDO = false;
-            Globals.TA_STORED = true;
+            Globals.IS_INTAKE = false;
+            Globals.IS_SCORING = false;
+            Globals.IS_STORED = true;
+            Globals.IS_ARMED = false;
         }
-        /*if(gamepad2.x || robot.intakeOutake.getRobotState().equals(Vertex.vertexState.Intake)){
+        if(gamepadEx.getButton(GamepadKeys.Button.X) || Globals.IS_ARMED ){
             robot.intakeOutake.IntakePosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Intake;
-        } */
-        if(gamepadEx.getButton(GamepadKeys.Button.Y) || Globals.TA_PONTUANDO){
+
+            Globals.IS_INTAKE = false;
+            Globals.IS_SCORING = false;
+            Globals.IS_STORED = false;
+            Globals.IS_ARMED = true;
+        }
+        if(gamepadEx.getButton(GamepadKeys.Button.Y) || Globals.IS_SCORING){
             robot.intakeOutake.OuttakePosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Outtake;
 
-            Globals.TA_INTAKE = false;
-            Globals.TA_PONTUANDO = true;
-            Globals.TA_STORED = false;
+            Globals.IS_INTAKE = false;
+            Globals.IS_SCORING = true;
+            Globals.IS_STORED = false;
+            Globals.IS_ARMED = false;
         }
-
-        /* gamepadEx.getGamepadButton(GamepadKeys.Button.A);
-                new SequentialAction(
-
-                                        robot.intakeOutake.IntermediatePosition(getRuntime()),
-                                        robot.intakeOutake.RobotState = Vertex.vertexState.Intermediate,
-
-        );*/
     }
     private void linearHorizontal(LinearHorizontal horizontal)  {
     }
