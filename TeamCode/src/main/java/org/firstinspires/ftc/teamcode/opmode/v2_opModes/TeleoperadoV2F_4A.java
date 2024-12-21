@@ -50,6 +50,8 @@ public class TeleoperadoV2F_4A extends OpMode {
         this.runActions(robot.intakeOutake.carteiro);
         telemetry.addData("Alvo",robot.intakeOutake.braco.targetPosition);
         telemetry.addData("Atual",robot.intakeOutake.braco.motorBracoGarra.getCurrentPosition());
+        telemetry.update();
+        robot.intakeOutake.braco.handleBracoTeleop(getRuntime());
 
     }
 
@@ -64,15 +66,15 @@ public class TeleoperadoV2F_4A extends OpMode {
     }
     private void binds(V2 robot) {
 
-        if(gamepadEx.getButton(GamepadKeys.Button.A) || Globals.IS_INTAKE){
+        if(gamepadEx.getButton(GamepadKeys.Button.A) || Globals.IS_ARMED){
             robot.intakeOutake.IntermediatePosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Intermediate;
 
 
-            Globals.IS_INTAKE = true;
+            Globals.IS_INTAKE = false;
             Globals.IS_SCORING = false;
             Globals.IS_STORED = false;
-            Globals.IS_ARMED = false;
+            Globals.IS_ARMED = true;
         }
         if(gamepadEx.getButton(GamepadKeys.Button.B) || Globals.IS_STORED){
             robot.intakeOutake.InitialPosition(getRuntime());
@@ -83,14 +85,14 @@ public class TeleoperadoV2F_4A extends OpMode {
             Globals.IS_STORED = true;
             Globals.IS_ARMED = false;
         }
-        if(gamepadEx.getButton(GamepadKeys.Button.X) || Globals.IS_ARMED ){
+        if(gamepadEx.getButton(GamepadKeys.Button.X) || Globals.IS_INTAKE ){
             robot.intakeOutake.IntakePosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Intake;
 
-            Globals.IS_INTAKE = false;
+            Globals.IS_INTAKE = true;
             Globals.IS_SCORING = false;
             Globals.IS_STORED = false;
-            Globals.IS_ARMED = true;
+            Globals.IS_ARMED = false;
         }
         if(gamepadEx.getButton(GamepadKeys.Button.Y) || Globals.IS_SCORING){
             robot.intakeOutake.OuttakePosition(getRuntime());
@@ -107,14 +109,20 @@ public class TeleoperadoV2F_4A extends OpMode {
     private void linearVertical(LinearVertical vertical)  {
     }
     private void bracoGarra(BracoGarra braco)  {
+
         if(gamepad2.dpad_left){
-            robot.intakeOutake.braco.upBraco(5);
+            robot.intakeOutake.braco.downBraco();
+
         }
-        if(gamepad2.dpad_right ){
-            robot.intakeOutake.braco.downBraco(5);
+        if(gamepad2.dpad_right){
+            robot.intakeOutake.braco.upBraco();
+            telemetry.addLine("some");
         }
-        robot.intakeOutake.braco.handleBracoTeleop(getRuntime());
+
+
     }
+
+
     private void gerenciarModo(V2 robot) {
 
 

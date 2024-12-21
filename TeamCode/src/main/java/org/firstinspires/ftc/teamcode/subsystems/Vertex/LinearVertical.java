@@ -33,6 +33,7 @@ public class LinearVertical {
 
     public int targetPosition = 0;
     public static double p = 0.008, i = 0, d = 0.008,f = 0.000;
+    PIDController controller = new PIDController(p, i, d);
 
     /* POSIÇÕES PRESETS */
     private int lowBasketPos = 3500, drivingPos = 200, intakingPos = 10;
@@ -43,6 +44,7 @@ public class LinearVertical {
         this.motorR =  hardwareMap.get(DcMotorEx.class, "linearR");
         this.led =  hardwareMap.get(DigitalChannel.class, "1ledR");//atualizar no drive hub
         this.power = motorR.getPower();
+
 
         this.motorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.motorR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -115,23 +117,14 @@ public class LinearVertical {
         PIDF(false);
 
     }*/
-    public double PIDF(boolean auto) {
+    public double PIDF(int target) {
 
-        double kp = p;
-        double ff = targetPosition  * f;
+        controller.setPID(p, i,d);
+        int linearpos = motorL.getCurrentPosition();
+        double pid = controller.calculate(linearpos, target);
+        double ff = Math.cos(Math.toRadians(target)) * f;
 
-        //Cria o Controlador PID
-        PIDController controller = new PIDController(kp, i, d);
-        controller.setPID(kp, i, d);
-
-        //Calcular correção
-        double pid = controller.calculate(this.motorR.getCurrentPosition(), targetPosition);
-
-        motorR.setPower(pid+ff );
-        motorL.setPower(pid+ff);
-
-        return controller.getPositionError();
-
+        return pid;
     }
     public void upSetPoint() {
         this.targetPosition += 80;
@@ -172,12 +165,14 @@ public class LinearVertical {
 
                 double positionError = 0;
                 if(targetPosition > 0 ) {
-                    positionError = PIDF(true);
+                    motorR.setPower(PIDF(target));
+                    motorL.setPower(PIDF(target));
+                    //positionError = PIDF(target);
                 }
                 else {
-                    positionError = targetPosition - motorR.getCurrentPosition();
-                    motorL.setPower(-1);
-                    motorR.setPower(-1);
+                    positionError = PIDF(target);
+                    motorL.setPower(PIDF(target));
+                    motorR.setPower(PIDF(target));
                 }
                 if (time.milliseconds() > 800 && Math.abs(motorL.getVelocity()) < 15 && targetPosition < 100 ) {
                     reset();

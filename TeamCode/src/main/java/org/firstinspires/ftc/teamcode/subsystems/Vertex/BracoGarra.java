@@ -15,11 +15,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.common.Globals;
+
 @Config
 public class BracoGarra {
     public Servo servoBracoDaGarra;
     public DcMotorEx motorBracoGarra;
     public int targetPosition = 0;
+    public int IntakePosition = -6000;
+    public int OuttakePosition = -2550;
+    public int IntermediatePosition = -3600;
+    public int StoredPosition = -200;
     public static double kp = 0.00035, ki = 0, kd = 700000, kff = -0.006, kll = 0.055, kmola = 30;
     public static double kpA = 0.05, kiA = 0, kdA = 700000, kffA = -0.006, kllA = 0.055, kmolaA = 30;
     public double ff = 0, pid = 0, ll = 0;
@@ -44,7 +50,6 @@ public class BracoGarra {
             tempo        = 0;
     public double when   = 0;
 
-
     public BracoGarra(HardwareMap hardwareMap) {
         this.servoBracoDaGarra = hardwareMap.get(Servo.class, "porta1");
 
@@ -54,15 +59,11 @@ public class BracoGarra {
         motorBracoGarra.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         reset();
     }
-
+   //todo: FUNÇÕES BASE
     public void reset() {
         motorBracoGarra.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBracoGarra.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
-
-
-
-
     public int getPosition() {
         return -motorBracoGarra.getCurrentPosition();
     }
@@ -83,11 +84,12 @@ public class BracoGarra {
         }
         return Math.abs(ll);
     }
+    //todo: CONTROLADORES DE POSIÇÃO
     public double controladorDePosicao() {
 
         // FeedForward
 
-        double ff = targetPosition  * kff;
+        double ff = targetPosition * kff;
         if (!(targetPosition > 2000 && targetPosition < 3000)) {
             ff = 0;
         }
@@ -130,13 +132,8 @@ public class BracoGarra {
     }
     public double controladorDePosicaoMotion(double maxAcceleration, double maxVelocity, double distance, double elapsedTime) {
 
-
-
         //KP
         double p = kp;
-
-
-
 
         //Cria o Controlador PID
         PIDController controller = new PIDController(p, 0, kd);
@@ -145,7 +142,7 @@ public class BracoGarra {
         //Calcular correção
         double pid = 0;
         if(tempo > 0) {
-            pid = controller.calculate(this.getPosition(),targetPosition );//motionProfile(maxAcceleration, maxVelocity, distance, elapsedTime
+            pid = controller.calculate(this.getPosition(), targetPosition);//motionProfile(maxAcceleration, maxVelocity, distance, elapsedTime
         }
         else {
             //pid = controller.calculate(this.getPosition(), targetPosition);
@@ -263,6 +260,57 @@ public class BracoGarra {
 
 
     }
+    public static double motionProfile(double maxAcceleration, double maxVelocity, double distance, double elapsedTime) {
+        // Calcula o tempo necessário para atingir a velocidade máxima
+        double accelerationDt = maxVelocity / maxAcceleration;
+
+        // Verifica se é possível acelerar até a velocidade máxima na distância dada
+        double halfwayDistance = distance / 2.0;
+        double accelerationDistance = 0.5 * maxAcceleration * Math.pow(accelerationDt, 2);
+
+        if (accelerationDistance > halfwayDistance) {
+            accelerationDt = Math.sqrt(halfwayDistance / (0.5 * maxAcceleration));
+        }
+
+        accelerationDistance = 0.5 * maxAcceleration * Math.pow(accelerationDt, 2);
+
+        // Recalcula a velocidade máxima com base no tempo disponível para acelerar/desacelerar
+        maxVelocity = maxAcceleration * accelerationDt;
+
+        // Deceleração ocorre na mesma taxa que a aceleração
+        double decelerationDt = accelerationDt;
+
+        // Calcula o tempo em que a velocidade máxima é mantida
+        double cruiseDistance = distance - 2 * accelerationDistance;
+        double cruiseDt = cruiseDistance / maxVelocity;
+        double decelerationTime = accelerationDt + cruiseDt;
+
+        // Calcula o tempo total do perfil de movimento
+        double entireDt = accelerationDt + cruiseDt + decelerationDt;
+        if (elapsedTime > entireDt) {
+            return distance; // Se o tempo decorrido excede o perfil, retorna a distância total
+        }
+
+        // Se estamos na fase de aceleração
+        if (elapsedTime < accelerationDt) {
+            // Equação do movimento com aceleração constante
+            return 0.5 * maxAcceleration * Math.pow(elapsedTime, 2);
+        }
+        // Se estamos na fase de cruzeiro
+        else if (elapsedTime < decelerationTime) {
+            double cruiseCurrentDt = elapsedTime - accelerationDt;
+            return accelerationDistance + maxVelocity * cruiseCurrentDt;
+        }
+        // Se estamos na fase de desaceleração
+        else {
+            double decelerationElapsed = elapsedTime - decelerationTime;
+            return accelerationDistance + cruiseDistance
+                    + maxVelocity * decelerationElapsed
+                    - 0.5 * maxAcceleration * Math.pow(decelerationElapsed, 2);
+        }
+    }
+
+    //todo: ACTIONS DE MOVIMENTO
     public Action goToIntakePositon(double runtime, double delay) {
         if ( delay > 0) {
             when = runtime + delay;
@@ -280,7 +328,7 @@ public class BracoGarra {
                 if(!started) {
                     time.reset();
                     targetPosition = -6000;
-                     if(autonomo) targetPosition = targetPosition  - 240;
+                     if(autonomo) targetPosition = targetPosition - 240;
                      if(overshoot) targetPosition = targetPosition - 500;
                      // PROFILE
                      BracoGarra.distance = targetPosition;
@@ -310,9 +358,6 @@ public class BracoGarra {
 
         };
     }
-
-
-
     /*public Action goToStored(double runtime, double delay) {
         if ( delay > 0) {
             when = runtime + delay;
@@ -359,7 +404,68 @@ public class BracoGarra {
             }
         };
     }*/
-    //goToRetin
+    public Action goToAnyPosition(double runTime, double delay, boolean state){
+        if(delay > 0){
+            when = runTime + delay;
+            return new InstantAction(() -> {});
+        }
+        return  new Action() {
+
+
+            int margin;
+            boolean started = false;
+            boolean condition = true;
+            ElapsedTime time = new ElapsedTime();
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (Globals.IS_STORED) {
+                    time.reset();
+                    targetPosition = StoredPosition;
+                    started = true;
+                    // PROFILE
+                    distance = targetPosition - getPosition();
+                }
+                if (Globals.IS_INTAKE) {
+                    time.reset();
+                    targetPosition = IntakePosition;
+                    started = true;
+                    // PROFILE
+                    distance = targetPosition - getPosition();
+                }
+                if (Globals.IS_SCORING) {
+                    time.reset();
+                    targetPosition = OuttakePosition;
+                    started = true;
+                    // PROFILE
+                    distance = targetPosition - getPosition();
+                }
+                if(Globals.IS_ARMED){
+                    time.reset();
+                    targetPosition = IntermediatePosition;
+                    started = true;
+                    // PROFILE
+                    distance = targetPosition - getPosition();
+                }
+                margin = 100;
+
+                // PROFILE
+                tempo = time.time();
+                double positionError = controladorDePosicaoMotion(2000, 5000, distance, 0);
+                // antes estava posicao de angulo
+                condition =  Math.abs(positionError) > margin;
+
+                if (!condition)  {
+                    // PROFILE
+                    tempo = 0;
+                    distance = 0;
+                    motorBracoGarra.setPower(calculateFF());
+                }
+
+                return condition;
+            }
+        };
+    }
     public Action goToStored(double runtime, double delay) {
         if(delay > 0){
             when = runtime + delay;
@@ -402,7 +508,6 @@ public class BracoGarra {
             }
         };
     }
-
     public Action goToIntermediatePosition(double runtime, double delay) {
         if(delay > 0){
             when = runtime + delay;
@@ -659,7 +764,6 @@ public class BracoGarra {
         };
 
     }
-
     public Action goToChamberOutake(double runtime, double delay) {
         if ( delay > 0) {
             when = runtime + 0.7;
@@ -668,87 +772,6 @@ public class BracoGarra {
         }
 
         return goToIntermediatePosition(0, 0);
-    }
-
-
-    public Action handleBracoTeleop(double runtime) {
-        if ( needToGoToIntake && runtime >= when) {
-            needToGoToIntake = false;
-            return goToIntakePositon(runtime, 0);
-        }
-
-        if ( needToGoToBasketOutake && runtime >= when) {
-            needToGoToBasketOutake = false;
-            return goToBasketOutake(runtime, 0);
-        }
-
-        if ( needToGoToStored && runtime >= when) {
-            needToGoToStored = false;
-            return goToStored(runtime, 0);
-        }
-
-        if ( needToGoToIntermadiate && runtime >= when) {
-            needToGoToIntermadiate  = false;
-            return goToIntermediatePosition(runtime, 0);
-        }
-        //controladorDePosicaoMotion(2000, 5000, 0, 0);
-        controladorDePosicao();
-        return new InstantAction(() -> {});
-    }
-
-    public void upBraco(int som) { this.targetPosition = this.targetPosition + som; }
-    public void downBraco(int sub) {
-        this.targetPosition = this.targetPosition - sub;
-}
-
-    public static double motionProfile(double maxAcceleration, double maxVelocity, double distance, double elapsedTime) {
-        // Calcula o tempo necessário para atingir a velocidade máxima
-        double accelerationDt = maxVelocity / maxAcceleration;
-
-        // Verifica se é possível acelerar até a velocidade máxima na distância dada
-        double halfwayDistance = distance / 2.0;
-        double accelerationDistance = 0.5 * maxAcceleration * Math.pow(accelerationDt, 2);
-
-        if (accelerationDistance > halfwayDistance) {
-            accelerationDt = Math.sqrt(halfwayDistance / (0.5 * maxAcceleration));
-        }
-
-        accelerationDistance = 0.5 * maxAcceleration * Math.pow(accelerationDt, 2);
-
-        // Recalcula a velocidade máxima com base no tempo disponível para acelerar/desacelerar
-        maxVelocity = maxAcceleration * accelerationDt;
-
-        // Deceleração ocorre na mesma taxa que a aceleração
-        double decelerationDt = accelerationDt;
-
-        // Calcula o tempo em que a velocidade máxima é mantida
-        double cruiseDistance = distance - 2 * accelerationDistance;
-        double cruiseDt = cruiseDistance / maxVelocity;
-        double decelerationTime = accelerationDt + cruiseDt;
-
-        // Calcula o tempo total do perfil de movimento
-        double entireDt = accelerationDt + cruiseDt + decelerationDt;
-        if (elapsedTime > entireDt) {
-            return distance; // Se o tempo decorrido excede o perfil, retorna a distância total
-        }
-
-        // Se estamos na fase de aceleração
-        if (elapsedTime < accelerationDt) {
-            // Equação do movimento com aceleração constante
-            return 0.5 * maxAcceleration * Math.pow(elapsedTime, 2);
-        }
-        // Se estamos na fase de cruzeiro
-        else if (elapsedTime < decelerationTime) {
-            double cruiseCurrentDt = elapsedTime - accelerationDt;
-            return accelerationDistance + maxVelocity * cruiseCurrentDt;
-        }
-        // Se estamos na fase de desaceleração
-        else {
-            double decelerationElapsed = elapsedTime - decelerationTime;
-            return accelerationDistance + cruiseDistance
-                    + maxVelocity * decelerationElapsed
-                    - 0.5 * maxAcceleration * Math.pow(decelerationElapsed, 2);
-        }
     }
     public Action goToBasketOutakeSample3(double runtime, double delay) {
         if ( delay > 0) {
@@ -796,6 +819,39 @@ public class BracoGarra {
             }
         };
     }
+
+
+    //todo: Action de controle manual
+    public void upBraco() { this.targetPosition += 40;}
+    public void downBraco() {this.targetPosition -=  40;}
+
+    //todo: handle teleop(não sabia onde colocar)
+    public Action handleBracoTeleop(double runtime) {
+        /*0if ( needToGoToIntake && runtime >= when) {
+            needToGoToIntake = false;
+            return goToIntakePositon(runtime, 0);
+        }
+
+        if ( needToGoToBasketOutake && runtime >= when) {
+            needToGoToBasketOutake = false;
+            return goToBasketOutake(runtime, 0);
+        }
+
+        if ( needToGoToStored && runtime >= when) {
+            needToGoToStored = false;
+            return goToStored(runtime, 0);
+        }
+
+        if ( needToGoToIntermadiate && runtime >= when) {
+            needToGoToIntermadiate  = false;
+            return goToIntermediatePosition(runtime, 0);
+        }*/
+        //controladorDePosicaoMotion(2000, 5000, 0, 0);
+        controladorDePosicao();
+        return new InstantAction(() -> {});
+    }
+
+
 
     // todo: muitas funções no braco da garra diminuir esse volume
 }

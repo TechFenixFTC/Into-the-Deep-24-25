@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.robot.RobotState;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.common.Globals;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra;
@@ -75,25 +76,20 @@ public class Vertex {
                 // codigo de intake no submersivo
                 //carteiro.addOrder(linearVertical.ElevadorGoTo(500),runTime, "elevador descer");
                 carteiro.addOrder(garra.fecharGarra(),runTime,"garra fechar");
-                carteiro.addOrder(braco.goToIntermediatePosition(runTime,0),runTime,"braco");
+                carteiro.addOrder(braco.goToAnyPosition(runTime,0, Globals.IS_ARMED),runTime,"braco");
 
-                /* ANTIGO
 
-                //runningActions.add(linearVertical.ElevadorGoTo(200));
-                runningActions.add(garra.fecharGarra());
-                runningActions.add(braco.goToIntermediatePosition(runTime, 0.1));
-                runningActions.add(linearHorizontal.recolher(runTime,0.3));*/
         }
     }
 
     public  void InitialPosition(double runTime){
-        //switch (RobotState) {
-            //case Initial:
+        switch (RobotState) {
+            case Initial:
                 //carteiro.addOrder(linearVertical.ElevadorGoTo(100),runTime, "vertical subindo");
                 carteiro.addOrder(linearHorizontal.recolher(runTime, runTime),0, "recolher horizontal");
-                carteiro.addOrder(braco.goToStored(runTime, 0),runTime, "braco posicao inicial");
+                carteiro.addOrder(braco.goToAnyPosition(runTime,0, Globals.IS_STORED),runTime,"braco");
 
-        //}
+        }
     }
 
     public void OuttakePosition(double runTime){
@@ -101,8 +97,8 @@ public class Vertex {
             case Outtake:
                 //carteiro.addOrder(linearVertical.ElevadorGoTo(2700),runTime, "linear vertical subir");
                 //carteiro.addOrder(linearHorizontal.recolher(runTime, 0), runTime, "linear horizontal recolher");
+                carteiro.addOrder(braco.goToAnyPosition(runTime,0, Globals.IS_SCORING),runTime,"braco");
 
-                carteiro.addOrder(braco.goToBasketOutake(runTime, 0),0.3,"braço outtake");
 
         }
     }
@@ -111,6 +107,9 @@ public class Vertex {
         switch (RobotState){
             case Intake:
                 // bind do gamepad2.x
+                // vertical subir
+                // horizontal esticar
+                carteiro.addOrder(braco.goToAnyPosition(runTime,0, Globals.IS_INTAKE),runTime,"braco");
         }
 
     }
