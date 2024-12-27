@@ -10,6 +10,8 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
+import com.arcrobotics.ftclib.hardware.SensorDistance;
+import com.arcrobotics.ftclib.hardware.SensorDistanceEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -27,6 +29,7 @@ import java.util.List;
 public class V2 {
     // Attributes
     public MecanumDrive md;
+
     public Telemetry telemetry;
     List<Encoder> leftEncs = new ArrayList<>(), rightEncs = new ArrayList<>();
     public Vertex intakeOutake;
@@ -40,6 +43,7 @@ public class V2 {
     public V2(HardwareMap hardwareMap, Telemetry telemetry) {
 
         md = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+
 
 
 

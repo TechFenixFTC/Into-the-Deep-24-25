@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.agregadoras;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
+import com.arcrobotics.ftclib.hardware.SensorDistance;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.robot.Robot;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Globals;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
+import org.firstinspires.ftc.teamcode.subsystems.Sensors.DistanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra;
 import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra;
 import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal;
@@ -24,6 +26,8 @@ public class Vertex {
     public Telemetry telemetry;
     public  LinearVertical linearVertical;
     public  LinearHorizontal linearHorizontal;
+
+    public DistanceSensor distanceSensor;
     public  Garra garra;
     public  BracoGarra braco;
     public List<Action> runningActions = new ArrayList<>();
@@ -56,12 +60,14 @@ public class Vertex {
 
         this.hardwaremap = hardwareMap;
         this.telemetry = telemetry;
+        this.distanceSensor = new DistanceSensor(hardwareMap);
         this.linearVertical = new LinearVertical(hardwareMap);
         this.linearHorizontal = new LinearHorizontal(hardwareMap);
         this.garra = new Garra(hardwareMap);
         this.braco = new BracoGarra(hardwareMap);
         this.runningActions = new ArrayList<>();
         this.RobotState = getRobotState();
+
 
 
     }
