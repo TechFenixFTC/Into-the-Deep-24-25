@@ -119,6 +119,7 @@ public class Vertex {
         }
 
     }
+
     public  void ChamberOuttake(double runTime){
         switch (RobotState){
             case ChamberOuttake:
@@ -131,6 +132,11 @@ public class Vertex {
 
         }
 
+    }
+    public void GarraPosition(double runTime){
+        switch (RobotState){
+
+        }
     }
 
     /*

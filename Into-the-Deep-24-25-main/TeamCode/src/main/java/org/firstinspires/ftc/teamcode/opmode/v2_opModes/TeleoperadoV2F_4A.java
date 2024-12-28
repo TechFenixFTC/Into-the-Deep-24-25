@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.agregadoras.Vertex;
 import org.firstinspires.ftc.teamcode.common.Globals;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra;
 import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal;
 import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical;
 
@@ -105,21 +106,32 @@ public class TeleoperadoV2F_4A extends OpMode {
         }
     }
     private void linearHorizontal(LinearHorizontal horizontal)  {
+        if(gamepadEx.getButton(GamepadKeys.Button.DPAD_RIGHT)){
+            horizontal.upSetPoint();
+        }
+        if(gamepadEx.getButton(GamepadKeys.Button.DPAD_LEFT)){
+            horizontal.downSetPoint();
+        }
     }
     private void linearVertical(LinearVertical vertical)  {
     }
     private void bracoGarra(BracoGarra braco)  {
 
-        if(gamepad2.dpad_left){
+        if(gamepadEx.getButton(GamepadKeys.Button.DPAD_DOWN)){
             robot.intakeOutake.braco.downBraco();
 
         }
-        if(gamepad2.dpad_right){
+        if(gamepadEx.getButton(GamepadKeys.Button.DPAD_UP)){
             robot.intakeOutake.braco.upBraco();
-            telemetry.addLine("some");
         }
 
 
+    }
+    private void garra(Garra garra,OrdersManager carteiro){
+
+        if(gamepadEx.getButton(GamepadKeys.Button.LEFT_BUMPER)){
+
+        }
     }
 
 
