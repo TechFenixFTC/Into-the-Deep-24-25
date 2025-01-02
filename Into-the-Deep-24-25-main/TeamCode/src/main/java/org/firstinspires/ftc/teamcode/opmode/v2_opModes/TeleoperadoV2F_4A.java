@@ -48,10 +48,9 @@ public class TeleoperadoV2F_4A extends OpMode {
         this.linearHorizontal(robot.intakeOutake.linearHorizontal);
         this.linearVertical(robot.intakeOutake.linearVertical);
         this.bracoGarra(robot.intakeOutake.braco);
+        this.garra(robot.intakeOutake.garra,robot.intakeOutake.carteiro);
         this.runActions(robot.intakeOutake.carteiro);
-        telemetry.addData("Alvo",robot.intakeOutake.braco.targetPosition);
-        telemetry.addData("Atual",robot.intakeOutake.braco.motorBracoGarra.getCurrentPosition());
-        telemetry.update();
+
         robot.intakeOutake.braco.handleBracoTeleop(getRuntime());
 
     }
@@ -114,6 +113,12 @@ public class TeleoperadoV2F_4A extends OpMode {
         }
     }
     private void linearVertical(LinearVertical vertical)  {
+        if(gamepad1.dpad_up){
+            vertical.upSetPoint();
+        }
+        if(gamepad1.dpad_down){
+            vertical.downSetPoint();
+        }
     }
     private void bracoGarra(BracoGarra braco)  {
 
@@ -130,7 +135,10 @@ public class TeleoperadoV2F_4A extends OpMode {
     private void garra(Garra garra,OrdersManager carteiro){
 
         if(gamepadEx.getButton(GamepadKeys.Button.LEFT_BUMPER)){
-
+            carteiro.addOrder(garra.gerenciadorDoFechamentoDaGarraNoTeleop(getRuntime()),getRuntime(),"abrirFecharGarra");
+        }
+        if(gamepadEx.getButton(GamepadKeys.Button.RIGHT_BUMPER)){
+            carteiro.addOrder(garra.gerenciadorDaRotacaoDaGarraNoTeleop(getRuntime()),getRuntime(),"rotacionarGarra");
         }
     }
 
