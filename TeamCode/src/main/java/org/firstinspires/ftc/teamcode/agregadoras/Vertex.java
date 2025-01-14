@@ -1,23 +1,17 @@
 package org.firstinspires.ftc.teamcode.agregadoras;
 
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ftc.Encoder;
-import com.arcrobotics.ftclib.hardware.SensorDistance;
-import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.robot.Robot;
-import com.qualcomm.robotcore.robot.RobotState;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Globals;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.DistanceSensor;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra.BracoGarra;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra.statesBracoGarra;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra.Garra;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal.LinearHorizontal;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical.LinearVertical;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,10 +73,10 @@ public class Vertex {
     public void IntermediatePosition(double runTime){
         switch (RobotState) {
             case Intermediate:
-                // codigo de intake no submersivo
-                //carteiro.addOrder(linearVertical.ElevadorGoTo(500),runTime, "elevador descer");
+                //codigo de intake no submersivo
+                carteiro.addOrder(linearVertical.ElevadorGoTo(500),runTime, "elevador descer");
                 carteiro.addOrder(garra.fecharGarra(),runTime,"garra fechar");
-                carteiro.addOrder(braco.goToAnyPosition(runTime,0, Globals.IS_ARMED),runTime,"braco");
+                carteiro.addOrder(braco.goToAnyPosition(runTime,0, statesBracoGarra.Intemediate),runTime,"braco");
 
 
         }
@@ -91,9 +85,9 @@ public class Vertex {
     public  void InitialPosition(double runTime){
         switch (RobotState) {
             case Initial:
-                //carteiro.addOrder(linearVertical.ElevadorGoTo(100),runTime, "vertical subindo");
+                carteiro.addOrder(linearVertical.ElevadorGoTo(100),runTime, "vertical subindo");
                 carteiro.addOrder(linearHorizontal.recolher(runTime, runTime),0, "recolher horizontal");
-                carteiro.addOrder(braco.goToAnyPosition(runTime,0, Globals.IS_STORED),runTime,"braco");
+                carteiro.addOrder(braco.goToAnyPosition(runTime,0, statesBracoGarra.Initial),runTime,"braco");
 
         }
     }
@@ -101,9 +95,9 @@ public class Vertex {
     public void OuttakePosition(double runTime){
         switch (RobotState) {
             case Outtake:
-                //carteiro.addOrder(linearVertical.ElevadorGoTo(2700),runTime, "linear vertical subir");
-                //carteiro.addOrder(linearHorizontal.recolher(runTime, 0), runTime, "linear horizontal recolher");
-                carteiro.addOrder(braco.goToAnyPosition(runTime,0, Globals.IS_SCORING),runTime,"braco");
+                carteiro.addOrder(linearVertical.ElevadorGoTo(2700),runTime, "linear vertical subir");
+                carteiro.addOrder(linearHorizontal.recolher(runTime, 0), runTime, "linear horizontal recolher");
+                carteiro.addOrder(braco.goToAnyPosition(runTime,0, statesBracoGarra.Outtake),runTime,"braco");
 
 
         }
@@ -115,7 +109,7 @@ public class Vertex {
                 // bind do gamepad2.x
                 // vertical subir
                 // horizontal esticar
-                carteiro.addOrder(braco.goToAnyPosition(runTime,0, Globals.IS_INTAKE),runTime,"braco");
+                carteiro.addOrder(braco.goToAnyPosition(runTime,0, statesBracoGarra.Outtake),runTime,"braco");
         }
 
     }

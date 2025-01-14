@@ -10,19 +10,12 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
-import com.arcrobotics.ftclib.hardware.SensorDistance;
-import com.arcrobotics.ftclib.hardware.SensorDistanceEx;
 import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.common.Globals;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,16 +9,17 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.agregadoras.V2;
 import org.firstinspires.ftc.teamcode.agregadoras.Vertex;
 import org.firstinspires.ftc.teamcode.common.Globals;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra.BracoGarra;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra.Garra;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal.LinearHorizontal;
+import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical.LinearVertical;
 
 @TeleOp(name="Teleoperado V2f")
 public class TeleoperadoV2F_4A extends OpMode {
@@ -36,7 +37,7 @@ public class TeleoperadoV2F_4A extends OpMode {
         robot = this.createRobot(hardwareMap);
         gamepadEx = new GamepadEx(gamepad2);
         robot.intakeOutake.RobotState = Vertex.vertexState.Initial;
-        Globals.IS_STORED = true;
+
 
 
     }
@@ -66,42 +67,22 @@ public class TeleoperadoV2F_4A extends OpMode {
     }
     private void binds(V2 robot) {
 
-        if(gamepadEx.getButton(GamepadKeys.Button.A) || Globals.IS_ARMED){
+        if(gamepadEx.getButton(GamepadKeys.Button.A) || robot.intakeOutake.RobotState == Vertex.vertexState.Intermediate){
             robot.intakeOutake.IntermediatePosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Intermediate;
 
-
-            Globals.IS_INTAKE = false;
-            Globals.IS_SCORING = false;
-            Globals.IS_STORED = false;
-            Globals.IS_ARMED = true;
         }
-        if(gamepadEx.getButton(GamepadKeys.Button.B) || Globals.IS_STORED){
+        if(gamepadEx.getButton(GamepadKeys.Button.B) ||  robot.intakeOutake.RobotState == Vertex.vertexState.Initial){
             robot.intakeOutake.InitialPosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Initial;
-
-            Globals.IS_INTAKE = false;
-            Globals.IS_SCORING = false;
-            Globals.IS_STORED = true;
-            Globals.IS_ARMED = false;
         }
-        if(gamepadEx.getButton(GamepadKeys.Button.X) || Globals.IS_INTAKE ){
+        if(gamepadEx.getButton(GamepadKeys.Button.X) ||  robot.intakeOutake.RobotState == Vertex.vertexState.Intake){
             robot.intakeOutake.IntakePosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Intake;
-
-            Globals.IS_INTAKE = true;
-            Globals.IS_SCORING = false;
-            Globals.IS_STORED = false;
-            Globals.IS_ARMED = false;
         }
-        if(gamepadEx.getButton(GamepadKeys.Button.Y) || Globals.IS_SCORING){
+        if(gamepadEx.getButton(GamepadKeys.Button.Y) ||  robot.intakeOutake.RobotState == Vertex.vertexState.Intermediate){
             robot.intakeOutake.OuttakePosition(getRuntime());
             robot.intakeOutake.RobotState = Vertex.vertexState.Outtake;
-
-            Globals.IS_INTAKE = false;
-            Globals.IS_SCORING = true;
-            Globals.IS_STORED = false;
-            Globals.IS_ARMED = false;
         }
     }
     private void linearHorizontal(LinearHorizontal horizontal)  {

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.Vertex;
+package org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal;
 
 import androidx.annotation.NonNull;
 
@@ -12,10 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.arcrobotics.ftclib.util.Timing.Timer;
-import com.qualcomm.robotcore.util.ElapsedTime;
+
 @Config
 public class LinearHorizontal {
     public Servo servoLinearHorizonal;
@@ -23,12 +21,15 @@ public class LinearHorizontal {
     public int targetPositionLinearHorizontal = 0;
     public boolean teleop = false;
     public boolean precisaTerminarDeExtender = false, precisaTerminarDeRetrair = false;
+    statesLinearHorizontal linearHorizontalStates = statesLinearHorizontal.Initial;
     private double delayHoriontal = 0;
     public boolean intaking = false, modoAPENASTEMPO = false;
 
     public static double kp = 0.001, kd = 0.000, kff = 0.0000, kll = 0.0000;
 
     public LinearHorizontal(HardwareMap hardwareMap) {
+
+
         this.servoLinearHorizonal = hardwareMap.get(Servo.class, "porta4");
         this.motorLinearHorizontal = hardwareMap.get(DcMotorEx.class, "linearH");
         this.motorLinearHorizontal.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -200,36 +201,7 @@ public class LinearHorizontal {
 
 
     }
-    public Action intake(double runTime, double delay) {
-        if (delay > 0) {
-            precisaTerminarDeExtender = true;
-            delayHoriontal = runTime + delay;
-            return new InstantAction(() -> {});
-        }
-        return new Action() {
-            int margin;
-            ElapsedTime time = new ElapsedTime();
-            boolean started = false;
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(!started) {
-                    time.reset();
-                    targetPositionLinearHorizontal = 1200;
-                    started = true;
-                }
 
-
-                margin  = 200;
-
-                double positionError = controladorDePosicao();
-                if((time.time() >  0.6 && Math.abs(motorLinearHorizontal.getVelocity()) < 15) || time.time() > 1){
-
-                    return false;
-                }
-                return Math.abs(positionError) > margin;
-            }
-
-        };}
 
     public double controladorDePosicao() {
 
@@ -263,20 +235,6 @@ public class LinearHorizontal {
 
         return controller.getPositionError();
 
-    }
-
-    public Action handleHorizontalTeleop(double runTime) {
-
-        if (precisaTerminarDeExtender && runTime >= delayHoriontal) {
-            precisaTerminarDeExtender = false;
-            return extender(runTime, 0);
-        }
-        if (precisaTerminarDeRetrair && runTime >= delayHoriontal) {
-            precisaTerminarDeRetrair = false;
-            return recolher(runTime, 0);
-        }
-        controladorDePosicao();
-        return new InstantAction(() -> {});
     }
 
     /*===========================*\

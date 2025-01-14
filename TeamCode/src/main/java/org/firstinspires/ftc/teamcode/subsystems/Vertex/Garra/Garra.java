@@ -1,46 +1,43 @@
-package org.firstinspires.ftc.teamcode.subsystems.Vertex;
+package org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra;
 
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.agregadoras.V2;
-import java.util.List;
+
+import java.lang.reflect.GenericArrayType;
 
 public class Garra {
     public Servo rotacaoDaGarra, fechamentoDaGarra;
     public ColorSensor colorSensor;
-
+    statesGarra GarraStates = statesGarra.Open;
+    RotacaoDaGarraState estadoRotacaoDaGarra = RotacaoDaGarraState.PARALELA;
     double cooldownAnguloGarra = 0, cooldownGarra = 0;
 
     double delay = 0.4;
     boolean anguloGarraAction = false, garraAction = false;
-
-    public  enum FechamentoDaGarraState {
-        FECHADA,
-        ABERTA
-    }
 
     public  enum  RotacaoDaGarraState {
         PERPENDICULAR,
         PARALELA
     }
 
-    public FechamentoDaGarraState estadoFechamentoDaGarra = FechamentoDaGarraState.ABERTA;
-    public RotacaoDaGarraState estadoRotacaoDaGarra = RotacaoDaGarraState.PARALELA;
+
     public Garra(HardwareMap hardwareMap) {
+
+
        this.rotacaoDaGarra = hardwareMap.get(Servo.class, "porta0");
        this.fechamentoDaGarra = hardwareMap.get(Servo.class, "porta4");
        this.colorSensor = hardwareMap.get(ColorSensor.class, "colorSensor");
     }
 
     public Action abrirGarra() {
-        estadoFechamentoDaGarra = FechamentoDaGarraState.ABERTA;
+        GarraStates = statesGarra.Open;
         return new InstantAction(() -> fechamentoDaGarra.setPosition(0.75));
     }
 
@@ -57,7 +54,7 @@ public class Garra {
     }
 
     public Action fecharGarra() {
-        estadoFechamentoDaGarra = FechamentoDaGarraState.FECHADA;
+        GarraStates = statesGarra.Closed;
         return new InstantAction(() -> fechamentoDaGarra.setPosition(0.475));
     }
 
@@ -77,12 +74,12 @@ public class Garra {
 
         if (this.garraAction) {
             this.garraAction = false;
-            estadoFechamentoDaGarra = FechamentoDaGarraState.FECHADA;
+            GarraStates = statesGarra.Closed;
             return this.fecharGarra();
         }
 
         this.garraAction = true;
-        estadoFechamentoDaGarra = FechamentoDaGarraState.ABERTA;
+        GarraStates = statesGarra.Open;
         return this.abrirGarra();// fechado
 
 
