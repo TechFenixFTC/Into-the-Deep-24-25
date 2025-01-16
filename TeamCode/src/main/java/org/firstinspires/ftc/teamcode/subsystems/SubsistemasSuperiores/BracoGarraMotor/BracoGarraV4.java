@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.common.verifys.PIDTargetChecker;
 
 @Config
 public class BracoGarraV4 {
+    public static boolean monitor;
     public DcMotorEx motorBracoGarra;
     private double targetAngle = 0;
     public static double kp = 0.025, ki = 0, kd = 0.2, kff = 0.05, kll = 0.0,  margemEmGraus = 6 , tempoDeEstabilidade = 0.2, sense = 4, llMax = kll, maxStep = 5;
@@ -26,6 +28,7 @@ public class BracoGarraV4 {
     public double tempoUltimaacao = 0;
     private final Telemetry telemetry;
     public PIDTargetChecker pidTargetChecker = new PIDTargetChecker(margemEmGraus, tempoDeEstabilidade);
+    public static int portaBracoGarraServo, portaBracoGarraMotor;
 
     BracoGarraStates bracoGarraState = BracoGarraStates.Initial;
     public static  double   maxAcc = 2700, maxVelocity  = 4400, distance = 0, tempo = 0;
@@ -35,6 +38,7 @@ public class BracoGarraV4 {
         motorBracoGarra.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.telemetry = telemetry;
         reset();
+        portaBracoGarraMotor = motorBracoGarra.getPortNumber();
     }
     /**************************************************
      *                  Controllers                   *
@@ -161,6 +165,17 @@ public class BracoGarraV4 {
     }
     public boolean chegouNoTarget() {
         return pidTargetChecker.hasReachedTarget(targetAngle, getAngle());
+    }
+    public void monitor(Telemetry telemetry) {
+        if (monitor) {
+            telemetry.addLine("*********************************");
+            telemetry.addLine("  TELEMETRIA DO BRAÇO DA GARRA");
+            telemetry.addLine("*********************************");
+            telemetry.addData("Angulo do braco",this.getAngle());
+            telemetry.addData("alvo",targetAngle);
+            //telemetry.addData("",);
+
+        }
     }
 
 }

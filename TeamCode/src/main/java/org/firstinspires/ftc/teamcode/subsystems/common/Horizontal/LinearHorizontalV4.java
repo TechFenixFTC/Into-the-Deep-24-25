@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,19 +19,24 @@ import org.firstinspires.ftc.teamcode.HardwareNames;
 
 @Config
 public class LinearHorizontalV4 {
-    public DcMotorEx motorLinearHorizontal, encoder;
-    private boolean monitor = false;
+    public DcMotorEx encoder;
+    public Servo servoLinearHorizontal;
+    public static boolean monitor = false;
     public int targetPositionLinearHorizontal = 0;
     public double erro = 0, p = 0, ll = 0.2, ff = 0;
     public ElapsedTime timeGoingToSetPoint = new ElapsedTime();
     public static double kp = 0.01, kd = 0.000, kff = 0.0000, kll = 0.16, valorMinimoLL = 6, valorMinimoAlertaDeCorrente = 3.25;
     private int codAction = 0;
+    public static int portaLinearHorizontalServo;
+
     public LinearHorizontalV4(HardwareMap hardwareMap) {
-        this.motorLinearHorizontal = hardwareMap.get(DcMotorEx.class, HardwareNames.horizontalSuperior);
+        //this.motorLinearHorizontal = hardwareMap.get(DcMotorEx.class, HardwareNames.horizontalSuperior);
+        this.servoLinearHorizontal = hardwareMap.get(Servo.class, HardwareNames.horizontalSuperiorServo);
         this.encoder = hardwareMap.get(DcMotorEx.class, "rightBack");
         //this.motorLinearHorizontal.setDirection(DcMotorSimple.Direction.REVERSE);
-        this.motorLinearHorizontal.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         reset();
+        portaLinearHorizontalServo = servoLinearHorizontal.getPortNumber();
 
     }
 
@@ -45,7 +51,7 @@ public class LinearHorizontalV4 {
         }
          */
         // FeedForward
-        ff = targetPositionLinearHorizontal  * kff;
+        ff = targetPositionLinearHorizontal * kff;
         //KP
         p = kp;
         //Cria o Controlador PID
@@ -59,27 +65,31 @@ public class LinearHorizontalV4 {
         //aqui quero desligar o ll para valores de erro muito pequenos
         if (Math.abs(controller.getPositionError()) <= valorMinimoLL) ll = 0;
         //Mandando a energia pro motor
-        motorLinearHorizontal.setPower(pid + ll);
+        //motorLinearHorizontal.setPower(pid + ll);
         return controller.getPositionError();
 
     }
+
     /**************************************************
      *                   Actions                      *
      **************************************************/
+    /*REFAZER A FUNÇÕES PARA FUNCIONAREM COM SERVOS(SÃO FUNÇÕES BASEADAS NOS MOTORES)*/
     public void reset() {
-      setTarget(0);
-      encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-      encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-  }
+        setTarget(0);
+        encoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
     public Action extenderLimiteMecanico() {
         codAction = 1;
         return new Action() {
             int margin;
             final ElapsedTime time = new ElapsedTime();
             boolean started = false;
+
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(!started) {
+                if (!started) {
                     time.reset();
                     setTarget(1200);
                     started = true;
@@ -91,23 +101,26 @@ public class LinearHorizontalV4 {
                 boolean condicaoPararTempoLimite = time.time() > 1;
                 boolean condicaoPararOutraAcao = !(codAction == 1);
 
-                if( condicaoPararBateuLimiteMecanico || condicaoPararTempoLimite || condicaoPararOutraAcao){
+                if (condicaoPararBateuLimiteMecanico || condicaoPararTempoLimite || condicaoPararOutraAcao) {
                     targetPositionLinearHorizontal = encoder.getCurrentPosition();
                     return false;
                 }
                 return Math.abs(positionError) > margin;
             }
 
-        };}
+        };
+    }
+
     public Action retrairLimiteMecanico() {
         codAction = 2;
         return new Action() {
             int margin;
             final ElapsedTime time = new ElapsedTime();
             boolean started = false;
+
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(!started) {
+                if (!started) {
                     time.reset();
                     setTarget(-1200);
                     started = true;
@@ -119,14 +132,16 @@ public class LinearHorizontalV4 {
                 boolean condicaoPararTempoLimite = time.time() > 1;
                 boolean condicaoPararOutraAcao = !(codAction == 2);
 
-                if( condicaoPararBateuLimiteMecanico || condicaoPararTempoLimite || condicaoPararOutraAcao){
+                if (condicaoPararBateuLimiteMecanico || condicaoPararTempoLimite || condicaoPararOutraAcao) {
                     reset();
                     return false;
                 }
                 return Math.abs(positionError) > margin;
             }
 
-        };}
+        };
+    }
+
     /**************************************************
      *              Controllers Tools                 *
      **************************************************/
@@ -134,19 +149,22 @@ public class LinearHorizontalV4 {
         timeGoingToSetPoint.reset();
         targetPositionLinearHorizontal = target;
     }
-    public boolean strangeCurrentBehavior() {
-        return motorLinearHorizontal.getCurrent(CurrentUnit.AMPS) > valorMinimoAlertaDeCorrente;
+
+    public boolean strangeCurrentBehavior()/*NÃO FUNCIONA MUDAR PARA LOGICA DE SERVOS*/ {
+        //return motorLinearHorizontal.getCurrent(CurrentUnit.AMPS) > valorMinimoAlertaDeCorrente;
+        return false;
     }
+
     /**************************************************
      *                   Monitoring                   *
      **************************************************/
-    public void turnOnMonitoring(){
-        this.monitor = true;
-    }
-    public void turnOffMonitoring(){
-        this.monitor = false;
-    }
-    public void monitorPID(Telemetry telemetry){
 
+    public void monitor(Telemetry telemetry,Servo servo) {
+        if (monitor) {
+            telemetry.addLine("*********************************");
+            telemetry.addLine("TELEMETRIA DO LINEAR HORIZONTAL");
+            telemetry.addLine("*********************************");
+            telemetry.addData("Posição do Servo",servo.getPosition());
+        }
     }
 }

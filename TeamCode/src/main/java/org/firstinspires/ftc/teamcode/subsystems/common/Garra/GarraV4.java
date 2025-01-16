@@ -18,9 +18,9 @@ public class GarraV4 {
             posFechada  = 1.0,
             posPerp = 1.0,
             posPar = 0.4,
-            posX  =   0.0
-                    ;
+            posX  =   0.0;
 
+    public static int portaAbrirGarra, portaRotacaoGarra;
 
     double cooldownAnguloGarra = 0, cooldownAberturaGarra = 0;
 
@@ -33,6 +33,9 @@ public class GarraV4 {
         this.rotacaoDaGarra = hardwareMap.get(Servo.class, HardwareNames.servoRatacaoGarra);
         this.fechamentoDaGarra = hardwareMap.get(Servo.class, HardwareNames.servoAberturaGarrra);
         this.colorSensor = hardwareMap.get(ColorSensor.class, HardwareNames.colorSensor1);
+        portaAbrirGarra = fechamentoDaGarra.getPortNumber();
+        portaRotacaoGarra = rotacaoDaGarra.getPortNumber();
+
     }
 
     public Action fecharGarra() {

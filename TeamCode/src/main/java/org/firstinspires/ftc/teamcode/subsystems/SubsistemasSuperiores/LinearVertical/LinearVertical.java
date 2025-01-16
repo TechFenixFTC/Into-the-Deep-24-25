@@ -26,6 +26,8 @@ public class LinearVertical {
     public double timeToChangeTarget = 0;
     public int wantedTarget = 0;
 
+    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo;
+
 
     public int position;
     public double power;
@@ -45,6 +47,8 @@ public class LinearVertical {
         this.motorR =  hardwareMap.get(DcMotorEx.class, "linearR");
         this.led =  hardwareMap.get(DigitalChannel.class, "1ledR");//atualizar no drive hub
         this.power = motorR.getPower();
+        portaLinearVerticalDireita = motorR.getPortNumber();
+        portaLinearVerticalEsquerdo = motorL.getPortNumber();
 
 
         this.motorL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -133,5 +137,6 @@ public class LinearVertical {
         };
 
     }
+
 
 }

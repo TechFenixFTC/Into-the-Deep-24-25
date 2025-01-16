@@ -37,8 +37,15 @@ public final class HardwareNames {
     **************************************************/   /* Motores Vertex */
         verticalR            = "verticalR",
         verticalL            = "verticalL",
-        horizontalSuperior   = "horizontal",
+        horizontalSuperiorMotor = "horizontalMotor",
         bracoGarraSuperior   = "braco",
+    /**************************************************
+     *              Servo Subsistemas               *
+     **************************************************/   /* Motores Vertex */
+
+    horizontalSuperiorServo = "horizontalSuperior",
+    horizontalInferiorServo = "horizontalInferior",
+    bracoGarraSuperiorServo   = "bracoServo",
     /**************************************************
      *                 Servo-motores                  *
      **************************************************/
