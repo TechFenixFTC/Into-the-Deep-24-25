@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal;
+package org.firstinspires.ftc.teamcode.subsystems.common.Horizontal;
 
 import androidx.annotation.NonNull;
 
@@ -21,12 +21,11 @@ public class LinearHorizontal {
     public int targetPositionLinearHorizontal = 0;
     public boolean teleop = false;
     public boolean precisaTerminarDeExtender = false, precisaTerminarDeRetrair = false;
-    statesLinearHorizontal linearHorizontalStates = statesLinearHorizontal.Initial;
+    LinearHorizontalStates linearHorizontalStates = LinearHorizontalStates.RETRACTED;
     private double delayHoriontal = 0;
     public boolean intaking = false, modoAPENASTEMPO = false;
 
     public static double kp = 0.001, kd = 0.000, kff = 0.0000, kll = 0.0000;
-
     public LinearHorizontal(HardwareMap hardwareMap) {
 
 
@@ -37,7 +36,6 @@ public class LinearHorizontal {
         reset();
 
     }
-
     public void upSetPoint() {
         //if( this.targetPositionLinearHorizontal > 0.99) return;
         //this.targetPositionLinearHorizontal += 0.05;
@@ -45,7 +43,6 @@ public class LinearHorizontal {
         //  if( this.targetPositionLinearHorizontal >  80) return;
         this.targetPositionLinearHorizontal += 140;
     }
-
     public void downSetPoint() {
 
         //this.targetPositionLinearHorizontal -= 0.05;
@@ -166,8 +163,7 @@ public class LinearHorizontal {
 
 
     }
-    public Action extenderNemTanto(double runTime, double delay)
-    {
+    public Action extenderNemTanto(double runTime, double delay) {
         if (delay > 0) {
             precisaTerminarDeExtender = true;
             precisaTerminarDeRetrair = false;
@@ -201,7 +197,6 @@ public class LinearHorizontal {
 
 
     }
-
 
     public double controladorDePosicao() {
 

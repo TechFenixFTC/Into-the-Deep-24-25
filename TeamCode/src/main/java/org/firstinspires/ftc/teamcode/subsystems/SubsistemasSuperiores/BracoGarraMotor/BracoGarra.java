@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra;
+package org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarraMotor;
 
 import androidx.annotation.NonNull;
 
@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,15 +14,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.common.Globals;
-
 import java.util.HashMap;
 
 @Config
 public class BracoGarra {
     public Servo servoBracoDaGarra;
     public DcMotorEx motorBracoGarra;
-    statesBracoGarra bracoGarrastate = statesBracoGarra.Initial;
+    BracoGarraStates bracoGarrastate = BracoGarraStates.Initial;
     public int targetPosition = 0;
     public int IntakePosition = -6000;
     public int OuttakePosition = -2550;
@@ -358,7 +355,7 @@ public class BracoGarra {
             }
         };
     }*/
-    public Action goToAnyPosition(double runTime, double delay, statesBracoGarra statesBracoGarra ){
+    public Action goToAnyPosition(double runTime, double delay, BracoGarraStates statesBracoGarra ){
         if(delay > 0){
             when = runTime + delay;
             return new InstantAction(() -> {});
@@ -375,7 +372,7 @@ public class BracoGarra {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
-                HashMap< Integer, statesBracoGarra> map = new HashMap<>();
+                HashMap< Integer, BracoGarraStates> map = new HashMap<>();
                 map.put(-200,  statesBracoGarra.Initial);
                 map.put( -6000,statesBracoGarra.Intake);
                 map.put(-2550, statesBracoGarra.Outtake);
@@ -429,231 +426,6 @@ public class BracoGarra {
             }
         };
     }
-    public Action goToStored(double runtime, double delay) {
-        if(delay > 0){
-            when = runtime + delay;
-            needToGoToIntermadiate = true;
-            return new InstantAction(() -> {});
-        }
-        return  new Action() {
-            int margin;
-            boolean started = false;
-            boolean condition = true;
-            ElapsedTime time = new ElapsedTime();
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!started) {
-                    time.reset();
-                    targetPosition = -1200;
-                    started = true;
-                    // PROFILE
-                    distance = targetPosition - getPosition();
-                }
-
-
-                margin = 100;
-
-                // PROFILE
-                tempo = time.time();
-                double positionError = controladorDePosicaoMotion(2000, 5000, 0, 0);
-                // antes estava posicao de angulo
-                condition =  Math.abs(positionError) > margin;
-
-                if (!condition)  {
-                    // PROFILE
-                    tempo = 0;
-                    distance = 0;
-                    motorBracoGarra.setPower(calculateFF());
-                }
-
-                return condition;
-            }
-        };
-    }
-    public Action goToBasketOutake(double runtime, double delay) {
-        if ( delay > 0) {
-            when = runtime + delay;
-            needToGoToBasketOutake = true;
-            return new InstantAction(() -> {});
-        }
-        return  new Action() {
-            int margin;
-            boolean started = false;
-            ElapsedTime time = new ElapsedTime();
-            boolean condition;
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!started) {
-                    time.reset();
-                    targetPosition = -2550;
-                    if (autonomo) targetPosition += 370;
-                    // PROFILE
-                    distance = targetPosition - getPosition();
-                    started = true;
-                }
-
-
-                margin = 200;
-
-                // PROFILE
-                tempo = time.time();
-
-                double positionError = controladorDePosicaoMotion(2000, 5000, 0, 0);
-                // antes estava  estava posicaoAngulador
-                condition = Math.abs(positionError) > margin;
-
-                if (!condition || time.time() > 0.9) {
-                   // motorBracoGarra.setPower(-0.15);
-                   // targetPosition = 1500;
-
-                    // PROFILE
-                    tempo = 0;
-                    distance = 0;
-                    motorBracoGarra.setPower(-0.12);
-                    return false;
-                }
-                return condition;
-            }
-        };
-    }
-    public Action goTo150(double runtime, double delay) {
-        if ( delay > 0) {
-            when = runtime + delay;
-            needToGoToBasketOutake = true;
-            return new InstantAction(() -> {});
-        }
-        return  new Action() {
-            int margin;
-            boolean started = false;
-            ElapsedTime time = new ElapsedTime();
-            boolean condition;
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!started) {
-                    time.reset();
-                    targetPosition = 300;
-                    // PROFILE
-                    distance = targetPosition - getPosition();
-                    started = true;
-                }
-
-
-                margin = 200;
-
-                // PROFILE
-                tempo = time.time();
-
-                double positionError = controladorDePosicaoMotion(2000, 5000, 0, 0);
-                condition = Math.abs(positionError) > margin;
-
-                if (!condition || time.time() > 0.9) {
-                    // motorBracoGarra.setPower(-0.15);
-                    // targetPosition = 1500;
-
-                    // PROFILE
-                    tempo = 0;
-                    distance = 0;
-                    motorBracoGarra.setPower(-0.12);
-                    return false;
-                }
-                return condition;
-            }
-        };
-    }
-    public Action goToPark(double runtime, double delay) {
-        if ( delay > 0) {
-            when = runtime + delay;
-            needToGoToBasketOutake = true;
-            return new InstantAction(() -> {});
-        }
-        return  new Action() {
-            int margin;
-            boolean started = false;
-            ElapsedTime time = new ElapsedTime();
-            boolean condition;
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!started) {
-                    time.reset();
-                    targetPosition = 2350;
-                    // PROFILE
-                    distance = targetPosition - getPosition();
-                    started = true;
-                }
-
-
-                margin = 200;
-
-                // PROFILE
-                tempo = time.time();
-
-                double positionError = controladorDePosicaoMotion(2000, 5000, 0, 0);
-                // antes estava posicao de angulo
-                condition = Math.abs(positionError) > margin;
-
-                if (!condition || time.time() > 0.9) {
-                    // motorBracoGarra.setPower(-0.15);
-                    // targetPosition = 1500;
-
-                    // PROFILE
-                    tempo = 0;
-                    distance = 0;
-                    motorBracoGarra.setPower(-0.12);
-                    return false;
-                }
-                return condition;
-            }
-        };
-    }
-
-    public Action goToBasketOutakeSample3(double runtime, double delay) {
-        if ( delay > 0) {
-            when = runtime + delay;
-            needToGoToBasketOutake = true;
-            return new InstantAction(() -> {});
-        }
-        return  new Action() {
-            int margin;
-            boolean started = false;
-            ElapsedTime time = new ElapsedTime();
-            boolean condition;
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!started) {
-                    time.reset();
-                    targetPosition = 2050;
-                    if (autonomo) targetPosition += 450;
-                    // PROFILE
-                    distance = targetPosition - getPosition();
-                    started = true;
-                }
-
-
-                margin = 200;
-
-                // PROFILE
-                tempo = time.time();
-
-                double positionError = controladorDePosicaoMotion(2000, 5000, 0, 0);
-                // antes estava  estava posicaoAngulador
-                condition = Math.abs(positionError) > margin;
-
-                if (!condition || time.time() > 0.9) {
-                    // motorBracoGarra.setPower(-0.15);
-                    // targetPosition = 1500;
-
-                    // PROFILE
-                    tempo = 0;
-                    distance = 0;
-                    motorBracoGarra.setPower(-0.12);
-                    return false;
-                }
-                return condition;
-            }
-        };
-    }
-
 
     //todo: Action de controle manual
     public void upBraco() { this.targetPosition += 40;}

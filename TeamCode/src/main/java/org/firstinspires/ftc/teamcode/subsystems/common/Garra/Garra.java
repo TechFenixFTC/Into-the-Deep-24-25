@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra;
+package org.firstinspires.ftc.teamcode.subsystems.common.Garra;
 
 import androidx.annotation.NonNull;
 
@@ -10,12 +10,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.agregadoras.V2;
 
-import java.lang.reflect.GenericArrayType;
-
 public class Garra {
     public Servo rotacaoDaGarra, fechamentoDaGarra;
     public ColorSensor colorSensor;
-    statesGarra GarraStates = statesGarra.Open;
+    GarraOpeningStates GarraStates = GarraOpeningStates.OPEN;
     RotacaoDaGarraState estadoRotacaoDaGarra = RotacaoDaGarraState.PARALELA;
     double cooldownAnguloGarra = 0, cooldownGarra = 0;
 
@@ -37,7 +35,7 @@ public class Garra {
     }
 
     public Action abrirGarra() {
-        GarraStates = statesGarra.Open;
+        GarraStates = GarraOpeningStates.OPEN;
         return new InstantAction(() -> fechamentoDaGarra.setPosition(0.75));
     }
 
@@ -54,7 +52,7 @@ public class Garra {
     }
 
     public Action fecharGarra() {
-        GarraStates = statesGarra.Closed;
+        GarraStates = GarraOpeningStates.CLOSED;
         return new InstantAction(() -> fechamentoDaGarra.setPosition(0.475));
     }
 
@@ -74,12 +72,12 @@ public class Garra {
 
         if (this.garraAction) {
             this.garraAction = false;
-            GarraStates = statesGarra.Closed;
+            //GarraStates = GarraStates.Closed;
             return this.fecharGarra();
         }
 
         this.garraAction = true;
-        GarraStates = statesGarra.Open;
+        //GarraStates = org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraStates.Open;
         return this.abrirGarra();// fechado
 
 

@@ -1,19 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.agregadoras.V2;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical;
+import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontal;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 
 import java.util.HashMap;
-import java.util.Map;
 
 
 public class ErrorCode {

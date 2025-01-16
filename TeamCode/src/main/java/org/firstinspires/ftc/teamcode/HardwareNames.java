@@ -1,0 +1,50 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
+public final class HardwareNames {
+    public static String
+
+    /**************************************************
+    *                  Rodas Mortas                   *
+    **************************************************/
+        par0 = "",
+        par1 = "",
+        perp = "",
+    /**************************************************
+     *                  Motores Chassi                *
+     **************************************************/
+        rightFront =  "rightFront",
+        leftFront =   "leftFront",
+        rightBack =   "rightBack",
+        leftBack =    "leftBack",
+    /**************************************************
+    *                  Sensores                       *
+    **************************************************/
+        distanceSensorL      = "sensorPortaE3",
+        distanceSensorR      = "sensorPorta2",
+        colorSensor1         = "color1",
+        colorSensor2         = "sensorPortaE2",
+
+    /**************************************************
+    *         Visão Computacional / Cameras          *
+    **************************************************/
+        webcam1              =  "Webcam 1",
+        limelight            =  "limelight",
+    /**************************************************
+    *              DcMotors Subsistemas               *
+    **************************************************/   /* Motores Vertex */
+        verticalR            = "verticalR",
+        verticalL            = "verticalL",
+        horizontalSuperior   = "horizontal",
+        bracoGarraSuperior   = "braco",
+    /**************************************************
+     *                 Servo-motores                  *
+     **************************************************/
+        servoRatacaoGarra    = "porta0",
+        servoAberturaGarrra  = "porta1"
+        ;
+
+        public static String[] servoNames = {servoRatacaoGarra, servoAberturaGarrra};
+}

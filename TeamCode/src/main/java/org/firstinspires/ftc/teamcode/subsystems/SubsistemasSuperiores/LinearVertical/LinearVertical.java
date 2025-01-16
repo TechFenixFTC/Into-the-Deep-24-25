@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical;
+package org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical;
 
 import androidx.annotation.NonNull;
 
@@ -20,7 +20,7 @@ public class LinearVertical {
     public final DcMotorEx motorR;
     public final DcMotorEx motorL;
     public final DigitalChannel led;
-    statesLinearVertical LinearVerticalstates = statesLinearVertical.Initial;
+    LinearVerticalStates LinearVerticalstates = LinearVerticalStates.Initial;
     // controla descer
     public boolean needToChangeTarget = false;
     public double timeToChangeTarget = 0;

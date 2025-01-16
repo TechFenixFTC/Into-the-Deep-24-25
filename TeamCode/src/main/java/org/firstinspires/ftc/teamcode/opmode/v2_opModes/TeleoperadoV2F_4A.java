@@ -9,17 +9,15 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.agregadoras.V2;
 import org.firstinspires.ftc.teamcode.agregadoras.Vertex;
-import org.firstinspires.ftc.teamcode.common.Globals;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.BracoGarra.BracoGarra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.Garra.Garra;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearHorizontal.LinearHorizontal;
-import org.firstinspires.ftc.teamcode.subsystems.Vertex.LinearVertical.LinearVertical;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarraMotor.BracoGarra;
+import org.firstinspires.ftc.teamcode.subsystems.common.Garra.Garra;
+import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontal;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 
 @TeleOp(name="Teleoperado V2f")
 public class TeleoperadoV2F_4A extends OpMode {
