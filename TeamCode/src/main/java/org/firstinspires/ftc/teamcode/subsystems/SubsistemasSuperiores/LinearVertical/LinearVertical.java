@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.HardwareNames;
 
 @Config
 public class LinearVertical {
@@ -22,7 +23,7 @@ public class LinearVertical {
 
     public final DcMotorEx motorR;
     public final DcMotorEx motorL;
-    public final DigitalChannel led;
+    //public final DigitalChannel led;
     LinearVerticalStates LinearVerticalstates = LinearVerticalStates.Initial;
     // controla descer
     public boolean needToChangeTarget = false;
@@ -47,9 +48,9 @@ public class LinearVertical {
     public LinearVertical (HardwareMap hardwareMap) {
 
 
-        this.motorL =  hardwareMap.get(DcMotorEx.class, "linearL");
-        this.motorR =  hardwareMap.get(DcMotorEx.class, "linearR");
-        this.led =  hardwareMap.get(DigitalChannel.class, "1ledR");//atualizar no drive hub
+        this.motorL =  hardwareMap.get(DcMotorEx.class, HardwareNames.verticalL);
+        this.motorR =  hardwareMap.get(DcMotorEx.class, HardwareNames.verticalR);
+        //this.led =  hardwareMap.get(DigitalChannel.class, "1ledR");//atualizar no drive hub
         this.power = motorR.getPower();
         portaLinearVerticalDireita = motorR.getPortNumber();
         portaLinearVerticalEsquerdo = motorL.getPortNumber();

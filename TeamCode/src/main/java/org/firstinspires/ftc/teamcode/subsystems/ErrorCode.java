@@ -4,7 +4,8 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontal;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalInferior;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Horizontal.LinearHorizontalSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 
 import java.util.HashMap;
@@ -75,8 +76,8 @@ public class ErrorCode {
         error=100;
         return error;
     }
-    public int  interrupLinearHorizontal(LinearHorizontal horizontal){
-        if(horizontal.motorLinearHorizontal.getVelocity()<5&&horizontal.motorLinearHorizontal.getCurrentPosition()>400){
+    public int  interrupLinearHorizontalSuperior(LinearHorizontalSuperior horizontal){
+        if(horizontal.encoder.getVelocity()<5&&horizontal.encoder.getCurrentPosition()>400){
             error = 408;
             return error;
         }

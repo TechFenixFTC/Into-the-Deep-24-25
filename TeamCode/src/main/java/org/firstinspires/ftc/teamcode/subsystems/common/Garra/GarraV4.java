@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 
 @Config
-public abstract class GarraV4 {
+public class GarraV4 {
     public Servo rotacaoDaGarra, fechamentoDaGarra;
     public ColorSensor colorSensor;
     public static boolean monitor = false;
@@ -97,5 +97,5 @@ public abstract class GarraV4 {
         }
     }
 
-    public abstract void monitor(Telemetry telemetry);
+
 }

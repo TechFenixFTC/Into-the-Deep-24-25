@@ -16,6 +16,6 @@ public class LinearHorizontalInferior extends LinearHorizontalV4 {
         this.encoder = hardwareMap.get(DcMotorEx.class,HardwareNames.getHorizontalInferior);
     }
     public void monitor(Telemetry telemetry){
-        super.monitor(telemetry,"Inferior");
+        this.monitor(telemetry,"Inferior");
     }
 }

@@ -22,7 +22,7 @@ public final class HardwareNames {
     /**************************************************
     *                  Sensores                       *
     **************************************************/
-        distanceSensorL      = "sensorPortaE3",
+        distanceSensorL      = "sensorporta3",
         distanceSensorR      = "sensorPorta2",
         colorSensor1         = "color1",
         colorSensor2         = "sensorPortaE2",
@@ -35,8 +35,8 @@ public final class HardwareNames {
     /**************************************************
     *              DcMotors Subsistemas               *
     **************************************************/   /* Motores Vertex */
-        verticalR            = "verticalR",
-        verticalL            = "verticalL",
+        verticalR            = "verticalr",
+        verticalL            = "verticall",
         bracoGarraSuperior   = "braco",
     /**************************************************
      *              Servo Subsistemas               *

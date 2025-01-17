@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.HardwareNames;
+
 @Config
 public class DistanceSensor {
 
@@ -17,9 +19,9 @@ public class DistanceSensor {
     double distance;
 
 
-    public double getDistance(){this.distance = sensorDistanceRight.getDistance(DistanceUnit.CM); return this.distance;}
+    /*public double getDistance(){this.distance = sensorDistanceRight.getDistance(DistanceUnit.CM); return this.distance;}
     public DistanceSensor(HardwareMap hardwareMap) {
-      sensorDistanceLeft = hardwareMap.get(SensorDistanceEx.class, "sensorDistanceLeft");
-      sensorDistanceRight = hardwareMap.get(SensorDistanceEx.class,"sensorDistanceRight");
-    }
+      sensorDistanceLeft = hardwareMap.get(SensorDistanceEx.class, HardwareNames.distanceSensorL);
+      sensorDistanceRight = hardwareMap.get(SensorDistanceEx.class,HardwareNames.distanceSensorR);
+    }*/
 }

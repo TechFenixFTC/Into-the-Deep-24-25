@@ -13,8 +13,8 @@ public class GarraInferior extends GarraV4 {
 
     }
 
-    @Override
+
     public void monitor(Telemetry telemetry) {
-        super.monitor(telemetry,"Inferior");
+        this.monitor(telemetry,"Inferior");
     }
 }

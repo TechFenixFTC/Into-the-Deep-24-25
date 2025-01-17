@@ -4,11 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -25,7 +21,7 @@ public class V2 {
 
     public Telemetry telemetry;
     List<Encoder> leftEncs = new ArrayList<>(), rightEncs = new ArrayList<>();
-    public Vertex intakeOutake;
+    public Subsistemas intakeOutake;
     HardwareMap hardwaremap;
     public Globals globals;
     public boolean overShoot = false;
@@ -49,14 +45,14 @@ public class V2 {
         this.hardwaremap = hardwareMap;
 
         this.telemetry = telemetry;
-        this.intakeOutake = new Vertex(hardwareMap, telemetry);
+        this.intakeOutake = new Subsistemas(hardwareMap, telemetry);
         if(getVoltage() > 13.4){
             overShoot = true;
         }
 
         if(overShoot) {
             //BracoGarra.kp = BracoGarra.kp * 0.7;
-            this.intakeOutake.braco.overshoot = true;
+            //this.intakeOutake.braco.overshoot = true;
 
         }
     }
@@ -68,7 +64,7 @@ public class V2 {
     todo: goNearTheObservationZone
      */
 
-    public Action goDepositRedBasket(String tipo) {
+    /*public Action goDepositRedBasket(String tipo) {
         this.md.updatePoseEstimate();
         if (tipo.equals("strafe")) {
             if(risky) {
@@ -120,9 +116,9 @@ public class V2 {
 
                 )
         );
-    }
+    }*/
 
-    public Action goToRedBasket(String tipo) {
+    /*public Action goToRedBasket(String tipo) {
         this.md.updatePoseEstimate();
         if (tipo.equals("strafe")) {
             return new SequentialAction(
@@ -164,7 +160,8 @@ public class V2 {
 
                 )
         );
-    }
+    }*/
+    /*
     public Action goToRedSubmersible(String tipo) {
         this.md.updatePoseEstimate();
         if (tipo.equals("strafe")) {
@@ -198,13 +195,13 @@ public class V2 {
                 )
                 )
         );
-    }
+    }*/
     public double getVoltage() { return hardwaremap.voltageSensor.iterator().next().getVoltage(); }
     public Action sensorMovimentation() {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (intakeOutake.garra.colorSensor.alpha() < 100) {
+                /*if (intakeOutake.garra.colorSensor.alpha() < 100) {
 
                     md.leftBack.setPower(0.3);
                     md.leftFront.setPower(0.3);
@@ -221,7 +218,7 @@ public class V2 {
                     md.rightFront.setPower(0);
                     md.rightBack.setPower(0);
                     return false;
-                }
+                }*/
                 return true;
             }
         };

@@ -31,7 +31,7 @@ public class LinearHorizontalV4 {
 
     public LinearHorizontalV4(HardwareMap hardwareMap) {
         this.servoLinearHorizontal = hardwareMap.get(Servo.class, HardwareNames.horizontalSuperiorServo);
-        this.encoder = hardwareMap.get(DcMotorEx.class, "rightBack");
+        this.encoder = hardwareMap.get(DcMotorEx.class, HardwareNames.horizontalSuperior);
 
         reset();
         portaLinearHorizontalServo = servoLinearHorizontal.getPortNumber();

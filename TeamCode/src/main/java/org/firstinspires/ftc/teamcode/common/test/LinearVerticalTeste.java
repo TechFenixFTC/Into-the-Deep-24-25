@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.agregadoras.V2;
 
 @TeleOp(name = "TesteLinearSemPIDF")
@@ -25,8 +26,8 @@ public class LinearVerticalTeste extends OpMode {
 
     @Override
     public void init() {
-        this.motorL =  hardwareMap.get(DcMotorEx.class, "linearL");
-        this.motorR =  hardwareMap.get(DcMotorEx.class, "linearR");
+        this.motorL =  hardwareMap.get(DcMotorEx.class, HardwareNames.verticalL);
+        this.motorR =  hardwareMap.get(DcMotorEx.class, HardwareNames.verticalR);
         this.motorR.setDirection(DcMotorSimple.Direction.FORWARD);
         this.motorL.setDirection(DcMotorSimple.Direction.REVERSE);
     }
