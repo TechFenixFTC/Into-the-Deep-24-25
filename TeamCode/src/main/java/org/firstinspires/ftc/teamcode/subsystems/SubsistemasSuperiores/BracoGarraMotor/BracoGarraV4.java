@@ -168,11 +168,11 @@ public class BracoGarraV4 {
     }
     public void monitor(Telemetry telemetry) {
         if (monitor) {
-            telemetry.addLine("*********************************");
+            telemetry.addLine("==============================");
             telemetry.addLine("  TELEMETRIA DO BRAÇO DA GARRA");
-            telemetry.addLine("*********************************");
-            telemetry.addData("Angulo do braco",this.getAngle());
-            telemetry.addData("alvo",targetAngle);
+            telemetry.addLine("===============================");
+            telemetry.addData("-Angulo do braco: ",this.getAngle());
+            telemetry.addData("-alvo: ",targetAngle);
             //telemetry.addData("",);
 
         }

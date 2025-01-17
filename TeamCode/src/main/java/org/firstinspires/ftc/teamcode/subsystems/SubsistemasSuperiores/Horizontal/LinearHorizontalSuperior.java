@@ -14,6 +14,6 @@ public class LinearHorizontalSuperior extends LinearHorizontalV4 {
         this.servoLinearHorizontal= hardwareMap.get(Servo.class, HardwareNames.horizontalSuperiorServo);
     }
     public void monitor(Telemetry telemetry){
-        super.monitor(telemetry,servoLinearHorizontal);
+        super.monitor(telemetry,"Superior");
     }
 }

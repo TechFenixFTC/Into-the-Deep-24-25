@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal;
 
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -12,8 +13,9 @@ public class LinearHorizontalInferior extends LinearHorizontalV4 {
     public LinearHorizontalInferior(HardwareMap hardwareMap) {
         super(hardwareMap);
         this.servoLinearHorizontal= hardwareMap.get(Servo.class, HardwareNames.horizontalInferiorServo);
+        this.encoder = hardwareMap.get(DcMotorEx.class,HardwareNames.getHorizontalInferior);
     }
     public void monitor(Telemetry telemetry){
-        super.monitor(telemetry,servoLinearHorizontal);
+        super.monitor(telemetry,"Inferior");
     }
 }

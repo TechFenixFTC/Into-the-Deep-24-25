@@ -13,6 +13,9 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 @Config
 public class LinearVertical {
 
@@ -25,6 +28,7 @@ public class LinearVertical {
     public boolean needToChangeTarget = false;
     public double timeToChangeTarget = 0;
     public int wantedTarget = 0;
+    public static boolean monitor= false;
 
     public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo;
 
@@ -136,6 +140,20 @@ public class LinearVertical {
 
         };
 
+    }
+
+    public void monitor(Telemetry telemetry) {
+        if (monitor) {
+            telemetry.addLine("======================================");
+            telemetry.addLine("TELEMETRIA DO BRAÇO DO LINEAR VERTICAL");
+            telemetry.addLine("======================================");
+            telemetry.addData("-Posição Motor Left: ",motorL.getCurrentPosition());
+            telemetry.addData("-Posição Motor Right: ",motorR.getCurrentPosition());
+            telemetry.addData("-alvo: ",targetPosition);
+            telemetry.addData("-Corrente: ",motorR.getCurrent(CurrentUnit.AMPS));
+            //telemetry.addData("",);
+
+        }
     }
 
 

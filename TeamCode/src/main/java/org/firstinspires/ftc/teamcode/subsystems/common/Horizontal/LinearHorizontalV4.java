@@ -30,10 +30,8 @@ public class LinearHorizontalV4 {
     public static int portaLinearHorizontalServo;
 
     public LinearHorizontalV4(HardwareMap hardwareMap) {
-        //this.motorLinearHorizontal = hardwareMap.get(DcMotorEx.class, HardwareNames.horizontalSuperior);
         this.servoLinearHorizontal = hardwareMap.get(Servo.class, HardwareNames.horizontalSuperiorServo);
         this.encoder = hardwareMap.get(DcMotorEx.class, "rightBack");
-        //this.motorLinearHorizontal.setDirection(DcMotorSimple.Direction.REVERSE);
 
         reset();
         portaLinearHorizontalServo = servoLinearHorizontal.getPortNumber();
@@ -159,12 +157,14 @@ public class LinearHorizontalV4 {
      *                   Monitoring                   *
      **************************************************/
 
-    public void monitor(Telemetry telemetry,Servo servo) {
+    public void monitor(Telemetry telemetry,String hozizontal) {
         if (monitor) {
             telemetry.addLine("*********************************");
-            telemetry.addLine("TELEMETRIA DO LINEAR HORIZONTAL");
+            telemetry.addData("TELEMETRIA DO LINEAR HORIZONTAL ",hozizontal);
             telemetry.addLine("*********************************");
-            telemetry.addData("Posição do Servo",servo.getPosition());
+            telemetry.addData("-Posição do Servo: ",servoLinearHorizontal.getPosition());
+            telemetry.addData("-Posição alvo: ",targetPositionLinearHorizontal);
+            telemetry.addData("-Encoder: ",encoder.getCurrentPosition());
         }
     }
 }

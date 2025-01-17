@@ -37,7 +37,6 @@ public final class HardwareNames {
     **************************************************/   /* Motores Vertex */
         verticalR            = "verticalR",
         verticalL            = "verticalL",
-        horizontalSuperiorMotor = "horizontalMotor",
         bracoGarraSuperior   = "braco",
     /**************************************************
      *              Servo Subsistemas               *
@@ -50,7 +49,12 @@ public final class HardwareNames {
      *                 Servo-motores                  *
      **************************************************/
         servoRatacaoGarra    = "porta0",
-        servoAberturaGarrra  = "porta1"
+        servoAberturaGarrra  = "porta1",
+    /**************************************************
+     *                 TroughBore                  *
+     **************************************************/
+    horizontalSuperior    = "porta0",
+    getHorizontalInferior  = "porta1"
         ;
 
         public static String[] servoNames = {servoRatacaoGarra, servoAberturaGarrra};

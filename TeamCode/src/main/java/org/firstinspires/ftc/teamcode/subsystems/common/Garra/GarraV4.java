@@ -7,12 +7,14 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 
 @Config
-public class GarraV4 {
+public abstract class GarraV4 {
     public Servo rotacaoDaGarra, fechamentoDaGarra;
     public ColorSensor colorSensor;
+    public static boolean monitor = false;
     public static double
             posAberta = 0.0,
             posFechada  = 1.0,
@@ -82,4 +84,18 @@ public class GarraV4 {
         return this.rotacionarGarraParaPosicaoPerpendicular();
 
     }
+    public void monitor(Telemetry telemetry, String garra) {
+        if (monitor) {
+            telemetry.addLine("*********************************");
+            telemetry.addData("TELEMETRIA DA GARRA ",garra);
+            telemetry.addLine("*********************************");
+            telemetry.addData("-Angulo de rotação da Garra: ",rotacaoDaGarra);
+            telemetry.addData("-Posição da Garra de abrir: ",fechamentoDaGarra);
+
+
+
+        }
+    }
+
+    public abstract void monitor(Telemetry telemetry);
 }
