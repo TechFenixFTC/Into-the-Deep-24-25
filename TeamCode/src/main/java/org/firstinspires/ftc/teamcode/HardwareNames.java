@@ -45,10 +45,16 @@ public final class HardwareNames {
     horizontalSuperiorServo = "horizontalSuperior",
     horizontalInferiorServo = "horizontalInferior",
     bracoGarraSuperiorServo   = "bracoServo",
+
+    bracoGarraInferiorServo = "bracoInferiorServo",
+    rotacaoGarraInferiorServo = "rotacaoGarraInferiorServo",
+    angulacaoGarraInferiorServo = "angulacaoGarraInferiorServo",
+    aberturaGarraInferiorServo = "aberturaGarraInferiorServo",
+
     /**************************************************
      *                 Servo-motores                  *
      **************************************************/
-        servoRatacaoGarra    = "porta0",
+        servoRotacaoGarra    = "porta0",
         servoAberturaGarrra  = "porta1",
     /**************************************************
      *                 TroughBore                  *
@@ -57,5 +63,5 @@ public final class HardwareNames {
     getHorizontalInferior  = "porta1"
         ;
 
-        public static String[] servoNames = {servoRatacaoGarra, servoAberturaGarrra};
+        public static String[] servoNames = {servoRotacaoGarra, servoAberturaGarrra};
 }

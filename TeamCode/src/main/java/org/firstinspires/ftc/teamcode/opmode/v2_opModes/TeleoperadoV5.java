@@ -92,6 +92,9 @@ public class TeleoperadoV5 extends OpMode {
     private void garraSuperior(GarraSuperior garra, OrdersManager carteiro, GamepadEx gamepad){
     }
     private void garraInferior(GarraInferior garra,OrdersManager carteiro,GamepadEx gamepad){
+        if(gamepad.getButton(GamepadKeys.Button.A)){
+            robot.intakeOutake.garraInferior.goToIntake(0);
+        }
 
     }
 
