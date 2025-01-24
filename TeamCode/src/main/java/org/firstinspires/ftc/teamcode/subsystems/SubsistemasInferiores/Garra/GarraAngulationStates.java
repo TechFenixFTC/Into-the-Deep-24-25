@@ -2,5 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra;
 
 public enum GarraAngulationStates {
 
-    RETO,
+    INTAKE,
+    READYTO_INTAKE,
+    TRANSFER,
 }

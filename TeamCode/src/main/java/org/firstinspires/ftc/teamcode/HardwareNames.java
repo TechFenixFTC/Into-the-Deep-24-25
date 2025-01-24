@@ -37,30 +37,30 @@ public final class HardwareNames {
     **************************************************/   /* Motores Vertex */
         verticalR            = "verticalr",
         verticalL            = "verticall",
-        bracoGarraSuperior   = "braco",
+        bracoGarraSuperior   = "b",
     /**************************************************
      *              Servo Subsistemas               *
      **************************************************/   /* Motores Vertex */
 
-    horizontalSuperiorServo = "horizontalSuperior",
-    horizontalInferiorServo = "horizontalInferior",
-    bracoGarraSuperiorServo   = "bracoServo",
+    horizontalSuperiorServo = "porta2c",
+    horizontalInferiorServo = "porta4",
+    bracoGarraSuperiorServo   = "porta3c",
 
-    bracoGarraInferiorServo = "bracoInferiorServo",
-    rotacaoGarraInferiorServo = "rotacaoGarraInferiorServo",
-    angulacaoGarraInferiorServo = "angulacaoGarraInferiorServo",
-    aberturaGarraInferiorServo = "aberturaGarraInferiorServo",
+    bracoGarraInferiorServo = "porta3",
+    rotacaoGarraInferiorServo = "porta2",
+    angulacaoGarraInferiorServo = "porta0",
+    aberturaGarraInferiorServo = "porta1",
 
     /**************************************************
      *                 Servo-motores                  *
      **************************************************/
-        servoRotacaoGarra    = "porta0",
-        servoAberturaGarrra  = "porta1",
+        servoRotacaoGarra    = "porta0c",
+        servoAberturaGarrra  = "porta1c",
     /**************************************************
      *                 TroughBore                  *
      **************************************************/
-    horizontalSuperior    = "porta0",
-    getHorizontalInferior  = "porta1"
+    horizontalSuperior    = "braco",
+    getHorizontalInferior  = "braco"
         ;
 
         public static String[] servoNames = {servoRotacaoGarra, servoAberturaGarrra};

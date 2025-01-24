@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 public class TesteServos extends OpMode {
 
     List<Servo> servos = new ArrayList<>(4);
-    String[] nomesServosTestados  = {"porta0", "porta1", "porta2", "porta3","porta4"};
+    String[] nomesServosTestados  = {"porta0c", "porta1c", "porta2c", "porta3c","porta4c"};
 
     double[] angulosServosTestado = {0.5, 0.5, 0.5, 0.5,0.5};
     int portaServoSendoTestado = 0;
