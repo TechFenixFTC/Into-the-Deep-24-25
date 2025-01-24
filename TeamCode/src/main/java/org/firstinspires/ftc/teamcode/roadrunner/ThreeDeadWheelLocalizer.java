@@ -21,9 +21,9 @@ import org.firstinspires.ftc.teamcode.roadrunner.messages.ThreeDeadWheelInputsMe
 @Config
 public final class ThreeDeadWheelLocalizer implements Localizer {
     public static class Params {
-        public double par0YTicks = -2746.466079769399; // y position of the first parallel encoder (in tick units)
-        public double par1YTicks = 2149.2891609477706; // y position of the second parallel encoder (in tick units)
-        public double perpXTicks =  -1271.0500362815433; // x position of the perpendicular encoder (in tick units)
+        public double par0YTicks = -2302.804375934298; // y position of the first parallel encoder (in tick units)
+        public double par1YTicks = 2388.3813523794097; // y position of the second parallel encoder (in tick units)
+        public double perpXTicks =  -2194.5146865466277; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
@@ -39,9 +39,9 @@ public final class ThreeDeadWheelLocalizer implements Localizer {
         // TODO: make sure your config has *motors* with these names (or change them)
         //   the encoders should be plugged into the slot matching the named motor
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, HardwareNames.leftBack)));
-        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, HardwareNames.rightBack)));
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, HardwareNames.rightFront)));
+        par0 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, HardwareNames.rightBack)));
+        par1 = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, HardwareNames.rightFront)));
+        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, HardwareNames.leftFront)));
         par1.setDirection(DcMotorSimple.Direction.REVERSE);
         perp.setDirection(DcMotorSimple.Direction.REVERSE);
 

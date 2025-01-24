@@ -4,7 +4,7 @@ import com.arcrobotics.ftclib.hardware.SensorColor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.HardwareNames;
-import org.firstinspires.ftc.teamcode.agregadoras.V2;
+import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
 
 public class ColorSensor {
     private V2 robot;

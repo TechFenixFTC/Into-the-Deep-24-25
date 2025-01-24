@@ -59,18 +59,18 @@ public final class MecanumDrive {
         // TODO: fill in these values based on
         //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
 
         // drive model parameters
-        public double inPerTick = 0.0028574978258169;
-        public double lateralInPerTick = 0.0017637455003067972;
-        public double trackWidthTicks = 4953.093631452143;
+        public double inPerTick = 0.0029507255;
+        public double lateralInPerTick = 0.0016411289717676695;
+        public double trackWidthTicks = 4566.177425686703;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.4;
-        public double kV = 0.0005;
+        public double kS = 1.2797072975794643;
+        public double kV = 0.00041502605803009124;
         public double kA = 0.00008;
 
         // path profile parameters (in inches)
@@ -136,6 +136,7 @@ public final class MecanumDrive {
             leftBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.leftBack));
             rightBack = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightBack));
             rightFront = new OverflowEncoder(new RawEncoder(MecanumDrive.this.rightFront));
+
 
             imu = lazyImu.get();
 
@@ -221,11 +222,13 @@ public final class MecanumDrive {
         leftFront = hardwareMap.get(DcMotorEx.class, HardwareNames.leftFront);
         leftBack = hardwareMap.get(DcMotorEx.class, HardwareNames.leftBack);
         rightBack = hardwareMap.get(DcMotorEx.class, HardwareNames.rightBack);
-        rightFront = hardwareMap.get(DcMotorEx.class, HardwareNames.leftFront);
+        rightFront = hardwareMap.get(DcMotorEx.class, HardwareNames.rightFront);
 
-       // rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+      //  rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+      //  rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

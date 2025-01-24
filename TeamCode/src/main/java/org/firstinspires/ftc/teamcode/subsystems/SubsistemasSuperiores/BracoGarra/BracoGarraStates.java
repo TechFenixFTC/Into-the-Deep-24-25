@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarraMotor;
+package org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra;
 
 public enum BracoGarraStates {
         Outtake,

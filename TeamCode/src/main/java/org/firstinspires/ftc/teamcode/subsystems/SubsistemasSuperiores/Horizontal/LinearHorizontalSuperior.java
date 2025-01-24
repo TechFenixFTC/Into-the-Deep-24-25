@@ -10,8 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizon
 public class LinearHorizontalSuperior extends LinearHorizontalV4 {
 
     public LinearHorizontalSuperior(HardwareMap hardwareMap) {
-        super(hardwareMap);
-        this.servoLinearHorizontal= hardwareMap.get(Servo.class, HardwareNames.horizontalSuperiorServo);
+        super(hardwareMap, HardwareNames.horizontalSuperiorServo);
     }
     public void monitor(Telemetry telemetry){
         this.monitor(telemetry,"Superior");
