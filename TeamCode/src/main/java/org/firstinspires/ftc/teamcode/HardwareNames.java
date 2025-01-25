@@ -9,9 +9,9 @@ public final class HardwareNames {
     /**************************************************
     *                  Rodas Mortas                   *
     **************************************************/
-        par0 = "",
-        par1 = "",
-        perp = "",
+        par0 = "rightBack",
+        par1 = "rightFront",
+        perp = "leftFront",
     /**************************************************
      *                  Motores Chassi                *
      **************************************************/
@@ -42,14 +42,20 @@ public final class HardwareNames {
      *              Servo Subsistemas               *
      **************************************************/   /* Motores Vertex */
 
-    horizontalSuperiorServo = "porta2c",
+    horizontalSuperiorServo = "porta3c",
     horizontalInferiorServo = "porta4",
-    bracoGarraSuperiorServo   = "porta3c",
+    bracoGarraSuperiorServo   = "porta2c",
 
     bracoGarraInferiorServo = "porta3",
     rotacaoGarraInferiorServo = "porta2",
+
     angulacaoGarraInferiorServo = "porta0",
+
+    angulacaoGarraSuperiorServo = "porta1c",
+
     aberturaGarraInferiorServo = "porta1",
+
+    aberturaGarraSuperiorServo = "porta0c",
 
     /**************************************************
      *                 Servo-motores                  *

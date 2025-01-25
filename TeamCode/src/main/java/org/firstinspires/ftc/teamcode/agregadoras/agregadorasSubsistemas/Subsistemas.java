@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas;
 
-import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -8,13 +7,10 @@ import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.DistanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalInferior;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraV4;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Horizontal.LinearHorizontalSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Subsistemas {
     public Telemetry telemetry;
@@ -25,7 +21,7 @@ public class Subsistemas {
     public DistanceSensor distanceSensor;
     public GarraInferior garraInferior;
     public GarraSuperior garraSuperior;
-    public BracoGarraV4 braco;
+    public BracoGarraSuperior braco;
     //public List<Action> runningActions = new ArrayList<>();
     public OrdersManager carteiro =new OrdersManager(telemetry);
     HardwareMap hardwaremap;

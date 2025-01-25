@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra;
 
-public enum GarraAngulationStates {
+public enum GarraAngulationInferiorStates {
 
     INTAKE,
     READYTO_INTAKE,
