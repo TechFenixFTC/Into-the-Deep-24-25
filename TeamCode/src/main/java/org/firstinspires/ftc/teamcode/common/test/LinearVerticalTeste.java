@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
-import org.firstinspires.ftc.teamcode.agregadoras.V2;
+import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
 
 @TeleOp(name = "TesteLinearSemPIDF")
 public class LinearVerticalTeste extends OpMode {

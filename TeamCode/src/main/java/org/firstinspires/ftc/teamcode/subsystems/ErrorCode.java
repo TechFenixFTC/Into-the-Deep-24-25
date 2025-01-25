@@ -77,6 +77,7 @@ public class ErrorCode {
         return error;
     }
     public int  interrupLinearHorizontalSuperior(LinearHorizontalSuperior horizontal){
+        /*
         if(horizontal.encoder.getVelocity()<5&&horizontal.encoder.getCurrentPosition()>400){
             error = 408;
             return error;
@@ -84,6 +85,9 @@ public class ErrorCode {
 
         error=100;
         return error;
+
+         */
+        return 0;
     }
 
 

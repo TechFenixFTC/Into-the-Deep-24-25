@@ -9,9 +9,9 @@ public final class HardwareNames {
     /**************************************************
     *                  Rodas Mortas                   *
     **************************************************/
-        par0 = "",
-        par1 = "",
-        perp = "",
+        par0 = "rightBack",
+        par1 = "rightFront",
+        perp = "leftFront",
     /**************************************************
      *                  Motores Chassi                *
      **************************************************/
@@ -37,30 +37,36 @@ public final class HardwareNames {
     **************************************************/   /* Motores Vertex */
         verticalR            = "verticalr",
         verticalL            = "verticall",
-        bracoGarraSuperior   = "braco",
+        bracoGarraSuperior   = "b",
     /**************************************************
      *              Servo Subsistemas               *
      **************************************************/   /* Motores Vertex */
 
-    horizontalSuperiorServo = "horizontalSuperior",
-    horizontalInferiorServo = "horizontalInferior",
-    bracoGarraSuperiorServo   = "bracoServo",
+    horizontalSuperiorServo = "porta3c",
+    horizontalInferiorServo = "porta4",
+    bracoGarraSuperiorServo   = "porta2c",
 
-    bracoGarraInferiorServo = "bracoInferiorServo",
-    rotacaoGarraInferiorServo = "rotacaoGarraInferiorServo",
-    angulacaoGarraInferiorServo = "angulacaoGarraInferiorServo",
-    aberturaGarraInferiorServo = "aberturaGarraInferiorServo",
+    bracoGarraInferiorServo = "porta3",
+    rotacaoGarraInferiorServo = "porta2",
+
+    angulacaoGarraInferiorServo = "porta0",
+
+    angulacaoGarraSuperiorServo = "porta1c",
+
+    aberturaGarraInferiorServo = "porta1",
+
+    aberturaGarraSuperiorServo = "porta0c",
 
     /**************************************************
      *                 Servo-motores                  *
      **************************************************/
-        servoRotacaoGarra    = "porta0",
-        servoAberturaGarrra  = "porta1",
+        servoRotacaoGarra    = "porta0c",
+        servoAberturaGarrra  = "porta1c",
     /**************************************************
      *                 TroughBore                  *
      **************************************************/
-    horizontalSuperior    = "porta0",
-    getHorizontalInferior  = "porta1"
+    horizontalSuperior    = "braco",
+    getHorizontalInferior  = "braco"
         ;
 
         public static String[] servoNames = {servoRotacaoGarra, servoAberturaGarrra};

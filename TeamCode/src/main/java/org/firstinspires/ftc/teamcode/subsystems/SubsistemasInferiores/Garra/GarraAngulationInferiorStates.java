@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra;
 
-public enum BracoGarraInferiorStates {
+public enum GarraAngulationInferiorStates {
+
     INTAKE,
-    TRASNFER,
-    INITIAL,
+    READYTO_INTAKE,
+    TRANSFER,
 }

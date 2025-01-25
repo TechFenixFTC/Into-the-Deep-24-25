@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@TeleOp(name = "TesteIntakeInferior")
+@TeleOp(name = "TesteIntakeInferiorAn")
 public class TesteIntakeInferior extends OpMode {
 
     // portas

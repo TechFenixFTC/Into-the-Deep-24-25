@@ -32,8 +32,6 @@ public class LinearVertical {
     public static boolean monitor= false;
 
     public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo;
-
-
     public int position;
     public double power;
 
@@ -73,10 +71,13 @@ public class LinearVertical {
     }
     public double PIDF(int target) {
 
+        this.targetPosition = target;
         controller.setPID(p, i,d);
         int linearpos = motorL.getCurrentPosition();
         double pid = controller.calculate(linearpos, target);
         double ff = Math.cos(Math.toRadians(target)) * f;
+        motorL.setPower(pid+ff);
+        motorR.setPower(pid+ff);
 
         return pid;
     }
@@ -121,7 +122,7 @@ public class LinearVertical {
                 if(targetPosition > 0 ) {
                     motorR.setPower(PIDF(target));
                     motorL.setPower(PIDF(target));
-                    //positionError = PIDF(target);
+                    positionError = PIDF(target);
                 }
                 else {
                     positionError = PIDF(target);
