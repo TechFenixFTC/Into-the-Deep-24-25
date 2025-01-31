@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra;
 
 public enum BracoGarraSuperiorStates {
-        OUTTAKE,
-        INTAKE,
+        BASKET,
+        READYTO_TRANSFER,
         TRANSFER,
         INITIAL,
-        INTAKE_CHAMBER,
-        OUTTAKE_CHAMBER,
+        INTAKE,
+        OUTTAKE,
+        READY_OUTTAKE,
+
+        TEST_TRANFER
 
 
 

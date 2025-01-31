@@ -28,7 +28,7 @@ public class LinearVerticalTeste extends OpMode {
     public void init() {
         this.motorL =  hardwareMap.get(DcMotorEx.class, HardwareNames.verticalL);
         this.motorR =  hardwareMap.get(DcMotorEx.class, HardwareNames.verticalR);
-        this.motorR.setDirection(DcMotorSimple.Direction.FORWARD);
+        this.motorR.setDirection(DcMotorSimple.Direction.REVERSE);
         this.motorL.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
@@ -37,11 +37,11 @@ public class LinearVerticalTeste extends OpMode {
         if(gamepad2.left_trigger > 0){
             motorR.setPower(gamepad2.left_trigger);
             motorL.setPower(gamepad2.left_trigger);
-        }
-        if(gamepad2.right_trigger > 0){
+        } else if (gamepad2.right_trigger > 0) {
             motorR.setPower(gamepad2.right_trigger * -1 );
             motorL.setPower(gamepad2.right_trigger * -1 );
         }
+
         else{
             motorR.setPower(0);
             motorL.setPower(0);

@@ -1,26 +1,15 @@
 package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontalStates;
 import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontalV4;
 
-import java.util.HashMap;
-
 public class LinearHorizontalInferior extends LinearHorizontalV4 {
-
-    LinearHorizontalStates linearHorizontalState  = LinearHorizontalStates.RETRACTED;
-    HashMap<LinearHorizontalStates, Double> mapStateHorizontal = new HashMap<>();
-
 
     public LinearHorizontalInferior(HardwareMap hardwareMap) {
         super(hardwareMap, HardwareNames.horizontalInferiorServo);
@@ -30,21 +19,11 @@ public class LinearHorizontalInferior extends LinearHorizontalV4 {
 
     }
 
-    public Action goToExtended(){
-        linearHorizontalState = LinearHorizontalStates.EXTENDED;
-
-        return new InstantAction(() -> {
-           servoLinearHorizontal.setPosition(mapStateHorizontal.get(linearHorizontalState));
-
-        });
+    public Action goToExtended() {
+        return this.goToExtended();
     }
-    public Action goToRetracted(){
-        linearHorizontalState = LinearHorizontalStates.RETRACTED;
-
-        return new InstantAction(() -> {
-            servoLinearHorizontal.setPosition(mapStateHorizontal.get(linearHorizontalState));
-
-        });
+    public Action goToRetracted() {
+        return this.goToRetracted();
     }
 
     public void monitor(Telemetry telemetry){

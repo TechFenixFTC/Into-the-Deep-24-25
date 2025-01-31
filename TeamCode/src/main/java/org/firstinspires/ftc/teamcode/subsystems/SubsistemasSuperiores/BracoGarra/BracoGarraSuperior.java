@@ -14,38 +14,82 @@ import java.util.HashMap;
 @Config
 public class BracoGarraSuperior {
     public static boolean monitor;
+    public double ServoBracoSuperiorPosition =0.55555;
     public Servo bracoGarraSuperiorServo;
-    BracoGarraSuperiorStates bracoGarraSuperiorState = BracoGarraSuperiorStates.TRANSFER;
-    HashMap<BracoGarraSuperiorStates, Double> mapBracoSuperior = new HashMap<>();
+    public BracoGarraSuperiorStates bracoGarraSuperiorState = BracoGarraSuperiorStates.READYTO_TRANSFER;
+    public HashMap<BracoGarraSuperiorStates, Double> mapBracoSuperior = new HashMap<>();
     public static  double   maxAcc = 2700, maxVelocity  = 4400, distance = 0, tempo = 0;
     public BracoGarraSuperior(HardwareMap hardwareMap, Telemetry telemetry) {
         bracoGarraSuperiorServo = hardwareMap.get(Servo.class, HardwareNames.bracoGarraSuperiorServo);
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE, 0.665);
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.283);
-        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.202);
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE, 0.314);
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE_CHAMBER,0.65);
-        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_CHAMBER,0.313);
+        mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.25);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.403);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.14);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.022);//todo rever as posições
+
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.21);
+        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.604);
+        mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.665);
+
     }
-    public Action goToTransfer(){
-        bracoGarraSuperiorState = BracoGarraSuperiorStates.TRANSFER;
+
+
+    public Action goToTransfer(){//todo okey
+
         return new InstantAction(()->{
-            bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.TRANSFER;
+            ServoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
         });
     }
-    public Action goToOuttake(){
-        bracoGarraSuperiorState = BracoGarraSuperiorStates.OUTTAKE_CHAMBER;
+    public Action goToReadyToTransfer(){//todo okey
+
         return new InstantAction(()->{
-            bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.READYTO_TRANSFER;
+
+            ServoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
         });
     }
-    public Action goToInital(){
-        bracoGarraSuperiorState = BracoGarraSuperiorStates.INITIAL;
+    public Action goToOuttake(){//todo okey
+
+        return new InstantAction(()->{
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.BASKET;
+
+            ServoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
+        });
+    }
+    public Action goToInital(){//todo okey
+
         return new InstantAction(() -> {
-           bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.INITIAL;
+
+           ServoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
         });
     }
+
+   public Action goToIntakeCHAMBER(){//todo okey
+        return new InstantAction(() ->{
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.INTAKE;
+            ServoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
+        });
+   }
+   public Action goToReadOuttakeCHAMBER(){
+        return new InstantAction(() -> {
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.READY_OUTTAKE;
+            ServoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
+        });
+   }
+
+   public Action goToOuttakeCHAMBER(){
+        return new InstantAction(() ->{//todo okey
+            bracoGarraSuperiorState =BracoGarraSuperiorStates.OUTTAKE;
+            ServoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
+
+        });
+   }
+
+
+
+
     /*public void monitor(Telemetry telemetry) {
         if (monitor) {
             telemetry.addLine("==============================");
@@ -57,5 +101,6 @@ public class BracoGarraSuperior {
 
         }
     }*/
+
 
 }

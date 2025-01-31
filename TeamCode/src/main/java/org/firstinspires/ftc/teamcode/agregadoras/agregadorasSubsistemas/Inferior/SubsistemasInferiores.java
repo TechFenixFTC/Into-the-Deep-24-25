@@ -34,30 +34,36 @@ public class SubsistemasInferiores {
 
     }
     private double getVoltage() { return hardwaremap.voltageSensor.iterator().next().getVoltage(); }
-    public Action goToIntake(OrdersManager carteiro){
-        return new InstantAction(() -> {
-            carteiro.addOrder(horizontalInferior.goToExtended(),0, "horizontal inferior");
-            carteiro.addOrder(bracoGarraInferior.goToIntake(), 0.1, "braco garra inferior");
-            carteiro.addOrder(garraInferior.goToIntake(),0.2,"garra inferior");
-        });
+    public void goToIntake(OrdersManager carteiro, double runtime){
+
+            carteiro.addOrder(horizontalInferior.goToExtended(),0, "horizontal inferior", runtime);
+            carteiro.addOrder(garraInferior.goToIntake(),0.1,"garra inferior", runtime);
+            carteiro.addOrder(bracoGarraInferior.goToIntake(), 0.2, "braco garra inferior", runtime);
+            carteiro.addOrder(garraInferior.fecharGarra(),0.4,"fecharGarra", runtime);
+
+
     }
 
-    public Action goToTransfer(OrdersManager carteiro){
-        return new InstantAction(()->{
-                    carteiro.addOrder(garraInferior.goToTransfer(), 0, "garra Inferior");
-                    carteiro.addOrder(horizontalInferior.goToRetracted(),0.12, "horizontal inferior");
-                    carteiro.addOrder(bracoGarraInferior.goToTransfer(), 1.0, "braco garra inferior");
-        });
+    public void goToTransfer(OrdersManager carteiro, double runtime){
+
+                    carteiro.addOrder(garraInferior.goToTransfer(), 0, "garra Inferior", runtime);
+                    carteiro.addOrder(bracoGarraInferior.goToTransfer(), 0.0, "braco garra inferior", runtime);
+                    carteiro.addOrder(horizontalInferior.goToRetracted(),0.0, "horizontal inferior", runtime);
+
     }
 
-    public Action goToReadyToIntake(OrdersManager carteiro){
-        return new InstantAction(() -> {
-            carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior");
-            carteiro.addOrder(bracoGarraInferior.goToReadytoIntake(), 0.1, "braco garra inferior");
-            carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior");
-        });
+    public void goToReadyToIntake(OrdersManager carteiro, double runtime){
+            carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior", runtime);
+            carteiro.addOrder(bracoGarraInferior.goToIntake(), 0.1, "braco garra inferior", runtime);
+            carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior", runtime);
     }
+    public void goToReadyTransfer(OrdersManager carteiro, double runtime){
+            carteiro.addOrder(garraInferior.goToReadyTransfer(), 0, "garra Inferior", runtime);
+            carteiro.addOrder(garraInferior.fecharGarra(),0,"feeecharGarra", runtime);
+            carteiro.addOrder(horizontalInferior.goToRetracted(),0.12, "horizontal inferior", runtime);
+            carteiro.addOrder(bracoGarraInferior.goToTransfer(), 1.0, "braco garra inferior", runtime);
 
-    public Action goToReadytoIntakeNoHorizontal(OrdersManager carteiro){return new InstantAction(() -> {carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior");});}
+    }
+    public Action goToReadytoIntakeNoHorizontal(OrdersManager carteiro, double runtime){return new InstantAction(() -> {carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior", runtime);});}
 
 }

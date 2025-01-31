@@ -46,16 +46,13 @@ public class OrdersManager {
     private List<Order> orders = new ArrayList<>();
 
 
-    public void addOrder(Action action, double time, String name) {
+    public void addOrder(Action action, double delay, String name, double runtime) {
+        double time = delay + runtime;
         // Verifica se já existe uma ordem com o mesmo nome
-        for (Order order : orders) {
-            if (order.getName().equals(name)) {
-               // telemetry.addLine("Já existe uma ordem com o nome '", " Não foi adicionada.");
-                return; // Sai do método sem adicionar a nova ordem
-            }
-        }
+        removeOrderByName(name);
         // Se não houver duplicatas, adiciona a nova ordem
         orders.add(new Order(action, time, name));
+        telemetry.addData("action adicionada", name);
     }
 
     public void removeOrderByName(String name) {
@@ -63,22 +60,21 @@ public class OrdersManager {
         for (int i = 0; i < orders.size(); i++) {
             if (orders.get(i).getName().equals(name)) {
                 orders.remove(i); // Remove o objeto da lista
+               // telemetry.addData("> : Oredem REMOVIDA", "Action: %d", name);
                 return; // Sai da função após encontrar e remover o item
             }
         }
         //telemetry.addLine("Order com o nome '" + name + "' não encontrada.");
     }
-    //VULGO CODIGO DE ERRO E MAQUINA DE ESTADO
 
-    // demorei 1 dia para pensar como que juntava tudo, e cara fala que é vulgo
     public void checkIfCanRun(double runtime) {
         // Cria uma lista temporária para armazenar ordens a serem removidas
         List<Order> ordersToRemove = new ArrayList<>();
 
-        // It1era sobre a lista de ordens
+        // Itera sobre a lista de ordens
         for (Order order : orders) {
             // Verifica se o tempo da ordem é menor ou igual ao runtime
-            if (order.getTime() <= runtime) {
+            if (order.getTime()  <= runtime) {
                 runningActions.add(order.getAction()); // Adiciona a ação na lista de runningActions
                 ordersToRemove.add(order); // Marca a ordem para remoção
 
@@ -96,6 +92,7 @@ public class OrdersManager {
         for (Action action : runningActions) {
             action.preview(packet.fieldOverlay());
             if (action.run(packet)) {
+                //telemetry.addLine("> : Oredem Rodando");
                 newActions.add(action);
             }
         }
