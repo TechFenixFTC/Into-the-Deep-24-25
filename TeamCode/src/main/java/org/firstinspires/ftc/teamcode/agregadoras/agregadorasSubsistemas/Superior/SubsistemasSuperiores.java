@@ -57,11 +57,13 @@ public class SubsistemasSuperiores {
             carteiro.addOrder(horizontalSuperior.goToExtended(), 0.0,"horizontal",runtime);
             carteiro.addOrder(garraSuperior.goToIntakeCHAMBER(),0.0,"garra superior",runtime);
             carteiro.addOrder(garraSuperior.abrirGarra(),0.0,"Abrir",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(0),0.0,"linear vertical",runtime);
     }
         public void goToReadOuttakeCHAMBER(OrdersManager carteiro , double runtime ){
             carteiro.addOrder(braco.goToReadOuttakeCHAMBER(),0.0,"braco superior", runtime);
             carteiro.addOrder(garraSuperior.goToReadOuttakeCHAMBER(),0.0,"garra inferior",runtime);
             carteiro.addOrder(horizontalSuperior.goToRetracted(),0.0,"horizontal superior",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(700),0.0,"linear vertical",runtime);
     }
         public void goToOuttakeCHAMBER(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);

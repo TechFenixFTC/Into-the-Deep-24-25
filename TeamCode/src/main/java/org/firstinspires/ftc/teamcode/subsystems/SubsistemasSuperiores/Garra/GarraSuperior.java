@@ -25,7 +25,7 @@ public class GarraSuperior extends Garra {
         mapAngulation.put(GarraAngulationStates.TRANSFER,0.212);
         mapAngulation.put(GarraAngulationStates.BASKET,0.832);
 
-        mapAngulation.put(GarraAngulationStates.INTAKE,0.415);
+        mapAngulation.put(GarraAngulationStates.INTAKE,0.415);//todo rever as posições
         mapAngulation.put(GarraAngulationStates.OUTAKE,0.298);//todo rever as posições
         mapAngulation.put(GarraAngulationStates.READY_OUTTAKE,0.359);//todo rever as posições
 
@@ -68,14 +68,14 @@ public class GarraSuperior extends Garra {
     }
     public Action goToOuttakeCHAMBER(){//todo okey
         return new InstantAction(() -> {
-            garraAngulationState = GarraAngulationStates.INTAKE;
+            garraAngulationState = GarraAngulationStates.OUTAKE;
             //aberturaGarraSuperiorServo.getController().pwmDisable();
             angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
         });
     }
     public Action goToReadOuttakeCHAMBER(){//todo okey
         return new InstantAction(() -> {
-            garraAngulationState = GarraAngulationStates.INTAKE;
+            garraAngulationState = GarraAngulationStates.READY_OUTTAKE;
             angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
         });
     }
