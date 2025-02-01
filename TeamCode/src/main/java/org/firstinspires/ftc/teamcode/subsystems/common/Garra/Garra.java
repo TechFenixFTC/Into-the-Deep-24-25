@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 @Config
 public class Garra {
-    public  Servo servoAberturaDaGarra,angulacaoGarraServo;
+    public  Servo servoAberturaDaGarra, servoAngulacaoGarra;
     public ColorSensor colorSensor;
     public static boolean monitor = false;
     protected double cooldownAnguloGarra = 0, cooldownAberturaGarra = 0;
@@ -27,7 +27,7 @@ public class Garra {
 
     public Garra(HardwareMap hardwareMap, String portaServoAbertura, String portaServoAngulacao) {
         servoAberturaDaGarra = hardwareMap.get(Servo.class, portaServoAbertura);
-        angulacaoGarraServo = hardwareMap.get(Servo.class, portaServoAngulacao);
+        servoAngulacaoGarra = hardwareMap.get(Servo.class, portaServoAngulacao);
     }
 
     public Action fecharGarra() {
@@ -61,7 +61,7 @@ public class Garra {
             telemetry.addLine("*********************************");
             telemetry.addData("TELEMETRIA DA GARRA ",garra);
             telemetry.addLine("*********************************");
-            telemetry.addData("-Angulo da Garra: ", angulacaoGarraServo.getPosition());
+            telemetry.addData("-Angulo da Garra: ", servoAngulacaoGarra.getPosition());
             telemetry.addData("-Posição da Garra de abrir: ", servoAberturaDaGarra.getPosition());
 
         }

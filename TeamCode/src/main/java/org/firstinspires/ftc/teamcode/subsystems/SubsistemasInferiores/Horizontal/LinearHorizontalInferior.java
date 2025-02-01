@@ -1,15 +1,14 @@
 package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal;
 
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontalStates;
-import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontalV4;
+import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontal;
 
-public class LinearHorizontalInferior extends LinearHorizontalV4 {
+public class LinearHorizontalInferior extends LinearHorizontal {
 
     public LinearHorizontalInferior(HardwareMap hardwareMap) {
         super(hardwareMap, HardwareNames.horizontalInferiorServo);

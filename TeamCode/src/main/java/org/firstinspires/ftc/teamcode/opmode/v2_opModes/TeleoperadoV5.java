@@ -81,7 +81,7 @@ public class TeleoperadoV5 extends OpMode {
 
         telemetry.addData("PWM BRACO GARRA ",robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.getController().getPwmStatus());
         telemetry.addData("PWM BRACO GARRA ",robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.getPosition());
-        telemetry.addData("PWM BRACO GARRA ",robot.outtakeIntakeSuperior.braco.ServoBracoSuperiorPosition);
+        telemetry.addData("PWM BRACO GARRA ",robot.outtakeIntakeSuperior.braco.servoBracoSuperiorPosition);
         telemetry.update();
 
 
@@ -127,34 +127,19 @@ public class TeleoperadoV5 extends OpMode {
 
         // X -> A -> B -> Y-> DPAD RIGHT
         if(gamepad.getButton(GamepadKeys.Button.A)){
-            //intake normal
-            //robot.intakeInferior.goToIntake(carteiro, getRuntime());
             robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.B)){
-            //robot.intakeInferior.goToReadyTransfer(carteiro, getRuntime());
-            //robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, getRuntime());
             robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
 
         }
 
         if (gamepad.getButton(GamepadKeys.Button.X)) {
-            //robot.intakeInferior.goToReadyToIntake(carteiro, getRuntime());
             robot.outtakeIntakeSuperior.goToReadOuttakeCHAMBER(carteiro, getRuntime());
 
         }
-        if (gamepad.getButton(GamepadKeys.Button.Y)){
-            //robot.outtakeIntakeSuperior.goToTransfer(carteiro, getRuntime());
-            //robot.intakeInferior.goToTransfer(carteiro, getRuntime());
 
-        }
-
-        if (gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT) || needToOutake){
-            //needToOutake = false;
-            //robot.outtakeIntakeSuperior.goToOuttake(carteiro);
-            //robot.intakeInferior.garraInferior.goToOuttake2();
-        }
         if(gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)){
             Actions.runBlocking(
                     robot.intakeInferior.garraInferior.goToAbrirGarra()
@@ -213,14 +198,10 @@ public class TeleoperadoV5 extends OpMode {
 
     }
     private void SetPositionServos(){
-        //robot.intakeInferior.bracoGarraInferior.bracoGarraInferior.setPosition(robot.intakeInferior.bracoGarraInferior.ServoBracoInferiorPosition);
-        //robot.intakeInferior.garraInferior.servoRotacaoDaGarra.setPosition(robot.intakeInferior.garraInferior.ServoRotacaoInferiorPosition);
-        //robot.intakeInferior.garraInferior.angulacaoGarraServo.setPosition(robot.intakeInferior.garraInferior.ServoAngulacaoPosition);
 
-        robot.outtakeIntakeSuperior.garraSuperior.angulacaoGarraSuperiorServo.setPosition(robot.outtakeIntakeSuperior.garraSuperior.ServoAngulacaoSuperiorPosition);
-        robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.setPosition(robot.outtakeIntakeSuperior.braco.ServoBracoSuperiorPosition);
-        //robot.outtakeIntakeSuperior.horizontalSuperior.servoLinearHorizontal.setPosition(robot.outtakeIntakeSuperior.horizontalSuperior.servoLinearHorizontalPosition);
-        robot.outtakeIntakeSuperior.horizontalSuperior.servoLinearHorizontal.setPosition(0.634);
+        //robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.setPosition(robot.outtakeIntakeSuperior.garraSuperior.angulacaoSuperiorPosition);
+        //robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.setPosition(robot.outtakeIntakeSuperior.braco.servoBracoSuperiorPosition);
+        // robot.outtakeIntakeSuperior.horizontalSuperior.servoLinearHorizontal.setPosition(0.634);
 
     }
     private void gerenciarModo(V5 robot,GamepadEx gamepad) {

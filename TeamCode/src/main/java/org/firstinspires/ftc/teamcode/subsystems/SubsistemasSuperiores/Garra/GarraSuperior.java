@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
@@ -13,16 +12,12 @@ import org.firstinspires.ftc.teamcode.subsystems.common.Garra.Garra;
 
 
 public class GarraSuperior extends Garra {
-    public Servo aberturaGarraSuperiorServo;
-    public Servo  angulacaoGarraSuperiorServo;
 
-    public double ServoAngulacaoSuperiorPosition;
+    public double angulacaoSuperiorPosition;
     public GarraSuperior(HardwareMap hardwareMap) {
 
         super(hardwareMap,HardwareNames.aberturaGarraSuperiorServo, HardwareNames.angulacaoGarraSuperiorServo);
 
-        angulacaoGarraSuperiorServo = hardwareMap.get(Servo.class, HardwareNames.angulacaoGarraSuperiorServo);
-        aberturaGarraSuperiorServo = hardwareMap.get(Servo.class, HardwareNames.aberturaGarraSuperiorServo);
 
         mapOpening.put(GarraOpeningStates.OPEN, 0.0);
         mapOpening.put(GarraOpeningStates.CLOSED, 0.6);
@@ -41,16 +36,17 @@ public class GarraSuperior extends Garra {
                 //garraOpeningState = GarraOpeningStates.OPEN;
                 garraAngulationState = GarraAngulationStates.TRANSFER;
                 //aberturaGarraSuperiorServo.setPosition(mapOpening.get(garraOpeningState));
-                ServoAngulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+                angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
             });
     }
     public Action goToReadyToTransfer(){//todo okey
                 return new InstantAction(() -> {
                     //garraOpeningState = GarraOpeningStates.CLOSED;
-                    garraAngulationState = GarraAngulationStates.TRANSFER;
+                    //servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
 
-                    // aberturaGarraSuperiorServo.setPosition(mapOpening.get(garraOpeningState));
-                    ServoAngulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+                    garraAngulationState = GarraAngulationStates.TRANSFER;
+                    angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+                    servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
         });
     }
     public Action goToOuttake(){//todo okey
@@ -59,27 +55,28 @@ public class GarraSuperior extends Garra {
             garraOpeningState = GarraOpeningStates.CLOSED;
             garraAngulationState = GarraAngulationStates.BASKET;
 
-            ServoAngulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
-            aberturaGarraSuperiorServo.setPosition(mapOpening.get(garraOpeningState));
+            angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+            servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+            servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
         });
     }
     public Action goToIntakeCHAMBER(){//todo okey
         return new InstantAction(() ->{
             garraAngulationState = GarraAngulationStates.INTAKE;
-            ServoAngulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+            angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
         } );
     }
     public Action goToOuttakeCHAMBER(){//todo okey
         return new InstantAction(() -> {
             garraAngulationState = GarraAngulationStates.INTAKE;
             //aberturaGarraSuperiorServo.getController().pwmDisable();
-            ServoAngulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+            angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
         });
     }
     public Action goToReadOuttakeCHAMBER(){//todo okey
         return new InstantAction(() -> {
             garraAngulationState = GarraAngulationStates.INTAKE;
-            ServoAngulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+            angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
         });
     }
 
