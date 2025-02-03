@@ -18,16 +18,15 @@ public class GarraSuperior extends Garra {
 
         super(hardwareMap,HardwareNames.aberturaGarraSuperiorServo, HardwareNames.angulacaoGarraSuperiorServo);
 
-
         mapOpening.put(GarraOpeningStates.OPEN, 0.0);
         mapOpening.put(GarraOpeningStates.CLOSED, 0.6);
 
         mapAngulation.put(GarraAngulationStates.TRANSFER,0.212);
         mapAngulation.put(GarraAngulationStates.BASKET,0.832);
 
-        mapAngulation.put(GarraAngulationStates.INTAKE,0.415);//todo rever as posições
-        mapAngulation.put(GarraAngulationStates.OUTAKE,0.298);//todo rever as posições
-        mapAngulation.put(GarraAngulationStates.READY_OUTTAKE,0.359);//todo rever as posições
+        mapAngulation.put(GarraAngulationStates.INTAKE,0.348);//todo rever as posições
+        mapAngulation.put(GarraAngulationStates.OUTAKE,0.852);//todo rever as posições
+        mapAngulation.put(GarraAngulationStates.READY_OUTTAKE,0.852);//todo rever as posições
 
     }
 
@@ -64,6 +63,7 @@ public class GarraSuperior extends Garra {
         return new InstantAction(() ->{
             garraAngulationState = GarraAngulationStates.INTAKE;
             angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+            servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
         } );
     }
     public Action goToOuttakeCHAMBER(){//todo okey
@@ -71,12 +71,14 @@ public class GarraSuperior extends Garra {
             garraAngulationState = GarraAngulationStates.OUTAKE;
             //aberturaGarraSuperiorServo.getController().pwmDisable();
             angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+            servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
         });
     }
     public Action goToReadOuttakeCHAMBER(){//todo okey
         return new InstantAction(() -> {
             garraAngulationState = GarraAngulationStates.READY_OUTTAKE;
             angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+            servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
         });
     }
 

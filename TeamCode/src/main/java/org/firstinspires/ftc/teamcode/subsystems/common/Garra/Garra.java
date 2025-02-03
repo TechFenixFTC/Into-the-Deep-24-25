@@ -43,6 +43,7 @@ public class Garra {
         this.garraOpeningState = GarraOpeningStates.OPEN;
         return new InstantAction(() -> servoAberturaDaGarra.setPosition(mapOpening.get(this.garraOpeningState)));
     }
+
     public Action gerenciadorDoFechamentoDaGarraNoTeleop(double runTime) {
         if(runTime < this.cooldownAberturaGarra) {
             return new InstantAction(() -> {});

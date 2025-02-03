@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -82,4 +83,21 @@ public class V5 {
             }
         };
     }
+    public Action MoveOuttake(V5 robot){
+        return new SequentialAction(
+                robot.md.actionBuilder(robot.md.pose)
+                        .setTangent(Math.toRadians(180))
+                        .splineToLinearHeading(new Pose2d(0, 30, Math.toRadians(90)), Math.toRadians(90))
+                        .build()
+        );
+    }
+    public Action MoveIntake(V5 robot){
+        return new SequentialAction(
+                robot.md.actionBuilder(robot.md.pose)
+                        .setTangent(Math.toRadians(180))
+                        .splineToLinearHeading(new Pose2d(35, -53, Math.toRadians(90)), Math.toRadians(90))
+                        .build()
+        );
+    }
+
 }
