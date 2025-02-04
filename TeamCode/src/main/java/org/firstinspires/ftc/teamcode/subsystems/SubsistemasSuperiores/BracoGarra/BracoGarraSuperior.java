@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraRotationInferiorStates;
 
 import java.util.HashMap;
 
@@ -27,9 +28,11 @@ public class BracoGarraSuperior {
         mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.14);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.022);//todo rever as posições
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.218);
-        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.78);
-        mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.111);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.78);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);//todo rever as posições
+
+
 
     }
 

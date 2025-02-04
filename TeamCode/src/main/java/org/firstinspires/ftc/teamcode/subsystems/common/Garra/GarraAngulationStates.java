@@ -7,6 +7,6 @@ public enum GarraAngulationStates {
     READYTO_INTAKE,
     TRANSFER,
     INTAKE,
-    OUTAKE,
+    OUTTAKE,
     READY_OUTTAKE
 }

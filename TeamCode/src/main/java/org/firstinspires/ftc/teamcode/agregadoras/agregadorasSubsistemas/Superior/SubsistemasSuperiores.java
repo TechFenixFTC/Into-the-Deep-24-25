@@ -60,7 +60,6 @@ public class SubsistemasSuperiores {
             carteiro.addOrder(linearVertical.ElevadorGoTo(0),0.0,"linear vertical",runtime);
 
     }
-
         public Action goToIntakeChamber2() {
             return new ParallelAction(
                     braco.goToIntakeCHAMBER(),
@@ -70,23 +69,26 @@ public class SubsistemasSuperiores {
             );
 
         }
+
         public void goToReadOuttakeCHAMBER(OrdersManager carteiro , double runtime ){
             carteiro.addOrder(braco.goToReadOuttakeCHAMBER(),0.0,"braco superior", runtime);
             carteiro.addOrder(garraSuperior.goToReadOuttakeCHAMBER(),0.0,"garra inferior",runtime);
-            carteiro.addOrder(linearVertical.ElevadorGoTo(620),0.0,"linear vertical",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(330),0.0,"linear vertical",runtime);
     }
         public void goToOuttakeCHAMBER(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);
             carteiro.addOrder(garraSuperior.goToOuttakeCHAMBER(),0.0,"garra superior", runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(330),0.0,"linear vertical",runtime);
 
 
     }
-    public Action goToOuttakeCHAMBER(){
+
+        public Action goToOuttakeCHAMBER(){
         return new ParallelAction(
                 braco.goToOuttakeCHAMBER(),
                 garraSuperior.goToOuttakeCHAMBER(),
                 new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
-                linearVertical.ElevadorGoTo(450)
+                linearVertical.ElevadorGoTo(330)
         );
     }
 

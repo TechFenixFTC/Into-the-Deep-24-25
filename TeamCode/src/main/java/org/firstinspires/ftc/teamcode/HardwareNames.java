@@ -24,7 +24,7 @@ public final class HardwareNames {
     **************************************************/
         distanceSensorL      = "sensorporta3",
         distanceSensorR      = "sensorPorta2",
-        colorSensor1         = "color1",
+        colorSensor1         = "I2Cporta1",
         colorSensor2         = "sensorPortaE2",
 
     /**************************************************
@@ -38,8 +38,9 @@ public final class HardwareNames {
         verticalR            = "verticalr",
         verticalL            = "verticall",
         bracoGarraSuperior   = "b",
+        SugadorMotorInferior = "Sugador",
     /**************************************************
-     *              Servo Subsistemas               *
+     *              Servo Subsistemas Pinça           *
      **************************************************/   /* Motores Vertex */
 
     horizontalSuperiorServo = "porta2c",
@@ -49,6 +50,8 @@ public final class HardwareNames {
     bracoGarraInferiorServo = "porta0",
     rotacaoGarraInferiorServo = "porta2",
 
+    rotacaoGarraSuperiorServo = "porta2c",
+
     angulacaoGarraInferiorServo = "porta5",
 
     angulacaoGarraSuperiorServo = "porta0c",
@@ -56,6 +59,13 @@ public final class HardwareNames {
     aberturaGarraInferiorServo = "porta3",
 
     aberturaGarraSuperiorServo = "porta3c",
+
+    /**************************************************
+     *              Servo Subsistemas Sugar               *
+     **************************************************/
+
+    angulacaoSugarServo = "porta0",
+    alcapaoSugarServo = "porta2",
 
     /**************************************************
      *                 Servo-motores                  *

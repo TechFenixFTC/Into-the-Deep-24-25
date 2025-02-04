@@ -123,6 +123,8 @@ public class LinearVertical {
 
 
                     if(condicaoDeParada) {
+                        motorL.setPower(Math.cos(Math.toRadians(target)) * f);
+                        motorR.setPower(Math.cos(Math.toRadians(target)) * f);
                         return false;
                     }
 
