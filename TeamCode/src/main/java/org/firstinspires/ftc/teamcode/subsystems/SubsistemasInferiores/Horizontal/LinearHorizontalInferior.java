@@ -12,17 +12,15 @@ public class LinearHorizontalInferior extends LinearHorizontal {
 
     public LinearHorizontalInferior(HardwareMap hardwareMap) {
         super(hardwareMap, HardwareNames.horizontalInferiorServo);
-        mapStateHorizontal.put(LinearHorizontalStates.EXTENDED, 1.0);
-        mapStateHorizontal.put(LinearHorizontalStates.INTERMEDIATE,0.785);
+        mapStateHorizontal.put(LinearHorizontalStates.EXTENDED, 0.627);
+        mapStateHorizontal.put(LinearHorizontalStates.INTERMEDIATE,0.371);
         mapStateHorizontal.put(LinearHorizontalStates.RETRACTED,0.0);
 
     }
 
-    public Action goToExtended() {
-        return this.goToExtended();
-    }
+    public Action goToExtended() {return super.goToExtended();}
     public Action goToRetracted() {
-        return this.goToRetracted();
+        return super.goToRetracted();
     }
 
     public void monitor(Telemetry telemetry){

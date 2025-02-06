@@ -24,11 +24,10 @@ import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Superior.UpperSubsystemStates;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalInferior;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Horizontal.LinearHorizontalSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 
 import java.util.ArrayList;
@@ -51,13 +50,14 @@ public class TeleoperadoV5 extends OpMode {
     public  void init() {
 
         robot = this.createRobot(hardwareMap);
-        Pose2d initialPose = new Pose2d(35,-53 , Math.toRadians(-90));
+        Pose2d initialPose = new Pose2d(38,-60 , Math.toRadians(-90));
         robot.md.pose = initialPose;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         gamepadEx1 = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
         robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRASNFER;
         robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
+        robot.intakeInferior.goToInitial(robot.carteiro,getRuntime());
     }
     @Override
     public void loop() {
@@ -68,7 +68,7 @@ public class TeleoperadoV5 extends OpMode {
         this.linearHorizontalInferior(robot.intakeInferior.horizontalInferior,gamepadEx1);
         this.linearVertical(robot.outtakeIntakeSuperior.linearVertical,gamepadEx1, robot.carteiro);
         this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx1,robot.carteiro);
-        this.garraInferior(robot.intakeInferior.garraInferior,robot.carteiro,gamepadEx1);
+        this.IntakeSuccao(robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
         this.garraSuperior(robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx1);
         this.runActions(robot.carteiro);
         this.testar1servo(robot,gamepadEx1,robot.carteiro);
@@ -81,17 +81,16 @@ public class TeleoperadoV5 extends OpMode {
         //telemetry.addData("Garra port", robot.intakeInferior.garraInferior.servoAberturaDaGarra.getPortNumber());
         //telemetry.addData("Garra pwm status", robot.intakeInferior.garraInferior.servoAberturaDaGarra.getController().getPwmStatus());
         //telemetry.addData("Posição garra", robot.outtakeIntakeSuperior.horizontalSuperior.servoLinearHorizontal.getPosition());
-
+        telemetry.addData("posicao servo angulacao garra", robot.outtakeIntakeSuperior.garraSuperior.servoAngulacaoGarra.getPosition());
         telemetry.addData("PWM",robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.getController().getPwmStatus());
         telemetry.addData("get Position",robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.getPosition());
         telemetry.addData("Yaw",-robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
         telemetry.addData("Eixo X",robot.md.pose.position.x);
         telemetry.addData("Eixo Y",robot.md.pose.position.y);
-
         telemetry.addData("alpha", robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha());
         telemetry.addData("red", robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed());
         telemetry.addData("blue", robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue());
-        telemetry.addData("green", robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen());
+
         telemetry.update();
 
 
@@ -148,22 +147,23 @@ public class TeleoperadoV5 extends OpMode {
             robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
 
         }
-
-        /*if (gamepad.getButton(GamepadKeys.Button.X)) {
-            robot.outtakeIntakeSuperior.goToReadOuttakeCHAMBER(carteiro, getRuntime());
-
-        }*/
         if(gamepad.getButton(GamepadKeys.Button.X)){
             robot.intakeInferior.goToIntake(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.intakeInferior.goToTransfer(carteiro,getRuntime());
+            robot.intakeInferior.goToInitial(carteiro,getRuntime());
         }
 
         if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)){
             carteiro.addOrder(robot.outtakeIntakeSuperior.garraSuperior.gerenciadorDoFechamentoDaGarraNoTeleop(getRuntime()),0.0,"garra superior",getRuntime());
 
         }
+        if(gamepadEx1.getButton(GamepadKeys.Button.LEFT_BUMPER)){
+            robot.intakeInferior.goToTransfer(carteiro,getRuntime());
+            robot.outtakeIntakeSuperior.goToTransfer(carteiro,getRuntime());
+
+        }
+
 
     }
 
@@ -186,30 +186,27 @@ public class TeleoperadoV5 extends OpMode {
 
     }
     private void bracoGarra(BracoGarraSuperior braco, GamepadEx gamepad, OrdersManager carteiro)  {
-       // carteiro.addOrder(robot.outtakeIntakeSuperior.braco.goToInital(), 0,"braco superior inicial");
     }
     private void linearHorizontalInferior(LinearHorizontalInferior horizontal, GamepadEx gamepad)  {
 
     }
     private void garraSuperior(GarraSuperior garra, OrdersManager carteiro, GamepadEx gamepad){
     }
-    private void garraInferior(GarraInferior subsistemasInferiores, OrdersManager carteiro, GamepadEx gamepad){
-
+    private void IntakeSuccao(IntakeSuccao subsistemasInferiores, OrdersManager carteiro, GamepadEx gamepad){
+        if(gamepad.getButton(GamepadKeys.Button.DPAD_UP)){
+            robot.intakeInferior.intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador);
+        } else if (gamepad.getButton(GamepadKeys.Button.DPAD_DOWN)) {
+            robot.intakeInferior.intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * -1);
+        }
     }
     private void setPositionServos(){
-
-        //robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.setPosition(robot.outtakeIntakeSuperior.garraSuperior.angulacaoSuperiorPosition);
-        //robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.setPosition(robot.outtakeIntakeSuperior.braco.servoBracoSuperiorPosition);
-        // robot.outtakeIntakeSuperior.horizontalSuperior.servoLinearHorizontal.setPosition(0.634);
-
     }
 
     private void fullAutoOuttakeChamber(V5 robot , GamepadEx gamepad,OrdersManager carteiro){
-        if(gamepad.getButton(GamepadKeys.Button.A)){
+        /*if(gamepad.getButton(GamepadKeys.Button.Y)){
             robot.md.updatePoseEstimate();
             Actions.runBlocking(
                 new SequentialAction(
-                        //robot.outtakeIntakeSuperior.garraSuperior.fecharGarra(),
 
                         new ParallelAction(
 
@@ -218,24 +215,19 @@ public class TeleoperadoV5 extends OpMode {
 
                     ),
                     robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()
-                    /*new ParallelAction(
-                            robot.outtakeIntakeSuperior.goToIntakeChamber2(),
-                            robot.MoveIntake(robot)
-
-                        )*/
-
 
                 )
             );
         }
-        if(gamepad.getButton(GamepadKeys.Button.B)){
+        if(gamepad.getButton(GamepadKeys.Button.X)){
             robot.md.updatePoseEstimate();
             Actions.runBlocking(
                     new SequentialAction(
+                            robot.outtakeIntakeSuperior.goToIntakeChamber2(),
                             robot.MoveIntake(robot)
                     )
             );
-        }
+        }*/
 
     }
 

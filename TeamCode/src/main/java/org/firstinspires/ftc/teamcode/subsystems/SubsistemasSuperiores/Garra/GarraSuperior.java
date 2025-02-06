@@ -28,24 +28,28 @@ public class GarraSuperior extends Garra {
         mapOpening.put(GarraOpeningStates.OPEN, 0.0);
         mapOpening.put(GarraOpeningStates.CLOSED, 0.6);
 
-        mapAngulation.put(GarraAngulationStates.TRANSFER,0.212);
+        mapAngulation.put(GarraAngulationStates.TRANSFER,0.528);
         mapAngulation.put(GarraAngulationStates.BASKET,0.832);
 
-        mapAngulation.put(GarraAngulationStates.INTAKE,0.101);//todo okey
-        mapAngulation.put(GarraAngulationStates.OUTTAKE,0.422);//todo okey
-        mapAngulation.put(GarraAngulationStates.READY_OUTTAKE,0.422);//todo okey
+        mapAngulation.put(GarraAngulationStates.INTAKE,0.276);//todo okey
+        mapAngulation.put(GarraAngulationStates.OUTTAKE,0.720);//todo okey
 
-        mapRotation.put(GarraSuperiorRotetionStates.CHAMBER, 0.843);//todo okey
-        mapRotation.put(GarraSuperiorRotetionStates.PERPENDICULAR, 0.5);//todo okey
-        mapRotation.put(GarraSuperiorRotetionStates.PARALELA, 0.218);//todo okey
+        mapAngulation.put(GarraAngulationStates.READY_OUTTAKE,0.512);//todo okey
+
+        mapRotation.put(GarraSuperiorRotetionStates.PARALELA, 0.52);//todo okey
+        mapRotation.put(GarraSuperiorRotetionStates.PERPENDICULAR, 1.0);//todo okey
+        mapRotation.put(GarraSuperiorRotetionStates.CHAMBER, 0.202);//todo okey
     }
 
     public Action goToTransfer(){
             return new InstantAction(() -> {
                 //garraOpeningState = GarraOpeningStates.OPEN;
+                garraRotationSuperiorState = GarraSuperiorRotetionStates.PARALELA;
                 garraAngulationState = GarraAngulationStates.TRANSFER;
+                servoRotacaoDaGarra.setPosition(mapRotation.get(garraRotationSuperiorState1));
                 //aberturaGarraSuperiorServo.setPosition(mapOpening.get(garraOpeningState));
-                angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+                servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+                servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
             });
     }
     public Action goToReadyToTransfer(){
@@ -72,7 +76,7 @@ public class GarraSuperior extends Garra {
     public Action goToIntakeCHAMBER(){//todo
         return new InstantAction(() ->{
             garraAngulationState = GarraAngulationStates.INTAKE;
-            garraRotationSuperiorState = GarraSuperiorRotetionStates.PARALELA;
+            garraRotationSuperiorState = GarraSuperiorRotetionStates.PERPENDICULAR;
 
             servoRotacaoDaGarra.setPosition(mapRotation.get(garraRotationSuperiorState));
             angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);

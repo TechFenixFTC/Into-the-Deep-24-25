@@ -2,20 +2,15 @@ package org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferi
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
+import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.BracoGarra.BracoGarraInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SubsistemasInferiores {
 
@@ -25,6 +20,7 @@ public class SubsistemasInferiores {
     public GarraInferior garraInferior;
     public BracoGarraInferior bracoGarraInferior;
     public LinearHorizontalInferior horizontalInferior;
+    public SensorCor colorSensor;
     HardwareMap hardwaremap;
     public SubsistemasInferiores(HardwareMap hardwareMap, Telemetry telemetry) {
 
@@ -45,7 +41,8 @@ public class SubsistemasInferiores {
     public void goToIntake(OrdersManager carteiro, double runtime){
 
             carteiro.addOrder(horizontalInferior.goToExtended(),0, "horizontal inferior", runtime);
-            carteiro.addOrder(intakeSuccao.GotoIntake(),0.3,"sucção",runtime);
+            carteiro.addOrder(intakeSuccao.IntakeSugar(),0, "intake sugador", runtime);
+            carteiro.addOrder(intakeSuccao.GotoIntake(),0.7,"succor",runtime);
 
             // todo: deprecated
             /*carteiro.addOrder(garraInferior.goToIntake(),0.1,"garra inferior", runtime);
@@ -55,23 +52,25 @@ public class SubsistemasInferiores {
 
     }
 
-    public void goToTransfer(OrdersManager carteiro, double runtime){
-
-        carteiro.addOrder(horizontalInferior.goToRetracted(),0.0, "horizontal inferior", runtime);
-        carteiro.addOrder(intakeSuccao.GoToInitial(),0.3,"sucção",runtime);
+    public void goToInitial(OrdersManager carteiro, double runtime){
+        carteiro.addOrder(intakeSuccao.GoToInitial(),0,"succorIn",runtime);
+        carteiro.addOrder(intakeSuccao.IntakeParar(), 0.0, "intake parar", runtime);
+        carteiro.addOrder(intakeSuccao.IntakeSugar(),0.8,"intake sugador", runtime);
+        carteiro.addOrder(intakeSuccao.verifyColorSensor(),0.550, "verify color sensor", runtime);
+        carteiro.addOrder(horizontalInferior.goToRetracted(),0.81, "horizontal inferior", runtime);
+        carteiro.addOrder(intakeSuccao.IntakeParar(),1,"intake parar depois", runtime);
         /*carteiro.addOrder(garraInferior.goToTransfer(), 0, "garra Inferior", runtime);
         carteiro.addOrder(bracoGarraInferior.goToTransfer(), 0.0, "braco garra inferior", runtime);*/
-
-
     }
+
 
     public void goToReadyToIntake(OrdersManager carteiro, double runtime){
             carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior", runtime);
             /*carteiro.addOrder(bracoGarraInferior.goToIntake(), 0.1, "braco garra inferior", runtime);
             carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior", runtime);*/
     }
-    public void goToReadyTransfer(OrdersManager carteiro, double runtime){
-        carteiro.addOrder(horizontalInferior.goToRetracted(),0.12, "horizontal inferior", runtime);
+    public void goToTransfer(OrdersManager carteiro, double runtime){
+            carteiro.addOrder(intakeSuccao.GoToTransfer(),0,"garra inferior", runtime);
             /* carteiro.addOrder(garraInferior.goToReadyTransfer(), 0, "garra Inferior", runtime);
             carteiro.addOrder(garraInferior.fecharGarra(),0,"feeecharGarra", runtime);
             carteiro.addOrder(bracoGarraInferior.goToTransfer(), 1.0, "braco garra inferior", runtime);*/

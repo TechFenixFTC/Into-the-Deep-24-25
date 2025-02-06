@@ -106,7 +106,7 @@ public class V5 {
     public Action MoveIntake(V5 robot){
         return new SequentialAction(
                 robot.md.actionBuilder(robot.md.pose)
-                        .strafeToConstantHeading(new Vector2d(35, -53))
+                        .strafeToConstantHeading(new Vector2d(38, -60))
                         .build()
         );
     }

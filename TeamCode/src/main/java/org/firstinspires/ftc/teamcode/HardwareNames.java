@@ -38,7 +38,7 @@ public final class HardwareNames {
         verticalR            = "verticalr",
         verticalL            = "verticall",
         bracoGarraSuperior   = "b",
-        SugadorMotorInferior = "Sugador",
+        SugadorMotorInferior = "porta2e",
     /**************************************************
      *              Servo Subsistemas Pinça           *
      **************************************************/   /* Motores Vertex */

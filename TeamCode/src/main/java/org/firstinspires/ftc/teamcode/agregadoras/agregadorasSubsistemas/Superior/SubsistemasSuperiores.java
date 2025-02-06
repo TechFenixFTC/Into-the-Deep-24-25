@@ -38,11 +38,9 @@ public class SubsistemasSuperiores {
         }
 
         public void goToTransfer(OrdersManager carteiro, double runtime){
-
-                carteiro.addOrder(braco.goToTransfer(), 0.3,"braco superior", runtime);
+                carteiro.addOrder(linearVertical.ElevadorGoTo(400),0.0,"linear vertical",runtime);
                 carteiro.addOrder(garraSuperior.goToTransfer(), 0.0,"garra Superior", runtime);
-                carteiro.addOrder(garraSuperior.fecharGarra(), 0.500, "fechando", runtime);
-
+                carteiro.addOrder(braco.goToTransfer(), 0.3,"braco superior", runtime);
         }
         public void goToReadyTransfer(OrdersManager carteiro,double runtime){
             //carteiro.addOrder(linearVertical.ElevadorGoTo(100),0.0,"Linear");
@@ -78,10 +76,19 @@ public class SubsistemasSuperiores {
         public void goToOuttakeCHAMBER(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);
             carteiro.addOrder(garraSuperior.goToOuttakeCHAMBER(),0.0,"garra superior", runtime);
-            carteiro.addOrder(linearVertical.ElevadorGoTo(330),0.0,"linear vertical",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(550),0.0,"linear vertical",runtime);
 
 
     }
+    public void goToOuttakeCHAMBERSUBIR(OrdersManager carteiro , double runtime){
+        carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);
+        carteiro.addOrder(garraSuperior.goToOuttakeCHAMBER(),0.0,"garra superior", runtime);
+        carteiro.addOrder(linearVertical.ElevadorGoTo(1400),0.0,"linear vertical", runtime);
+        carteiro.addOrder(garraSuperior.abrirGarra(),1,"abrido",runtime);
+
+
+    }
+
 
         public Action goToOuttakeCHAMBER(){
         return new ParallelAction(

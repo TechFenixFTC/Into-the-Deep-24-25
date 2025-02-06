@@ -26,10 +26,12 @@ public class BracoGarraSuperior {
         mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.25);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.403);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.14);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.022);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.0);//todo rever as posições
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.111);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.78);//todo rever as posições
+
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.117);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.87);//todo rever as posições
+
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);//todo rever as posições
 
 
