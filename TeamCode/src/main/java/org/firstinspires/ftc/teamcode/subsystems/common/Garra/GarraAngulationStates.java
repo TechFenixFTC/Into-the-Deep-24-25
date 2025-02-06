@@ -8,5 +8,6 @@ public enum GarraAngulationStates {
     TRANSFER,
     INTAKE,
     OUTTAKE,
+    OUTTAKE_EJECTING,
     READY_OUTTAKE
 }

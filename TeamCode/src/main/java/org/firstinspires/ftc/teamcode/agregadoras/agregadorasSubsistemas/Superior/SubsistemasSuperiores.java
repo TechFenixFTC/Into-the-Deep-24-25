@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
@@ -38,15 +37,34 @@ public class SubsistemasSuperiores {
         }
 
         public void goToTransfer(OrdersManager carteiro, double runtime){
-                carteiro.addOrder(linearVertical.ElevadorGoTo(400),0.0,"linear vertical",runtime);
-                carteiro.addOrder(garraSuperior.goToTransfer(), 0.0,"garra Superior", runtime);
-                carteiro.addOrder(braco.goToTransfer(), 0.3,"braco superior", runtime);
+                /*carteiro.addOrder(linearVertical.ElevadorGoTo(700),0.0,"subir ",runtime);
+                carteiro.addOrder(garraSuperior.goToTransfer(), 1.0,"garra Superior", runtime);
+                carteiro.addOrder(braco.goToTransfer(), 0.5,"braco superior", runtime);
+                carteiro.addOrder(garraSuperior.abrirGarra(),4.0,"abrir garra",runtime);*/
+                carteiro.addOrder(linearVertical.ElevadorGoTo(300),4,"linear vertical",runtime);
+                carteiro.addOrder(garraSuperior.fecharGarra(),4.0,"abrir garra",runtime);
+
+        }
+        public Action Test(){
+            return new SequentialAction(
+
+                    linearVertical.ElevadorGoTo(700),
+
+                     new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(4).build(),
+                    linearVertical.ElevadorGoTo(370)
+
+
+            );
         }
         public void goToReadyTransfer(OrdersManager carteiro,double runtime){
-            //carteiro.addOrder(linearVertical.ElevadorGoTo(100),0.0,"Linear");
+            /*carteiro.addOrder(linearVertical.ElevadorGoTo(100),0.0,"Linear");
             carteiro.addOrder(garraSuperior.abrirGarra(), 0, "abrindo", runtime);
             carteiro.addOrder(braco.goToReadyToTransfer(), 0.200,"braco superior", runtime);
-            carteiro.addOrder(garraSuperior.goToReadyToTransfer(), 0.0,"garra Superior", runtime);
+            carteiro.addOrder(garraSuperior.goToReadyToTransfer(), 0.0,"garra Superior", runtime);*/
+            carteiro.addOrder(linearVertical.ElevadorGoTo(700),0.0,"subir ",runtime);
+            carteiro.addOrder(garraSuperior.goToTransfer(), 1.0,"garra Superior", runtime);
+            carteiro.addOrder(braco.goToTransfer(), 0.5,"braco superior", runtime);
+            carteiro.addOrder(garraSuperior.abrirGarra(),4.0,"abrir garra",runtime);
 
 
     }
@@ -76,10 +94,33 @@ public class SubsistemasSuperiores {
         public void goToOuttakeCHAMBER(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);
             carteiro.addOrder(garraSuperior.goToOuttakeCHAMBER(),0.0,"garra superior", runtime);
-            carteiro.addOrder(linearVertical.ElevadorGoTo(550),0.0,"linear vertical",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(700),0.0,"linear vertical",runtime);
 
 
     }
+    public void goToOuttakeTransfer(OrdersManager carteiro , double runtime, double delay){
+        carteiro.addOrder(garraSuperior.abrirGarra(),0.0 + delay,"garra abrir",runtime);
+        carteiro.addOrder(linearVertical.ElevadorGoTo(170),0.6 + delay,"linear vertical",runtime);
+        carteiro.addOrder(braco.goToTransfer(),1 + delay,"braco", runtime);
+        carteiro.addOrder(garraSuperior.goToTransfer(),0.0 + delay, "angulação", runtime);
+        carteiro.addOrder(garraSuperior.fecharGarra(),1.5 + delay,"garra",runtime);
+
+        carteiro.addOrder(linearVertical.ElevadorGoTo(550),1.9 + delay,"linear vertical outtake",runtime);
+        carteiro.addOrder(braco.goToOuttakeCHAMBER(),2.0 + delay,"braco superior",runtime);
+        carteiro.addOrder(garraSuperior.goToOuttakeEjecting(),4.0 + delay,"garra superior", runtime);
+        carteiro.addOrder(garraSuperior.abrirGarra(),5.0 + delay,"abrir garra", runtime);
+
+
+    }
+    public void goToOuttakeEjecting(OrdersManager carteiro , double runtime){
+        carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0 ,"braco superior",runtime);
+        carteiro.addOrder(garraSuperior.goToOuttakeEjecting(),0.0,"garra superior", runtime);
+        carteiro.addOrder(garraSuperior.abrirGarra(),0.5,"abrir garra", runtime);
+
+
+
+    }
+
     public void goToOuttakeCHAMBERSUBIR(OrdersManager carteiro , double runtime){
         carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);
         carteiro.addOrder(garraSuperior.goToOuttakeCHAMBER(),0.0,"garra superior", runtime);
@@ -99,19 +140,19 @@ public class SubsistemasSuperiores {
         );
     }
 
-        public void goToOuttake(OrdersManager carteiro, double runtime){
+        public void goToOuttakeBASKET(OrdersManager carteiro, double runtime){
 
-           carteiro.addOrder(braco.goToOuttake(), 0,"braco garra superior", runtime);
-           carteiro.addOrder(linearVertical.ElevadorGoTo(1380), 0.2,"vertical", runtime);
-           carteiro.addOrder(garraSuperior.goToOuttake(), 0.5,"garra superior", runtime);
+           carteiro.addOrder(braco.goToOuttakeBASKET(), 1.5,"braco garra superior", runtime);
+           carteiro.addOrder(linearVertical.ElevadorGoTo(2550), 0.0,"vertical", runtime);
+           carteiro.addOrder(garraSuperior.goToOuttakeBASKET(), 1.0,"garra superior", runtime);
 
 
         }
 
         public Action goToOuttake2(){
             return new ParallelAction(
-                    braco.goToOuttake(),
-                    garraSuperior.goToOuttake(),
+                    braco.goToOuttakeBASKET(),
+                    garraSuperior.goToOuttakeBASKET(),
                     new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
                     linearVertical.ElevadorGoTo(1350)
             );

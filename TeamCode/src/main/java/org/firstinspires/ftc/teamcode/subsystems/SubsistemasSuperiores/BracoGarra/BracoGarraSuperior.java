@@ -5,10 +5,10 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraRotationInferiorStates;
 
 import java.util.HashMap;
 
@@ -23,14 +23,14 @@ public class BracoGarraSuperior {
     public BracoGarraSuperior(HardwareMap hardwareMap, Telemetry telemetry) {
         bracoGarraSuperiorServo = hardwareMap.get(Servo.class, HardwareNames.bracoGarraSuperiorServo);
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.25);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.652);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.403);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.14);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.0);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.0);///todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_EJECTING, 1.0);
 
-
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.117);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.87);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.15);//todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.87);//todo okey
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);//todo rever as posições
 
@@ -55,7 +55,8 @@ public class BracoGarraSuperior {
             bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
         });
     }
-    public Action goToOuttake(){//todo okey
+
+    public Action goToOuttakeBASKET(){//todo okey
 
         return new InstantAction(()->{
             bracoGarraSuperiorState = BracoGarraSuperiorStates.BASKET;
@@ -63,10 +64,9 @@ public class BracoGarraSuperior {
             bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
         });
     }
-    public Action goToInital(){//todo okey
-
+    public Action goToReadOuttakeCHAMBER(){
         return new InstantAction(() -> {
-            bracoGarraSuperiorState = BracoGarraSuperiorStates.INITIAL;
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.READY_OUTTAKE;
             servoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
             bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
         });
@@ -79,13 +79,15 @@ public class BracoGarraSuperior {
             bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
         });
    }
-   public Action goToReadOuttakeCHAMBER(){
+
+    public Action goToInital(){//todo okey
+
         return new InstantAction(() -> {
-            bracoGarraSuperiorState = BracoGarraSuperiorStates.READY_OUTTAKE;
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.INITIAL;
             servoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
             bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
         });
-   }
+    }
 
    public Action goToOuttakeCHAMBER(){
         return new InstantAction(() ->{//todo okey
@@ -95,6 +97,16 @@ public class BracoGarraSuperior {
         });
    }
 
+   public void upSetPoint(double increase) {
+        double position = mapBracoSuperior.get(bracoGarraSuperiorState);
+        Range.clip(position += increase,0,-1);
+        bracoGarraSuperiorServo.setPosition(position);
+    }
+   public void downSetPoint(double decrease) {
+        double position = mapBracoSuperior.get(bracoGarraSuperiorState);
+       Range.clip(position += decrease,0,-1);
+        bracoGarraSuperiorServo.setPosition(position);
+    }
 
 
 

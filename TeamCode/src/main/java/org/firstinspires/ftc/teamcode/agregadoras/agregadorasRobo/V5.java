@@ -30,10 +30,13 @@ public class V5 {
 
     public Telemetry telemetry;
     public OrdersManager carteiro;
+    public V5Modes v5Modes = V5Modes.SPECIMEN;
     List<Encoder> leftEncs =  new ArrayList<>(), rightEncs = new ArrayList<>();
+
     public SubsistemasInferiores intakeInferior;
     public SubsistemasSuperiores outtakeIntakeSuperior;
     HardwareMap hardwaremap;
+
     public static boolean teelop = false, risky = false;
     public static double deposit_y = -44, deposit_x = -42;
 

@@ -12,18 +12,20 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.HardwareNames;
+import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
 
 import java.util.HashMap;
 
 public class IntakeSuccao{
-
+    private V5 robot;
     public SensorCor colorSensorSugar;
     public int  red,
                 blue,
                 green,
                 alpha;
     public Servo angulacao;
+    private double delay = 0.2;
     public static double power_Sugador = 1;
     public DcMotor sugador;
     public Servo alcapao;
@@ -45,9 +47,11 @@ public class IntakeSuccao{
     }
     public Action verifyColorSensor(){
         return new Action() {
+            V5 robot;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(colorSensorSugar.getAlpha() >1500){
+
+                if(colorSensorSugar.getAlpha() > 1500){
                     sugador.setPower(-1);
                     return false;
                 }
@@ -60,13 +64,18 @@ public class IntakeSuccao{
         return new InstantAction(()->{
             sugarAngulationStates  = SugarAngulationStates.INTAKE;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
-            alcapao.setPosition(0.674);
+
         });
     }
 
     public Action IntakeSugar(){
         return new InstantAction(()->{
             sugador.setPower(power_Sugador);
+        });
+    }
+    public Action IntakeSugarMedio(){
+        return new InstantAction(()->{
+            sugador.setPower(0.5);
         });
     }
 
@@ -86,7 +95,7 @@ public class IntakeSuccao{
         return new InstantAction(()->{
             sugarAngulationStates = SugarAngulationStates.INITIAL;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
-            alcapao.setPosition(0.639);
+
 
         });
     }
@@ -94,22 +103,32 @@ public class IntakeSuccao{
         return new InstantAction(()->{
             sugarAngulationStates = SugarAngulationStates.INITIAL;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
-            alcapao.setPosition(0.769);
+
 
         });
     }
-
+    public Action IntakePositionAlcapao(){
+        return new InstantAction(()->{
+            alcapao.setPosition(0.674);
+        });
+    }
+    public Action TransferPositionAlcapao(){
+        return new InstantAction(()->{
+            alcapao.setPosition(0.8);
+        });
+    }
     public Action GoToInitial(){
         return new InstantAction(()->{
             sugarAngulationStates = SugarAngulationStates.INITIAL;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+
         });
     }
     public Action GoToTransfer(){
         return new InstantAction(()->{
             sugarAngulationStates = SugarAngulationStates.INITIAL;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
-            alcapao.setPosition(0.769);
+
         });
     }
 }

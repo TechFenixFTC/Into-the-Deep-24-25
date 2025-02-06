@@ -8,7 +8,7 @@ public enum BracoGarraSuperiorStates {
         INTAKE,
         OUTTAKE,
         READY_OUTTAKE,
-
+        OUTTAKE_EJECTING,
         TEST_TRANFER
 
 

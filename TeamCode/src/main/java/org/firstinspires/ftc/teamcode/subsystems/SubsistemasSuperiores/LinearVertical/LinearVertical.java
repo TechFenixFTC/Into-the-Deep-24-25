@@ -105,8 +105,9 @@ public class LinearVertical {
     }
 
     public Action ElevadorGoTo(int target) {
-        this.targetPosition = target;
+
         return new Action() {
+
             int margin = 200;
             ElapsedTime time = new ElapsedTime();
             boolean started = false;
@@ -114,12 +115,19 @@ public class LinearVertical {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if(!started) {
+                    targetPosition = target;
                     time.reset();
                     started = true;
                 }
 
                     PIDF();
-                    boolean condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margin  &&  motorR.getCurrentPosition() <= targetPosition + margin ;
+                boolean condicaoDeParada = false;
+                if(target > 0) {
+                    condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margin  &&  motorR.getCurrentPosition() <= targetPosition + margin ;
+                }
+                else {
+                    condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margin  &&  motorR.getCurrentPosition() <= targetPosition + margin ;
+                }
 
 
                     if(condicaoDeParada) {
