@@ -92,7 +92,7 @@ public class GarraSuperior extends Garra {
     public Action goToOuttakeCHAMBER(){//todo
         return new InstantAction(() -> {
             garraAngulationState = GarraAngulationStates.OUTTAKE;
-            garraRotationSuperiorState = GarraSuperiorRotetionStates.PARALELA;
+            garraRotationSuperiorState = GarraSuperiorRotetionStates.CHAMBER;
 
             //aberturaGarraSuperiorServo.getController().pwmDisable();
             angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);

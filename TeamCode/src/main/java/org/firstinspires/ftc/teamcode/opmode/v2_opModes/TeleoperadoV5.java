@@ -55,6 +55,7 @@ public class TeleoperadoV5 extends OpMode {
         robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRASNFER;
         robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
         robot.intakeInferior.goToInitial(robot.carteiro,getRuntime());
+        robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
     }
     @Override
     public void loop() {
@@ -135,18 +136,17 @@ public class TeleoperadoV5 extends OpMode {
 
 
     }
-
     private void testar1servo(V5 robot, GamepadEx gamepad,OrdersManager carteiro) {
     }
 
     private void bindsChamber(V5 robot, GamepadEx gamepad, OrdersManager carteiro) {
 
         if(gamepad.getButton(GamepadKeys.Button.A)){
+            robot.intakeInferior.goToInitial(carteiro,getRuntime());
             robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
             robot.intakeInferior.goToIntake(carteiro,getRuntime());
-            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro,getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
@@ -154,9 +154,12 @@ public class TeleoperadoV5 extends OpMode {
         }
 
         if(gamepad.getButton(GamepadKeys.Button.B)){
-            robot.intakeInferior.goToInitial(carteiro,getRuntime());
+            //ejeting sugar
+            robot.intakeInferior.goToReadyToIntake(carteiro,getRuntime());
+            //ejeting transfer
+            /*robot.intakeInferior.goToInitial(carteiro,getRuntime());
             //  wait
-            robot.outtakeIntakeSuperior.goToOuttakeTransfer(carteiro,getRuntime(),2.0);
+            robot.outtakeIntakeSuperior.goToOuttakeTransfer(carteiro,getRuntime(),2.0);*/
         }
 
     }//todo okey
@@ -196,7 +199,12 @@ public class TeleoperadoV5 extends OpMode {
         }
     }
     private void linearHorizontal(LinearHorizontalInferior horizontal, GamepadEx gamepad)  {
-
+        if(gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)){
+            horizontal.goToExtended();
+        }
+        else if (gamepad.getButton(GamepadKeys.Button.DPAD_RIGHT)){
+            horizontal.goToRetracted();
+        }
     }
     private void garraSuperior(GarraSuperior garra, OrdersManager carteiro, GamepadEx gamepad){
         if (gamepad.getButton(GamepadKeys.Button.RIGHT_BUMPER)){
@@ -210,15 +218,14 @@ public class TeleoperadoV5 extends OpMode {
             robot.outtakeIntakeSuperior.garraSuperior.downSetPoint(gamepad.getRightY());
         }
     }
-    private void IntakeSuccao(IntakeSuccao subsistemasInferiores, OrdersManager carteiro, GamepadEx gamepad){
+    private void IntakeSuccao(IntakeSuccao intakeSuccao, OrdersManager carteiro, GamepadEx gamepad){
         if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0){
-            robot.intakeInferior.intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador);
+            intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador);
         } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0) {
-            robot.intakeInferior.intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * -1);
+            intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * -1);
         }
+        else {intakeSuccao.sugador.setPower(0);}
     }//todo okey
-
-
     private void fullAutoOuttakeChamber(V5 robot , GamepadEx gamepad,OrdersManager carteiro){
         /*if(gamepad.getButton(GamepadKeys.Button.Y)){
             robot.md.updatePoseEstimate();
@@ -247,8 +254,8 @@ public class TeleoperadoV5 extends OpMode {
         }*/
 
     }
-
     private void gerenciarModo(V5 robot,GamepadEx gamepadEx) {
+        // todo: this may cause issues, needs a delay to implement right bc of the velocity of loop vs human input time
         if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Modes == V5Modes.SPECIMEN) {
             this.robot.v5Modes = V5Modes.SAMPLE;
         }

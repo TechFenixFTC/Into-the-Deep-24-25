@@ -41,7 +41,7 @@ public class SubsistemasInferiores {
     public void goToIntake(OrdersManager carteiro, double runtime){
 
             carteiro.addOrder(horizontalInferior.goToExtended(),0, "horizontal inferior", runtime);
-            carteiro.addOrder(intakeSuccao.IntakePositionAlcapao(), 0, "alcapao intake", runtime);
+            carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao intake", runtime);
             //carteiro.addOrder(intakeSuccao.IntakeSugar(),0, "intake sugador", runtime);
             carteiro.addOrder(intakeSuccao.GotoIntake(),0.5,"succor",runtime);
 
@@ -52,24 +52,21 @@ public class SubsistemasInferiores {
 
 
     }
-
     public void goToInitial(OrdersManager carteiro, double runtime){
         carteiro.addOrder(intakeSuccao.GoToInitial(),0,"succorIn",runtime);
         //carteiro.addOrder(intakeSuccao.IntakeParar(), 0.0, "intake parar", runtime);
         //carteiro.addOrder(intakeSuccao.IntakeSugarMedio(),0.8,"intake sugador", runtime);
-        carteiro.addOrder(intakeSuccao.verifyColorSensor(),0.550, "verify color sensor", runtime);
-        carteiro.addOrder(horizontalInferior.goToRetracted(),0.81, "horizontal inferior", runtime);
-        carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0.9, "alcapao transfer", runtime);
+        //carteiro.addOrder(intakeSuccao.verifyColorSensor(),0.550, "verify color sensor", runtime);
+        carteiro.addOrder(horizontalInferior.goToRetracted(),1.5, "horizontal inferior", runtime);
+        carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 1, "alcapao transfer", runtime);
         //carteiro.addOrder(intakeSuccao.IntakeParar(),1,"intake parar depois", runtime);
         /*carteiro.addOrder(garraInferior.goToTransfer(), 0, "garra Inferior", runtime);
         carteiro.addOrder(bracoGarraInferior.goToTransfer(), 0.0, "braco garra inferior", runtime);*/
     }
-
-
     public void goToReadyToIntake(OrdersManager carteiro, double runtime){
-            carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior", runtime);
-            /*carteiro.addOrder(bracoGarraInferior.goToIntake(), 0.1, "braco garra inferior", runtime);
-            carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior", runtime);*/
+            carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior intake", runtime);
+            carteiro.addOrder(intakeSuccao.GoToTransfer(),0.0,"angulation",runtime);
+            carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(),0.0,"alcapao",runtime);
     }
     public void goToTransfer(OrdersManager carteiro, double runtime){
             carteiro.addOrder(intakeSuccao.GoToTransfer(),0,"garra inferior", runtime);

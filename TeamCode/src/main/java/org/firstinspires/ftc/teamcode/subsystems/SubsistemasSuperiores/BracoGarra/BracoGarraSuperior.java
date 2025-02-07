@@ -24,12 +24,12 @@ public class BracoGarraSuperior {
         bracoGarraSuperiorServo = hardwareMap.get(Servo.class, HardwareNames.bracoGarraSuperiorServo);
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.652);///todo okey
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.403);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.496);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.14);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.0);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_EJECTING, 1.0);
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.15);//todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.116);//todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.87);//todo okey
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);//todo rever as posições

@@ -33,13 +33,24 @@ public class IntakeSuccao{
     private HashMap<SugarAngulationStates , Double> mapAngulation = new HashMap<>();
     private SugarAngulationStates sugarAngulationStates  = SugarAngulationStates.INITIAL;
 
+    private HashMap<AlcapaoStates , Double> mapAlcapao = new HashMap<>();
+    private AlcapaoStates alcapaoStates  = AlcapaoStates.TRASNFER;
+
+
     public IntakeSuccao(HardwareMap hardwareMap){
         angulacao = hardwareMap.get(Servo.class, HardwareNames.angulacaoSugarServo);
         sugador = hardwareMap.get(DcMotor.class,HardwareNames.SugadorMotorInferior);
         alcapao = hardwareMap.get(Servo.class,HardwareNames.alcapaoSugarServo);
         colorSensorSugar = new SensorCor(hardwareMap);
+
         mapAngulation.put(SugarAngulationStates.INTAKE, 0.964);
         mapAngulation.put(SugarAngulationStates.INITIAL, 0.369);
+
+        mapAlcapao.put(AlcapaoStates.INTAKE,0.674);
+        mapAlcapao.put(AlcapaoStates.TRASNFER,0.8);
+
+
+
 
         // alcapão aberto 0.463
         // transfer 0.769
@@ -78,19 +89,16 @@ public class IntakeSuccao{
             sugador.setPower(0.5);
         });
     }
-
     public Action IntakeRepelir(){
         return new InstantAction(()->{
             sugador.setPower(power_Sugador * -1);
         });
     }
-
     public Action IntakeParar(){
         return new InstantAction(()->{
             sugador.setPower(0);
         });
     }
-
     public Action GoToFinishIntake(){
         return new InstantAction(()->{
             sugarAngulationStates = SugarAngulationStates.INITIAL;
@@ -109,12 +117,14 @@ public class IntakeSuccao{
     }
     public Action IntakePositionAlcapao(){
         return new InstantAction(()->{
-            alcapao.setPosition(0.674);
+            alcapaoStates = AlcapaoStates.INTAKE;
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
         });
     }
     public Action TransferPositionAlcapao(){
         return new InstantAction(()->{
-            alcapao.setPosition(0.8);
+            alcapaoStates = AlcapaoStates.TRASNFER;
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
         });
     }
     public Action GoToInitial(){
