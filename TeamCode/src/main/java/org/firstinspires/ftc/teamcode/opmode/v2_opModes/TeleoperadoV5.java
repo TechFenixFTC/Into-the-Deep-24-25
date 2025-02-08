@@ -25,6 +25,7 @@ import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperiorStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 
@@ -141,12 +142,17 @@ public class TeleoperadoV5 extends OpMode {
 
     private void bindsChamber(V5 robot, GamepadEx gamepad, OrdersManager carteiro) {
 
-        if(gamepad.getButton(GamepadKeys.Button.A)){
+        /*if(gamepad.getButton(GamepadKeys.Button.A)){
             robot.intakeInferior.goToInitial(carteiro,getRuntime());
             robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
+        }*/
+        if(gamepad.getButton(GamepadKeys.Button.A)){
+
+            carteiro.addOrder(robot.outtakeIntakeSuperior.braco.timeActionBracoGarraSuperior(BracoGarraSuperiorStates.OUTTAKE),0.4,"nome",getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
-            robot.intakeInferior.goToIntake(carteiro,getRuntime());
+            robot.intakeInferior.gerenciadorIntake(carteiro,getRuntime());
+            carteiro.addOrder(robot.DiseablePSESuperior(robot,getRuntime()),0.4,"nome",getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
@@ -155,7 +161,9 @@ public class TeleoperadoV5 extends OpMode {
 
         if(gamepad.getButton(GamepadKeys.Button.B)){
             //ejeting sugar
-            robot.intakeInferior.goToReadyToIntake(carteiro,getRuntime());
+          robot.intakeInferior.goToInitial(carteiro,getRuntime());
+          robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
+
             //ejeting transfer
             /*robot.intakeInferior.goToInitial(carteiro,getRuntime());
             //  wait
@@ -172,8 +180,7 @@ public class TeleoperadoV5 extends OpMode {
             robot.intakeInferior.goToTransfer(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
-            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro,getRuntime());
-            robot.intakeInferior.goToIntake(carteiro,getRuntime());
+            robot.intakeInferior.gerenciadorIntake(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
             robot.outtakeIntakeSuperior.goToTransfer(carteiro,getRuntime());

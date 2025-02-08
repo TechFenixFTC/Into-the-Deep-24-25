@@ -98,6 +98,13 @@ public class SubsistemasSuperiores {
             carteiro.addOrder(garraSuperior.goToReadOuttakeCHAMBER(),0.0,"garra inferior",runtime);
             carteiro.addOrder(linearVertical.ElevadorGoTo(330),0.0,"linear vertical",runtime);
     }
+    public void goEconomiadeBateria(OrdersManager carteiro , double runtime){
+        carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);
+        carteiro.addOrder(garraSuperior.goToOuttakeCHAMBER(),0.0,"garra superior", runtime);
+        carteiro.addOrder(linearVertical.ElevadorGoTo(700),0.0,"linear vertical",runtime);
+
+
+    }
         public void goToOuttakeCHAMBER(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);
             carteiro.addOrder(garraSuperior.goToOuttakeCHAMBER(),0.0,"garra superior", runtime);
@@ -149,9 +156,9 @@ public class SubsistemasSuperiores {
 
         public void goToOuttakeBASKET(OrdersManager carteiro, double runtime){
 
-           carteiro.addOrder(braco.goToOuttakeBASKET(), 1.5,"braco garra superior", runtime);
+           carteiro.addOrder(braco.goToOuttakeBASKET(), 0,"braco garra superior", runtime);
            carteiro.addOrder(linearVertical.ElevadorGoTo(2550), 0.0,"vertical", runtime);
-           carteiro.addOrder(garraSuperior.goToOuttakeBASKET(), 1.0,"garra superior", runtime);
+           carteiro.addOrder(garraSuperior.goToOuttakeBASKET(), 0,"garra superior", runtime);
 
 
         }

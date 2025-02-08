@@ -11,9 +11,11 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.BracoGarr
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.SugarAngulationStates;
+import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontalStates;
 
 public class SubsistemasInferiores {
-
+    double cooldown = 0;
     public Telemetry telemetry;
     public IntakeSuccao intakeSuccao;
     public UnderGrounSubystemStates underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
@@ -39,7 +41,7 @@ public class SubsistemasInferiores {
 
 
     public void goToIntake(OrdersManager carteiro, double runtime){
-
+            underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
             carteiro.addOrder(horizontalInferior.goToExtended(),0, "horizontal inferior", runtime);
             carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao intake", runtime);
             //carteiro.addOrder(intakeSuccao.IntakeSugar(),0, "intake sugador", runtime);
@@ -53,6 +55,7 @@ public class SubsistemasInferiores {
 
     }
     public void goToInitial(OrdersManager carteiro, double runtime){
+
         carteiro.addOrder(intakeSuccao.GoToInitial(),0,"succorIn",runtime);
         //carteiro.addOrder(intakeSuccao.IntakeParar(), 0.0, "intake parar", runtime);
         //carteiro.addOrder(intakeSuccao.IntakeSugarMedio(),0.8,"intake sugador", runtime);
@@ -64,6 +67,7 @@ public class SubsistemasInferiores {
         carteiro.addOrder(bracoGarraInferior.goToTransfer(), 0.0, "braco garra inferior", runtime);*/
     }
     public void goToReadyToIntake(OrdersManager carteiro, double runtime){
+            this.underGrounSubystemStates = UnderGrounSubystemStates.READY_TOINTAKE;
             carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior intake", runtime);
             carteiro.addOrder(intakeSuccao.GoToTransfer(),0.0,"angulation",runtime);
             carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(),0.0,"alcapao",runtime);
@@ -74,6 +78,23 @@ public class SubsistemasInferiores {
             carteiro.addOrder(garraInferior.fecharGarra(),0,"feeecharGarra", runtime);
             carteiro.addOrder(bracoGarraInferior.goToTransfer(), 1.0, "braco garra inferior", runtime);*/
 
+    }
+    public void gerenciadorIntake(OrdersManager carteiro, double runTime){
+        double delay = 0.35;
+        if(runTime < cooldown){
+            return;
+        }
+        cooldown = runTime + delay;
+
+        if(horizontalInferior.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED){
+            goToReadyToIntake(carteiro,runTime);
+            return;
+        }
+        if(intakeSuccao.sugarAngulationStates == SugarAngulationStates.INITIAL){
+            goToIntake(carteiro, runTime);
+            return;
+        }
+        goToReadyToIntake(carteiro, runTime);
     }
     public Action goToReadytoIntakeNoHorizontal(OrdersManager carteiro, double runtime){return new InstantAction(() -> {carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior", runtime);});}
 

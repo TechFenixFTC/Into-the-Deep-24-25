@@ -31,7 +31,7 @@ public class IntakeSuccao{
     public Servo alcapao;
 
     private HashMap<SugarAngulationStates , Double> mapAngulation = new HashMap<>();
-    private SugarAngulationStates sugarAngulationStates  = SugarAngulationStates.INITIAL;
+    public  SugarAngulationStates sugarAngulationStates  = SugarAngulationStates.INITIAL;
 
     private HashMap<AlcapaoStates , Double> mapAlcapao = new HashMap<>();
     private AlcapaoStates alcapaoStates  = AlcapaoStates.TRASNFER;

@@ -10,9 +10,12 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
+import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
@@ -114,4 +117,39 @@ public class V5 {
         );
     }
 
+    public Action DiseablePSESuperior(V5 robot, double runtime){
+        return new Action() {
+            ElapsedTime time = new ElapsedTime();
+            boolean FIRST = true;
+            double delay = 1;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if(FIRST) {
+                    time.reset();
+                    FIRST = false;
+                }
+                if(robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.getController().getPwmStatus()== ServoController.PwmStatus.ENABLED) {
+                    return false;
+                }
+                    if (robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.READY_TOINTAKE) {
+                        double cooldown = delay + time.time();
+                        if (time.time() < cooldown) {
+                            carteiro.addOrder(robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(), 0.0, "braco superior", runtime);
+                            carteiro.addOrder(robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeCHAMBER(), 0.0, "garra superior", runtime);
+                            carteiro.addOrder(robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(700), 0.0, "linear vertical", runtime);
+                            // return true;
+                        }
+
+                }
+                    robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.getController().pwmDisable();
+                    robot.outtakeIntakeSuperior.garraSuperior.servoRotacaoDaGarra.getController().pwmDisable();
+                    robot.outtakeIntakeSuperior.garraSuperior.servoAngulacaoGarra.getController().pwmDisable();
+                    robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.getController().pwmDisable();
+                    robot.outtakeIntakeSuperior.linearVertical.motorR.setPower(0);
+                    robot.outtakeIntakeSuperior.linearVertical.motorL.setPower(0);
+                    return false;
+
+            }
+        };
+    }
 }

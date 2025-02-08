@@ -9,6 +9,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -22,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 
 import java.util.HashMap;
-
+@Photon
 @Config
 public class LinearVertical {
 

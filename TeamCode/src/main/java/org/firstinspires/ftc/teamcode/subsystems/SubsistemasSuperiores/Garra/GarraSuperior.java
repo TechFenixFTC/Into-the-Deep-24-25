@@ -32,7 +32,7 @@ public class GarraSuperior extends Garra {
         mapAngulation.put(GarraAngulationStates.TRANSFER,0.549);//todo okey
         mapAngulation.put(GarraAngulationStates.BASKET,0.266);//todo okey
 
-        mapAngulation.put(GarraAngulationStates.INTAKE,0.32);//todo okey
+        mapAngulation.put(GarraAngulationStates.INTAKE,0.264);//todo okey
         mapAngulation.put(GarraAngulationStates.OUTTAKE,0.720);//todo okey
         mapAngulation.put(GarraAngulationStates.OUTTAKE_EJECTING,0.379);
         // 0.379
@@ -91,10 +91,12 @@ public class GarraSuperior extends Garra {
     }
     public Action goToOuttakeCHAMBER(){//todo
         return new InstantAction(() -> {
+            garraOpeningState = GarraOpeningStates.CLOSED;
             garraAngulationState = GarraAngulationStates.OUTTAKE;
             garraRotationSuperiorState = GarraSuperiorRotetionStates.CHAMBER;
 
             //aberturaGarraSuperiorServo.getController().pwmDisable();
+            servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
             angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
             servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
             servoRotacaoDaGarra.setPosition(mapRotation.get(garraRotationSuperiorState));
@@ -129,14 +131,17 @@ public class GarraSuperior extends Garra {
 
     public void upSetPoint(double increase) {
         double position = mapAngulation.get(garraAngulationState);
+        position = position * 0.1;
         Range.clip(position += increase,0,-1);
         servoAngulacaoGarra.setPosition(position);
     }
     public void downSetPoint(double decrease) {
         double position = mapAngulation.get(garraAngulationState);
+        position = position * 0.1;
         Range.clip(position += decrease,0,-1);
         servoAngulacaoGarra.setPosition(position);
     }
+
 
 
     public void monitor(Telemetry telemetry) {
