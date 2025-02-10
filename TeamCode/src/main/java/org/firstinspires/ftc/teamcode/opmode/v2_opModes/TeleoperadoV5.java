@@ -142,20 +142,21 @@ public class TeleoperadoV5 extends OpMode {
 
     private void bindsChamber(V5 robot, GamepadEx gamepad, OrdersManager carteiro) {
 
-        /*if(gamepad.getButton(GamepadKeys.Button.A)){
+        if(gamepad.getButton(GamepadKeys.Button.A)){
             robot.intakeInferior.goToInitial(carteiro,getRuntime());
             robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
-        }*/
-        if(gamepad.getButton(GamepadKeys.Button.A)){
+        }
+        /*if(gamepad.getButton(GamepadKeys.Button.A)){
 
             carteiro.addOrder(robot.outtakeIntakeSuperior.braco.timeActionBracoGarraSuperior(BracoGarraSuperiorStates.OUTTAKE),0.4,"nome",getRuntime());
-        }
+        }*/
         if(gamepad.getButton(GamepadKeys.Button.X)){
             robot.intakeInferior.gerenciadorIntake(carteiro,getRuntime());
-            carteiro.addOrder(robot.DiseablePSESuperior(robot,getRuntime()),0.4,"nome",getRuntime());
+            //carteiro.addOrder(robot.DiseablePSESuperior(robot,getRuntime()),0.4,"nome",getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
+            robot.intakeInferior.goToInitial(carteiro,getRuntime());
             robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
         }
 

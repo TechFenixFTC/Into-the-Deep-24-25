@@ -45,6 +45,8 @@ public class OrdersManager {
     private List<Action> runningActions = new ArrayList<>();
     private List<Order> orders = new ArrayList<>();
 
+    private  List<String> names = new ArrayList<>();
+
 
     public void addOrder(Action action, double delay, String name, double runtime) {
         double time = delay + runtime;
@@ -75,7 +77,8 @@ public class OrdersManager {
         for (Order order : orders) {
             // Verifica se o tempo da ordem é menor ou igual ao runtime
             if (order.getTime()  <= runtime) {
-                runningActions.add(order.getAction()); // Adiciona a ação na lista de runningActions
+                runningActions.add(order.getAction());// Adiciona a ação na lista de runningActions
+                names.add(order.getName());
                 ordersToRemove.add(order); // Marca a ordem para remoção
 
             }

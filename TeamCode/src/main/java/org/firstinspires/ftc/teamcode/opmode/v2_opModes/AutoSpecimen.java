@@ -24,7 +24,7 @@ public class AutoSpecimen extends LinearOpMode {
     @Override
     public void runOpMode()  {
 
-        Pose2d initialPose = new Pose2d(0, -60, Math.toRadians(-90));
+        Pose2d initialPose = new Pose2d(8.5, -61, Math.toRadians(-90));
 
         robot = new V5(hardwareMap,telemetry);
         robot.md.pose = initialPose;
@@ -41,7 +41,11 @@ public class AutoSpecimen extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        sample1()
+                        sample1(),
+                        goToSample2(),
+                        intake()
+
+
                         //sample2(),
                         //sample3(),
                         //sample4(),
@@ -56,7 +60,11 @@ public class AutoSpecimen extends LinearOpMode {
     public Action goToDeposit(){
         return new SequentialAction(
                 robot.md.actionBuilder(robot.md.pose)
-                        .lineToY(-20)
+                        //todo: colocar primeiro specimen
+                        .setTangent(Math.toRadians(135))
+                        .splineToConstantHeading(new Vector2d(0, -29.3), Math.toRadians(-90))
+                        //todo: Go to empurrar sample 1
+
                         .build()
         );
     }
@@ -76,9 +84,10 @@ public class AutoSpecimen extends LinearOpMode {
         return new SequentialAction(
 
                 new ParallelAction(
-                        new SequentialAction(
-
-                        )
+                        robot.outtakeIntakeSuperior.braco.goToIntakeCHAMBER(),
+                        robot.outtakeIntakeSuperior.garraSuperior.goToIntakeCHAMBER(),
+                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(0),
+                        robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()
 
                 )
         );
@@ -87,8 +96,13 @@ public class AutoSpecimen extends LinearOpMode {
     public Action goToSample2() {
         return new SequentialAction(
                 robot.md.actionBuilder(robot.md.pose)
-                        .setTangent(Math.toRadians(-90))
-                        .splineToLinearHeading(new Pose2d(47.5, 50, Math.toRadians(-90)), Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(54, -30),Math.toRadians(90))
+
+                        .splineToConstantHeading(new Vector2d(47, -8), Math.toRadians(-90))
+                        .lineToX(61)
+                        .lineToY(-50)
+                        //.splineToConstantHeading(new Vector2d(61, -8), Math.toRadians(-90))
+                        //.splineToConstantHeading(new Vector2d(61, -50), Math.toRadians(-90))
                         .build()
         );
     }

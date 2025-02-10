@@ -33,7 +33,7 @@ public class GarraSuperior extends Garra {
         mapAngulation.put(GarraAngulationStates.BASKET,0.266);//todo okey
 
         mapAngulation.put(GarraAngulationStates.INTAKE,0.264);//todo okey
-        mapAngulation.put(GarraAngulationStates.OUTTAKE,0.720);//todo okey
+        mapAngulation.put(GarraAngulationStates.OUTTAKE,0.661);//todo okey
         mapAngulation.put(GarraAngulationStates.OUTTAKE_EJECTING,0.379);
         // 0.379
         mapAngulation.put(GarraAngulationStates.READY_OUTTAKE,0.512);//todo okey
