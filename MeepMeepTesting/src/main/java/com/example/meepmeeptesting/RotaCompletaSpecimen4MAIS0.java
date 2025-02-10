@@ -21,11 +21,18 @@ public class RotaCompletaSpecimen4MAIS0 {
                         .setTangent(Math.toRadians(135))
                         .splineToConstantHeading(new Vector2d(-1.1, -29.3), Math.toRadians(-90))
                         //todo: Go to empurrar sample 1
-                        .splineToConstantHeading(new Vector2d(34.5, -30),Math.toRadians(90))
+                        .setTangent(Math.toRadians(-45))
+                        //.splineToConstantHeading(new Vector2d(34.5, -30),Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(54, -30),Math.toRadians(0))
+
+                        .splineToConstantHeading(new Vector2d(47, -8), Math.toRadians(0))
+                        .splineToConstantHeading(new Vector2d(61, -8), Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(61, -50), Math.toRadians(-90))
+
+                        //.splineToConstantHeading(new Vector2d(47, -7.5), Math.toRadians(-90))
+                        //.splineToConstantHeading(new Vector2d(47, -56.9), Math.toRadians(-90))
 
 
-                        .splineToConstantHeading(new Vector2d(47, -7.5), Math.toRadians(-90))
-                        .splineToConstantHeading(new Vector2d(47, -56.9), Math.toRadians(-90))
                         //todo: Empurrar sample 1
                         //.setTangent(Math.toRadians(90))
                         //.splineToConstantHeading(new Vector2d(-47, 60), Math.toRadians(90))

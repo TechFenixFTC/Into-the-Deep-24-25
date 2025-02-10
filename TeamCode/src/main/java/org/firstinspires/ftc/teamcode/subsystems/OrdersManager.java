@@ -77,7 +77,7 @@ public class OrdersManager {
         for (Order order : orders) {
             // Verifica se o tempo da ordem é menor ou igual ao runtime
             if (order.getTime()  <= runtime) {
-                runningActions.add(order.getAction());// Adiciona a ação na lista de runningActions
+                runningActions.add(order.getAction());// A -mdiciona a ação na lista de runningActions
                 names.add(order.getName());
                 ordersToRemove.add(order); // Marca a ordem para remoção
 

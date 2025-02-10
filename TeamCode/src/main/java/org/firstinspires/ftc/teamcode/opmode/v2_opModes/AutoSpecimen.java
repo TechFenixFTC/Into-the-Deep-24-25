@@ -42,8 +42,7 @@ public class AutoSpecimen extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         sample1(),
-                        goToSample2(),
-                        intake()
+                        goToSample2()
 
 
                         //sample2(),
@@ -62,7 +61,7 @@ public class AutoSpecimen extends LinearOpMode {
                 robot.md.actionBuilder(robot.md.pose)
                         //todo: colocar primeiro specimen
                         .setTangent(Math.toRadians(135))
-                        .splineToConstantHeading(new Vector2d(0, -29.3), Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(0, -29.3), Math.toRadians(90))
                         //todo: Go to empurrar sample 1
 
                         .build()
@@ -84,10 +83,9 @@ public class AutoSpecimen extends LinearOpMode {
         return new SequentialAction(
 
                 new ParallelAction(
-                        robot.outtakeIntakeSuperior.braco.goToIntakeCHAMBER(),
-                        robot.outtakeIntakeSuperior.garraSuperior.goToIntakeCHAMBER(),
-                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(0),
-                        robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()
+                        new SequentialAction(
+
+                        )
 
                 )
         );
@@ -96,13 +94,12 @@ public class AutoSpecimen extends LinearOpMode {
     public Action goToSample2() {
         return new SequentialAction(
                 robot.md.actionBuilder(robot.md.pose)
+                        .setTangent(Math.toRadians(0))
                         .splineToConstantHeading(new Vector2d(54, -30),Math.toRadians(90))
-
+                        .setTangent(Math.toRadians(0))
                         .splineToConstantHeading(new Vector2d(47, -8), Math.toRadians(-90))
-                        .lineToX(61)
-                        .lineToY(-50)
-                        //.splineToConstantHeading(new Vector2d(61, -8), Math.toRadians(-90))
-                        //.splineToConstantHeading(new Vector2d(61, -50), Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(61, -8), Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(61, -50), Math.toRadians(-90))
                         .build()
         );
     }
