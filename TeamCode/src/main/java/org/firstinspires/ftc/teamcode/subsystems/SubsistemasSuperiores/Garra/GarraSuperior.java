@@ -26,8 +26,9 @@ public class GarraSuperior extends Garra {
 
         super(hardwareMap,HardwareNames.aberturaGarraSuperiorServo, HardwareNames.angulacaoGarraSuperiorServo);
         servoRotacaoDaGarra = hardwareMap.get(Servo.class, HardwareNames.rotacaoGarraSuperiorServo);
-        mapOpening.put(GarraOpeningStates.OPEN, 0.0);//todo okey
-        mapOpening.put(GarraOpeningStates.CLOSED, 0.6);//todo okey
+        mapOpening.put(GarraOpeningStates.OPEN, 0.3);//todo okey
+        mapOpening.put(GarraOpeningStates.CLOSED, 0.61);//todo okey
+        mapOpening.put(GarraOpeningStates.HALF, 0.42);//todo okey
 
         mapAngulation.put(GarraAngulationStates.TRANSFER,0.549);//todo okey
         mapAngulation.put(GarraAngulationStates.BASKET,0.266);//todo okey
@@ -130,16 +131,21 @@ public class GarraSuperior extends Garra {
 
 
     public void upSetPoint(double increase) {
-        double position = mapAngulation.get(garraAngulationState);
-        position = position * 0.1;
-        Range.clip(position += increase,0,-1);
+        double position = Range.clip(servoAngulacaoGarra.getPosition() + (increase * 0.005),0,1);
         servoAngulacaoGarra.setPosition(position);
     }
     public void downSetPoint(double decrease) {
-        double position = mapAngulation.get(garraAngulationState);
-        position = position * 0.1;
-        Range.clip(position += decrease,0,-1);
+        double position = Range.clip(servoAngulacaoGarra.getPosition() + (decrease * 0.005),0,1);
         servoAngulacaoGarra.setPosition(position);
+    }
+
+    public void upSetPointRot(double increase) {
+        double position = Range.clip(servoRotacaoDaGarra.getPosition() + (increase * 0.01),0,1);
+        servoRotacaoDaGarra.setPosition(position);
+    }
+    public void downSetPointRot(double decrease) {
+        double position = Range.clip(servoRotacaoDaGarra.getPosition() + (decrease * 0.01),0,1);
+        servoRotacaoDaGarra.setPosition(position);
     }
 
 

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmode.v2_opModes;
+package org.firstinspires.ftc.teamcode.opmode.v5_opModes;
 
 import androidx.annotation.NonNull;
 
@@ -25,7 +25,6 @@ import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperiorStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 
@@ -40,6 +39,8 @@ public class TeleoperadoV5 extends OpMode {
     private FtcDashboard dashboard = FtcDashboard.getInstance();
     private Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
+    private double delayMode = 0.25, cooldownMode = 0;
+
 
 
     public boolean needToOutake = false;
@@ -52,7 +53,6 @@ public class TeleoperadoV5 extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         gamepadEx1 = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
-        robot.v5Modes = V5Modes.SPECIMEN;
         robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRASNFER;
         robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
         robot.intakeInferior.goToInitial(robot.carteiro,getRuntime());
@@ -86,15 +86,15 @@ public class TeleoperadoV5 extends OpMode {
         //telemetry.addData("Garra port", robot.intakeInferior.garraInferior.servoAberturaDaGarra.getPortNumber());
         //telemetry.addData("Garra pwm status", robot.intakeInferior.garraInferior.servoAberturaDaGarra.getController().getPwmStatus());
         //telemetry.addData("Posição garra", robot.outtakeIntakeSuperior.horizontalSuperior.servoLinearHorizontal.getPosition());
-        telemetry.addData("posicao servo angulacao garra", robot.outtakeIntakeSuperior.garraSuperior.servoAngulacaoGarra.getPosition());
-        telemetry.addData("PWM",robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.getController().getPwmStatus());
-        telemetry.addData("get Position",robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.getPosition());
-        telemetry.addData("Yaw",-robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
-        telemetry.addData("Eixo X",robot.md.pose.position.x);
-        telemetry.addData("Eixo Y",robot.md.pose.position.y);
-        telemetry.addData("alpha", robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha());
-        telemetry.addData("red", robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed());
-        telemetry.addData("blue", robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue());
+        //telemetry.addData("posicao servo angulacao garra", robot.outtakeIntakeSuperior.garraSuperior.servoAngulacaoGarra.getPosition());
+        //telemetry.addData("PWM",robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.getController().getPwmStatus());
+        //telemetry.addData("get Position",robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.getPosition());
+        //telemetry.addData("Yaw",-robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
+        //telemetry.addData("Eixo X",robot.md.pose.position.x);
+        //telemetry.addData("Eixo Y",robot.md.pose.position.y);
+        // telemetry.addData("alpha", robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha());
+        //telemetry.addData("red", robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed());
+        //telemetry.addData("blue", robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue());
 
         telemetry.update();
 
@@ -108,6 +108,7 @@ public class TeleoperadoV5 extends OpMode {
 
     }
     private void robotCentricDrive(V5 robot,GamepadEx gamepad) {
+        //todo: botao para andar diagonal sem alteração no heading
         robot.md.updatePoseEstimate();
         double drive = Range.clip(gamepad.getLeftY(), -1, 1);
 
@@ -155,6 +156,8 @@ public class TeleoperadoV5 extends OpMode {
             //carteiro.addOrder(robot.DiseablePSESuperior(robot,getRuntime()),0.4,"nome",getRuntime());
 
         }
+        // todo: grafico cortado por tempo -> media do sensor
+        // todo: automatizar o retorno do intake
         if(gamepad.getButton(GamepadKeys.Button.Y)){
             robot.intakeInferior.goToInitial(carteiro,getRuntime());
             robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
@@ -190,12 +193,12 @@ public class TeleoperadoV5 extends OpMode {
     }//todo errado
 
     private void linearVertical(LinearVertical vertical,GamepadEx gamepad, OrdersManager carteiro)  {
-        robot.outtakeIntakeSuperior.linearVertical.PIDF();
-
+        vertical.PIDF();
+        vertical.monitor(telemetry);
         if(gamepad.getButton(GamepadKeys.Button.DPAD_UP)){
-            robot.outtakeIntakeSuperior.linearVertical.upSetPoint();
+            vertical.upSetPoint();
         } else if (gamepad.getButton(GamepadKeys.Button.DPAD_DOWN)) {
-            robot.outtakeIntakeSuperior.linearVertical.downSetPoint();
+            vertical.downSetPoint();
         }
     }//todo okey
     private void bracoGarra(BracoGarraSuperior braco, GamepadEx gamepad, OrdersManager carteiro)  {
@@ -220,17 +223,24 @@ public class TeleoperadoV5 extends OpMode {
 
         }
         if(gamepad.getRightY() > 0){
-            robot.outtakeIntakeSuperior.garraSuperior.upSetPoint(gamepad.getRightY());
+            garra.upSetPoint(gamepad.getRightY());
         }
         else if(gamepad.getRightY() < 0){
-            robot.outtakeIntakeSuperior.garraSuperior.downSetPoint(gamepad.getRightY());
+            garra.downSetPoint(gamepad.getRightY());
+        }
+
+        if(gamepad.getRightX() > 0.5){
+            garra.upSetPointRot(gamepad.getRightX());
+        }
+        else if(gamepad.getRightX() < -0.5  ){
+            garra.downSetPointRot(gamepad.getRightX());
         }
     }
     private void IntakeSuccao(IntakeSuccao intakeSuccao, OrdersManager carteiro, GamepadEx gamepad){
         if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0){
-            intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador);
+            intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
         } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0) {
-            intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * -1);
+            intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * -gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
         }
         else {intakeSuccao.sugador.setPower(0);}
     }//todo okey
@@ -264,11 +274,17 @@ public class TeleoperadoV5 extends OpMode {
     }
     private void gerenciarModo(V5 robot,GamepadEx gamepadEx) {
         // todo: this may cause issues, needs a delay to implement right bc of the velocity of loop vs human input time
-        if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Modes == V5Modes.SPECIMEN) {
-            this.robot.v5Modes = V5Modes.SAMPLE;
-        }
-        else if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Modes == V5Modes.SAMPLE) {
-            this.robot.v5Modes = V5Modes.SPECIMEN;
+        // tudú: dhí´ss mei cóz ichues
+        if (getRuntime() >= cooldownMode) {
+            cooldownMode = getRuntime() + delayMode;
+
+            if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Modes == V5Modes.SPECIMEN) {
+                this.robot.v5Modes = V5Modes.SAMPLE;
+            }
+            else if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Modes == V5Modes.SAMPLE) {
+                this.robot.v5Modes = V5Modes.SPECIMEN;
+            }
+
         }
     }
     private void runActions(OrdersManager carteiro) {

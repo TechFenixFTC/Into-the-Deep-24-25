@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.opmode.v2_opModes;
+package org.firstinspires.ftc.teamcode.opmode.v5_opModes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -11,9 +10,7 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 
 @Config
@@ -41,8 +38,7 @@ public class AutoSpecimen extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        sample1(),
-                        goToSample2()
+                        Movecomplept()
 
 
                         //sample2(),
@@ -54,6 +50,64 @@ public class AutoSpecimen extends LinearOpMode {
         );
 
     }
+    public Action Movecomplept(){
+        return new SequentialAction(
+                robot.md.actionBuilder(robot.md.pose)
+                        //todo move deposito
+                        .setTangent(Math.toRadians(90))
+                        .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(-90)), Math.toRadians(90))
+                        //chegar no sample 2 e empurrar
+                        .setTangent(Math.toRadians(-90))
+                        .splineToLinearHeading(new Pose2d(38, -35, Math.toRadians(90)), Math.toRadians(90))
+
+                        .splineToLinearHeading(new Pose2d(38, -5, Math.toRadians(90)), Math.toRadians(90))
+                        .setTangent(Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(48, -5, Math.toRadians(90)), Math.toRadians(-90))
+                        .setTangent(Math.toRadians(-90))
+                        .waitSeconds(0.5)
+                        .splineToLinearHeading(new Pose2d(48, -50, Math.toRadians(90)), Math.toRadians(-90))
+
+                        .splineToLinearHeading(new Pose2d(48, -10, Math.toRadians(90)), Math.toRadians(90))
+                        .setTangent(Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(56, -10, Math.toRadians(90)), Math.toRadians(-90))
+                        .setTangent(Math.toRadians(-90))
+                        .waitSeconds(0.5)
+                        .splineToLinearHeading(new Pose2d(56, -50, Math.toRadians(90)), Math.toRadians(-90))
+
+                        .splineToLinearHeading(new Pose2d(52, -10, Math.toRadians(90)), Math.toRadians(90))
+                        .setTangent(Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(62, -10, Math.toRadians(90)), Math.toRadians(-90))
+                        .setTangent(Math.toRadians(-90))
+                        .waitSeconds(0.5)
+                        .splineToLinearHeading(new Pose2d(62, -50, Math.toRadians(90)), Math.toRadians(-90))
+                        .setTangent(-135)
+                        .splineToLinearHeading(new Pose2d(58, -60, Math.toRadians(-90)), Math.toRadians(-90))
+
+                        //todo deposito
+                        .setTangent(Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(-90)), Math.toRadians(90))
+
+                        //todo intake
+                        .setTangent(Math.toRadians(-45))
+                        .splineToLinearHeading(new Pose2d(38, -60, Math.toRadians(-90)), Math.toRadians(-90))
+
+                        //todo deposito
+                        .setTangent(Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(-90)), Math.toRadians(90))
+
+                        //todo intake
+                        .setTangent(Math.toRadians(-45))
+                        .splineToLinearHeading(new Pose2d(38, -60, Math.toRadians(-90)), Math.toRadians(-90))
+
+                        //todo deposito
+                        .setTangent(Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(-90)), Math.toRadians(90))
+
+                        .setTangent(Math.toRadians(-45))
+                        .splineToLinearHeading(new Pose2d(38, -50, Math.toRadians(-35)), Math.toRadians(-45))
+                        .build()
+        );
+    }
 
 
     public Action goToDeposit(){
@@ -61,7 +115,7 @@ public class AutoSpecimen extends LinearOpMode {
                 robot.md.actionBuilder(robot.md.pose)
                         //todo: colocar primeiro specimen
                         .setTangent(Math.toRadians(135))
-                        .splineToConstantHeading(new Vector2d(0, -29.3), Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(0, -20.3), Math.toRadians(90))
                         //todo: Go to empurrar sample 1
 
                         .build()

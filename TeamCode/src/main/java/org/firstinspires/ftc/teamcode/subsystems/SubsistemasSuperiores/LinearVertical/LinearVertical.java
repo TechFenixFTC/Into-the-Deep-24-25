@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.HardwareNames;
+import org.firstinspires.ftc.teamcode.common.PIDTargetChecker;
 
 import java.util.HashMap;
 @Config
@@ -35,11 +36,14 @@ public class LinearVertical {
     public int wantedTarget = 0;
     public static boolean monitor= false;
     HashMap<LinearVerticalStates, Integer> mapLinearVertical = new HashMap<>();
-    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo;
+    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 200 , sense = 40;
+    public static double tempoParaEstabilizacao = 0.2;
+    public PIDTargetChecker pidTargetChecker = new PIDTargetChecker(margem, tempoParaEstabilizacao);
+    public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public int position;
     public double power;
     public static int targetPosition = 0;
-    public static double p = 0.004, i = 0, d = 0.000,f = 0;
+    public static double p = 0.0018, i = 0, d = 0.000,f = 0, ll = 0, kll = 0;
     PIDController controller = new PIDController(p, i, d);
 
     /* POSIÇÕES PRESETS */
@@ -77,37 +81,52 @@ public class LinearVertical {
         double kp = p;
 
         int linearpos = motorR.getCurrentPosition();
+
+
         if(linearpos < this.targetPosition) {
             kp = p * 8;
         }
         if(linearpos > this.targetPosition + 200){
             kp = p / 4;
         }
+
+        if(motorR.getCurrent(CurrentUnit.AMPS) > 2.5 && targetPosition > 2000) {
+            targetPosition -= 20;
+        }
+        if (motorR.getCurrent(CurrentUnit.AMPS) > 3.8) {
+            targetPosition = (targetPosition + motorR.getCurrentPosition()) / 2; // Aproxima suavemente do valor atual
+        }
+        if(this.motorR.getCurrentPosition() < 270 && targetPosition < 10 && targetPosition > -180) {
+            motorR.setPower(0);
+            motorL.setPower(0);
+            return controller.getPositionError();
+        }
+
         controller.setPID(kp, i,d);
-        double pid = controller.calculate(linearpos, this.targetPosition);
-        double ff = Math.cos(Math.toRadians(this.targetPosition)) * f;
+        double pid = controller.calculate(linearpos, targetPosition);
+        double ff = Math.cos(Math.toRadians(targetPosition)) * f;
+
         motorL.setPower(pid+ff);
         motorR.setPower(pid+ff);
 
         return pid + ff;
     }
     public void upSetPoint() {
-        this.targetPosition += 10;
+        changeTarget(targetPosition + sense);
     }
     public void downSetPoint() {
-        this.targetPosition -= 10;
+        changeTarget(targetPosition - sense);
     }
-    public void changeTarget(double runTime, double delay, int target) {
-        timeToChangeTarget = runTime + delay;
-        needToChangeTarget = true;
-        wantedTarget = target;
+    public void changeTarget(int target) {
+
+        targetPosition = target;
+        tempoIndoAteOsetPoint.reset();
     }
 
     public Action ElevadorGoTo(int target) {
 
         return new Action() {
 
-            int margin = 200;
             ElapsedTime time = new ElapsedTime();
             boolean started = false;
 
@@ -119,13 +138,15 @@ public class LinearVertical {
                     started = true;
                 }
 
-                    PIDF();
-                boolean condicaoDeParada = false;
+                PIDF();
+
+                boolean condicaoDeParada;
+
                 if(target > 0) {
-                    condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margin  &&  motorR.getCurrentPosition() <= targetPosition + margin ;
+                    condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margemAut  &&  motorR.getCurrentPosition() <= targetPosition + margemAut ;
                 }
                 else {
-                    condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margin  &&  motorR.getCurrentPosition() <= targetPosition + margin ;
+                    condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margemAut  &&  motorR.getCurrentPosition() <= targetPosition + margemAut ;
                 }
 
 
@@ -142,6 +163,10 @@ public class LinearVertical {
 
     }
 
+    public boolean chegouNoTarget() {
+        return pidTargetChecker.hasReachedTarget(targetPosition, motorR.getCurrentPosition());
+    }
+
 
 
     public void monitor(Telemetry telemetry) {
@@ -149,10 +174,11 @@ public class LinearVertical {
             telemetry.addLine("======================================");
             telemetry.addLine("TELEMETRIA DO BRAÇO DO LINEAR VERTICAL");
             telemetry.addLine("======================================");
-            telemetry.addData("-Posição Motor Left: ",motorL.getCurrentPosition());
-            telemetry.addData("-Posição Motor Right: ",motorR.getCurrentPosition());
-            telemetry.addData("-alvo: ",targetPosition);
-            telemetry.addData("-Corrente: ",motorR.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("VERTICAL-Posição Motor Left: ",motorL.getCurrentPosition());
+            telemetry.addData("VERTICAL-Posição Motor Right: ",motorR.getCurrentPosition());
+            telemetry.addData("VERTICAL-alvo: ",targetPosition);
+            telemetry.addData("VERTICAL-Corrente",motorR.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("VERTICAL- chegou na posição alvo e estabilizou", chegouNoTarget());
             //telemetry.addData("",);
 
         }

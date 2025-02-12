@@ -1,19 +1,15 @@
-package org.firstinspires.ftc.teamcode.opmode.v2_opModes;
+package org.firstinspires.ftc.teamcode.opmode.v5_opModes;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 
 @Config
@@ -121,9 +117,9 @@ public class TestAuto extends LinearOpMode {
                         goToSample2(),
                         ReadToIntake()
                 ),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.2).build(),
-                intake(),
-                deposit()
+                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.2).build()
+                //intake(),
+                //deposit()
         );
     }
     public Action sample3(){

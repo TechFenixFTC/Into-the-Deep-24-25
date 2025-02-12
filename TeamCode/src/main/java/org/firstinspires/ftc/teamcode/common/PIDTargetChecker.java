@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.common.verifys;
+package org.firstinspires.ftc.teamcode.common;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 

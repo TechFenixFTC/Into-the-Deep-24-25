@@ -144,16 +144,12 @@ public class BracoGarraSuperior {
         });
    }
 
-   public void upSetPoint(double increase) {
-        double position = mapBracoSuperior.get(bracoGarraSuperiorState);
-        Range.clip(position += increase,0,-1);
-        position = position * 0.1;
-        bracoGarraSuperiorServo.setPosition(position);
+   public void upSetPoint(double increase) { // todo: corrigido!
+       double position = Range.clip(bracoGarraSuperiorServo.getPosition() + (increase * 0.005),0,1);
+       bracoGarraSuperiorServo.setPosition(position);
     }
-   public void downSetPoint(double decrease) {
-        double position = mapBracoSuperior.get(bracoGarraSuperiorState);
-        position = position * 0.1;
-        Range.clip(position += decrease,0,-1);
+   public void downSetPoint(double decrease) { // todo: corrigido!
+        double position = Range.clip(bracoGarraSuperiorServo.getPosition() + (decrease * 0.005),0,1);
         bracoGarraSuperiorServo.setPosition(position);
     }
 
@@ -163,8 +159,7 @@ public class BracoGarraSuperior {
         if (monitor) {
             telemetry.addLine("==============================");
             telemetry.addLine("  TELEMETRIA DO BRAÇO DA GARRA");
-            telemetry.addLine("===============================");
-            telemetry.addData("-Angulo do braco: ",this.getAngle());
+            telemetry.addLine("======fdo braco: ",this.getAngle());
             telemetry.addData("-alvo: ",targetAngle);
             //telemetry.addData("",);
 
