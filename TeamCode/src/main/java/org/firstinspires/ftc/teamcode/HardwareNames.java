@@ -44,7 +44,8 @@ public final class HardwareNames {
      **************************************************/   /* Motores Vertex */
 
     horizontalSuperiorServo = "porta2c",
-    horizontalInferiorServo = "porta1",
+    horizontalInferiorMotor = "porta2e",//esse
+            horizontalInferiorServo = "porta5",
     bracoGarraSuperiorServo   = "porta1c",
 
     bracoGarraInferiorServo = "porta0",
@@ -64,7 +65,7 @@ public final class HardwareNames {
      *              Servo Subsistemas Sugar               *
      **************************************************/
 
-    angulacaoSugarServo = "porta0",
+    angulacaoSugarServo = "porta0",//esse
     alcapaoSugarServo = "porta2",
 
     /**************************************************

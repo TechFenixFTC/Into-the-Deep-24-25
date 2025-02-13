@@ -12,12 +12,9 @@ public class LinearHorizontalSuperior extends LinearHorizontal {
 
     public LinearHorizontalSuperior(HardwareMap hardwareMap) {
         super(hardwareMap, HardwareNames.horizontalSuperiorServo);
-        mapStateHorizontal.put(LinearHorizontalStates.EXTENDED,0.634);
-        mapStateHorizontal.put(LinearHorizontalStates.RETRACTED,0.121);
+
 
     }
-    public void monitor(Telemetry telemetry){
-        this.monitor(telemetry,"Superior");
-    }
+
 
 }

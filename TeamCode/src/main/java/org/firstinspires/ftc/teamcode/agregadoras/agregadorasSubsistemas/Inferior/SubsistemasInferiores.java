@@ -42,10 +42,10 @@ public class SubsistemasInferiores {
 
     public void goToIntake(OrdersManager carteiro, double runtime){
             underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
-            carteiro.addOrder(horizontalInferior.goToExtended(),0, "horizontal inferior", runtime);
+            //carteiro.addOrder(horizontalInferior.goToExtended(),0, "horizontal inferior", runtime);
             carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao intake", runtime);
             //carteiro.addOrder(intakeSuccao.IntakeSugar(),0, "intake sugador", runtime);
-            carteiro.addOrder(intakeSuccao.GotoIntake(),0.5,"succor",runtime);
+            carteiro.addOrder(intakeSuccao.GotoIntake(),0.0,"succor",runtime);
 
             // todo: deprecated
             /*carteiro.addOrder(garraInferior.goToIntake(),0.1,"garra inferior", runtime);
@@ -60,7 +60,7 @@ public class SubsistemasInferiores {
         //carteiro.addOrder(intakeSuccao.IntakeParar(), 0.0, "intake parar", runtime);
         //carteiro.addOrder(intakeSuccao.IntakeSugarMedio(),0.8,"intake sugador", runtime);
         //carteiro.addOrder(intakeSuccao.verifyColorSensor(),0.550, "verify color sensor", runtime);
-        carteiro.addOrder(horizontalInferior.goToRetracted(),0, "horizontal inferior", runtime);
+        ////carteiro.addOrder(horizontalInferior.goToRetracted(),0, "horizontal inferior", runtime);
         carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao transfer", runtime);
         //carteiro.addOrder(intakeSuccao.IntakeParar(),1,"intake parar depois", runtime);
         /*carteiro.addOrder(garraInferior.goToTransfer(), 0, "garra Inferior", runtime);
@@ -68,7 +68,7 @@ public class SubsistemasInferiores {
     }
     public void goToReadyToIntake(OrdersManager carteiro, double runtime){
             this.underGrounSubystemStates = UnderGrounSubystemStates.READY_TOINTAKE;
-            carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior intake", runtime);
+            //carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior intake", runtime);
             carteiro.addOrder(intakeSuccao.GoToTransfer(),0.0,"angulation",runtime);
             carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(),0.0,"alcapao",runtime);
     }
@@ -86,10 +86,10 @@ public class SubsistemasInferiores {
         }
         cooldown = runTime + delay;
 
-        if(horizontalInferior.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED){
+        /*if(horizontalInferior.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED){
             goToReadyToIntake(carteiro,runTime);
             return;
-        }
+        }*/
         if(intakeSuccao.sugarAngulationStates == SugarAngulationStates.INITIAL){
             goToIntake(carteiro, runTime);
             return;

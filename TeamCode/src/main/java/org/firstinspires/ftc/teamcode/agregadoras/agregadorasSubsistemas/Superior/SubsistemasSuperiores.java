@@ -108,7 +108,7 @@ public class SubsistemasSuperiores {
         public void goToOuttakeCHAMBER(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToOuttakeCHAMBER(),0.0,"braco superior",runtime);
             carteiro.addOrder(garraSuperior.goToOuttakeCHAMBER(),0.0,"garra superior", runtime);
-            carteiro.addOrder(linearVertical.ElevadorGoTo(700),0.0,"linear vertical",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(820),0.0,"linear vertical",runtime);
 
 
     }

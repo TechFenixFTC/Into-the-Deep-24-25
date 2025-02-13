@@ -179,6 +179,7 @@ public class LinearVertical {
             telemetry.addData("VERTICAL-alvo: ",targetPosition);
             telemetry.addData("VERTICAL-Corrente",motorR.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("VERTICAL- chegou na posição alvo e estabilizou", chegouNoTarget());
+            telemetry.addData("VERTICAL- getPower", motorR.getPower());
             //telemetry.addData("",);
 
         }

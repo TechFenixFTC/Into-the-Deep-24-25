@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
@@ -11,12 +12,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
+import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraOpeningStates;
 
 import java.util.HashMap;
-
+@Config
 public class IntakeSuccao{
     private V5 robot;
     public SensorCor colorSensorSugar;
@@ -25,8 +29,10 @@ public class IntakeSuccao{
                 green,
                 alpha;
     public Servo angulacao;
-    private double delay = 0.2;
-    public static double power_Sugador = 1;
+    public static boolean monitor;
+    private double delay = 0.25;
+    private double cooldownAberturaGarra =0;
+    public static double power_Sugador = 0.3;
     public DcMotor sugador;
     public Servo alcapao;
 
@@ -43,8 +49,8 @@ public class IntakeSuccao{
         alcapao = hardwareMap.get(Servo.class,HardwareNames.alcapaoSugarServo);
         colorSensorSugar = new SensorCor(hardwareMap);
 
-        mapAngulation.put(SugarAngulationStates.INTAKE, 0.114);
-        mapAngulation.put(SugarAngulationStates.INITIAL, 0.362);
+        mapAngulation.put(SugarAngulationStates.INTAKE, 0.125);
+        mapAngulation.put(SugarAngulationStates.INITIAL, 0.367);
 
         mapAlcapao.put(AlcapaoStates.TOTALOPEN,0.337);
         mapAlcapao.put(AlcapaoStates.INTAKE,0.518);
@@ -142,4 +148,30 @@ public class IntakeSuccao{
 
         });
     }
-}
+    public Action gerenciadorDoFechamentoDaAlcapaoNoTeleop(double runTime) {
+        if(runTime < this.cooldownAberturaGarra) {
+            return new InstantAction(() -> {});
+        }
+        this.cooldownAberturaGarra = runTime + this.delay;
+
+        if (this.alcapaoStates == AlcapaoStates.INTAKE) {
+            return this.TransferPositionAlcapao();
+        }
+        return this.IntakePositionAlcapao();
+
+    }
+    public void monitor(Telemetry telemetry) {
+        if (monitor) {
+            telemetry.addLine("======================================");
+            telemetry.addLine("       TELEMETRIA DO INTAKE SUCÇÃO    ");
+            telemetry.addLine("======================================");
+            telemetry.addData("getPosition angular",angulacao.getPosition());
+            telemetry.addData("PMW status angular", angulacao.getController().getPwmStatus());
+            telemetry.addData("getPoition alcapao", alcapao.getPosition());
+            telemetry.addData("PMW status alcapao",alcapao.getController().getPwmStatus());
+
+
+            //telemetry.addData("",);
+
+        }}
+        }

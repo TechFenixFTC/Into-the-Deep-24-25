@@ -27,7 +27,7 @@ public class GarraSuperior extends Garra {
         super(hardwareMap,HardwareNames.aberturaGarraSuperiorServo, HardwareNames.angulacaoGarraSuperiorServo);
         servoRotacaoDaGarra = hardwareMap.get(Servo.class, HardwareNames.rotacaoGarraSuperiorServo);
         mapOpening.put(GarraOpeningStates.OPEN, 0.3);//todo okey
-        mapOpening.put(GarraOpeningStates.CLOSED, 0.61);//todo okey
+        mapOpening.put(GarraOpeningStates.CLOSED, 1.0);//todo okey
         mapOpening.put(GarraOpeningStates.HALF, 0.42);//todo okey
 
         mapAngulation.put(GarraAngulationStates.TRANSFER,0.549);//todo okey
