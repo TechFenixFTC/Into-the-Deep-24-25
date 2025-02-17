@@ -91,7 +91,7 @@ public class Garra {
             telemetry.addData("estado atual da garra abertura", garraOpeningState);
             telemetry.addData("estado atual da garra angulação", garraAngulationState);
             telemetry.addData("pos atual da garra", servoAberturaDaGarra.getPosition());
-          
+
 
             telemetry.addData("PWM ang", servoAngulacaoGarra.getController().getPwmStatus());
         }

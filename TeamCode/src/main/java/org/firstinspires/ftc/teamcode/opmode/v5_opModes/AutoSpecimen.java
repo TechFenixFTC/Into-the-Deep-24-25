@@ -36,7 +36,7 @@ public class AutoSpecimen extends LinearOpMode {
                         robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
                         robot.outtakeIntakeSuperior.braco.goToInital(),
                         robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
-                        robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeCHAMBER(),
+                        robot.outtakeIntakeSuperior.garraSuperior.goToInitial(),
                         new InstantAction(() -> {robot.intakeInferior.intakeSuccao.angulacao.setPosition(0.250);})
                         //robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()
                         //robot.intakeInferior.horizontalInferior.goToRetracted()
@@ -174,9 +174,9 @@ public class AutoSpecimen extends LinearOpMode {
                         .lineToY(-52)
                         .setTangent(Math.toRadians(-90))
                         .splineToLinearHeading(new Pose2d(55, -45, Math.toRadians(-85)), Math.toRadians(-85))
-                        .waitSeconds(0.8)
+                        //.waitSeconds(0.8)
                         //.setTangent(Math.toRadians(-90))
-                        .lineToY(-63,  new TranslationalVelConstraint(30.0))
+                        //.lineToY(-63,  new TranslationalVelConstraint(30.0))
 
                         .build();
 
@@ -186,7 +186,7 @@ public class AutoSpecimen extends LinearOpMode {
         return robot.md.actionBuilder(robot.md.pose)
                 //todo: colocar primeiro specimen
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(0, -18, Math.toRadians(-90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(0, -22, Math.toRadians(-85)), Math.toRadians(90))
                 .build();
     }
     public Action goToDeposit3() {
@@ -236,10 +236,14 @@ public class AutoSpecimen extends LinearOpMode {
     public Action deposit2() {
         return new SequentialAction(
                 new ParallelAction(
-                        goToDeposit2(),
                         robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(),
                         robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(900),
-                        robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeCHAMBER()
+                        robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeCHAMBER(),
+                        new SequentialAction(
+                                //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
+                                goToDeposit(),
+                                goToDeposit2()
+                        )
                 ),
 
                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.25).build(),
@@ -263,8 +267,6 @@ public class AutoSpecimen extends LinearOpMode {
                                     .waitSeconds(0.5)
                                     .lineToY(-63)
                                     .build()
-
-
                     ),
                 collect()
 

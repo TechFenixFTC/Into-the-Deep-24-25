@@ -30,7 +30,7 @@ public class BracoGarraSuperior {
         bracoGarraSuperiorServo = hardwareMap.get(Servo.class, HardwareNames.bracoGarraSuperiorServo);
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.652);///todo okey
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.233);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.171);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.14);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.0);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_EJECTING, 1.0);
@@ -162,6 +162,7 @@ public class BracoGarraSuperior {
             telemetry.addLine("===============================");
             telemetry.addData("-PWM status: ",bracoGarraSuperiorServo.getController().getPwmStatus());
             telemetry.addData("-get status: ",bracoGarraSuperiorServo.getPosition());
+
             telemetry.addData("estado atual", bracoGarraSuperiorState);
 
             //telemetry.addData("",);
