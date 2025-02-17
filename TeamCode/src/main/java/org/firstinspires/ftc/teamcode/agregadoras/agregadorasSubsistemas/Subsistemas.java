@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.DistanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraInferior;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalInferior;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalMotor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Horizontal.LinearHorizontalSuperior;
@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVer
 public class Subsistemas {
     public Telemetry telemetry;
     public  LinearVertical linearVertical;
-    public LinearHorizontalInferior horizontalInferior;
+    public LinearHorizontalMotor horizontalIMotor;
     public LinearHorizontalSuperior horizontalSuperior;
 
     public DistanceSensor distanceSensor;
@@ -35,7 +35,7 @@ public class Subsistemas {
         this.telemetry = telemetry;
         //this.distanceSensor = new DistanceSensor(hardwareMap);
         this.linearVertical = new LinearVertical(hardwareMap);
-        this.horizontalInferior = new LinearHorizontalInferior(hardwareMap);
+        this.horizontalIMotor = new LinearHorizontalMotor(hardwareMap);
         this.horizontalSuperior = new LinearHorizontalSuperior(hardwareMap);
         this.garraInferior = new GarraInferior(hardwareMap);
         this.garraSuperior = new GarraSuperior(hardwareMap);

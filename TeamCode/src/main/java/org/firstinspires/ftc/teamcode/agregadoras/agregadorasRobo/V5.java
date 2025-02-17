@@ -8,12 +8,19 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
+import com.qualcomm.hardware.bosch.BHI260IMU;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
@@ -38,11 +45,13 @@ public class V5 {
 
     public SubsistemasInferiores intakeInferior;
     public SubsistemasSuperiores outtakeIntakeSuperior;
+    //public BHI260IMU imu;
     HardwareMap hardwaremap;
-
+    //Orientation angles;
+    //public BHI260IMU.Parameters parameters = new IMU.Parameters();
     public static boolean teelop = false, risky = false;
     public static double deposit_y = -44, deposit_x = -42;
-
+    public double heading ;
 
     public V5(HardwareMap hardwareMap, Telemetry telemetry) {
 
@@ -53,6 +62,14 @@ public class V5 {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+        //imu = hardwareMap.get(BNO055IMU.class, "imu");
+        //angles =  imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //heading = angles.firstAngle;
+        //parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+
+        //
+       //
+
 
         this.hardwaremap = hardwareMap;
         this.telemetry = telemetry;

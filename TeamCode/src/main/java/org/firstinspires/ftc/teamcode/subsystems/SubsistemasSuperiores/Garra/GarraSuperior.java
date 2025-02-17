@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,7 +15,7 @@ import org.firstinspires.ftc.teamcode.subsystems.common.Garra.Garra;
 
 import java.util.HashMap;
 
-
+@Config
 public class GarraSuperior extends Garra {
 
     public double angulacaoSuperiorPosition;
@@ -28,13 +29,13 @@ public class GarraSuperior extends Garra {
         servoRotacaoDaGarra = hardwareMap.get(Servo.class, HardwareNames.rotacaoGarraSuperiorServo);
         mapOpening.put(GarraOpeningStates.OPEN, 0.3);//todo okey
         mapOpening.put(GarraOpeningStates.CLOSED, 1.0);//todo okey
-        mapOpening.put(GarraOpeningStates.HALF, 0.42);//todo okey
+        mapOpening.put(GarraOpeningStates.HALF, 0.427);//todo okey
 
         mapAngulation.put(GarraAngulationStates.TRANSFER,0.549);//todo okey
         mapAngulation.put(GarraAngulationStates.BASKET,0.266);//todo okey
 
-        mapAngulation.put(GarraAngulationStates.INTAKE,0.264);//todo okey
-        mapAngulation.put(GarraAngulationStates.OUTTAKE,0.661);//todo okey
+        mapAngulation.put(GarraAngulationStates.INTAKE, 0.171);//todo okey
+        mapAngulation.put(GarraAngulationStates.OUTTAKE,0.5977777777777777);//todo okey
         mapAngulation.put(GarraAngulationStates.OUTTAKE_EJECTING,0.379);
         // 0.379
         mapAngulation.put(GarraAngulationStates.READY_OUTTAKE,0.512);//todo okey
@@ -65,7 +66,6 @@ public class GarraSuperior extends Garra {
                     servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
         });
     }
-
     public Action goToReadOuttakeCHAMBER(){//todo
         return new InstantAction(() -> {
             garraAngulationState = GarraAngulationStates.READY_OUTTAKE;
@@ -119,17 +119,10 @@ public class GarraSuperior extends Garra {
         return new InstantAction(() ->{
             garraAngulationState = GarraAngulationStates.INTAKE;
             garraRotationSuperiorState = GarraSuperiorRotetionStates.PERPENDICULAR;
-
             servoRotacaoDaGarra.setPosition(mapRotation.get(garraRotationSuperiorState));
-            angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
             servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
         } );
     }
-
-
-
-
-
     public void upSetPoint(double increase) {
         double position = Range.clip(servoAngulacaoGarra.getPosition() + (increase * 0.005),0,1);
         servoAngulacaoGarra.setPosition(position);

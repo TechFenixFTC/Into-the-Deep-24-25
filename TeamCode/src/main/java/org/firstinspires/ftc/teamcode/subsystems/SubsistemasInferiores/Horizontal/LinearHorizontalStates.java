@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.common.Horizontal;
+package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal;
 
 public enum LinearHorizontalStates {
     EXTENDED,

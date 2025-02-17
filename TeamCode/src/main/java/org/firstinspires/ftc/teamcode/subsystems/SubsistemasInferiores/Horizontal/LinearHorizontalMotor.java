@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.subsystems.common.Horizontal;
+package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal;
 
 
 import androidx.annotation.NonNull;
@@ -11,31 +11,33 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.HardwareNames;
 
-@Deprecated
 @Config
-public class LinearHorizontal {
-    protected Servo servoLinearHorizontal;
+public class LinearHorizontalMotor {
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public DcMotorEx motorHorizontal;
     PIDController controller = new PIDController(p, i, d);
     public static boolean monitor, needToHold = false;
+    private boolean isBusy;
     public static double p = 0.025, i = 0, d = 0.000,f = 0, ll = 0, kll = 0;
     public int position;
-    private  int margem = 10, margemAut = 20 , sense = 4;
+    private  int margem = 5, margemAut = 20 , sense = 4;
     public static int targetPosition = 0;
-    public LinearHorizontal(HardwareMap hardwareMap, String hardwareName) {
-        this.servoLinearHorizontal = hardwareMap.get(Servo.class,"porta5c" );
-        this.motorHorizontal = hardwareMap.get(DcMotorEx.class,hardwareName);
+    public LinearHorizontalStates linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
+    public LinearHorizontalMotor(HardwareMap hardwareMap) {
+        this.motorHorizontal = hardwareMap.get(DcMotorEx.class, HardwareNames.horizontalInferiorMotor);
+
         this.motorHorizontal.setDirection(DcMotorSimple.Direction.REVERSE);
         this.position = motorHorizontal.getCurrentPosition();
         this.targetPosition = this.position;
+        reset();
 
     }
     public double PID() {
@@ -92,13 +94,17 @@ public class LinearHorizontal {
                     targetPosition = alvo;
                     time.reset();
                     started = true;
+                    isBusy = false;
                 }
                 PID();
+                                    // 125   >= 122 && 125 <= 142
 
                 condicaoDeParada = motorHorizontal.getCurrentPosition() >= targetPosition - margem && motorHorizontal.getCurrentPosition() <= targetPosition + margem ;
 
                 if(condicaoDeParada){
+                    isBusy = false;
                     return false;
+
                 }
 
                 return true;
@@ -108,7 +114,7 @@ public class LinearHorizontal {
 
 
     public Action goTo(int target){
-        //linearHorizontalInferiorState = LinearHorizontalStates.EXTENDED;
+
         return new Action() {
             ElapsedTime time = new ElapsedTime();
             private boolean start= false;
@@ -135,12 +141,12 @@ public class LinearHorizontal {
 
 
     public Action goToExtended(){
-
-        return horizontalGoTo(137);
+        linearHorizontalInferiorState = LinearHorizontalStates.EXTENDED;
+        return horizontalGoTo(130);
     }
     public Action goToRetracted(){
-
-        return horizontalGoTo(0);
+        linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
+        return horizontalGoTo(-10);
     }
     public void upSetPoint() {
         changeTarget(targetPosition + sense);
@@ -150,7 +156,7 @@ public class LinearHorizontal {
     }
     public void changeTarget(int target) {
 
-        targetPosition = target;
+        targetPosition = Range.clip(target,-100,160);
         tempoIndoAteOsetPoint.reset();
     }
 
@@ -166,11 +172,12 @@ public class LinearHorizontal {
             telemetry.addData("-Posição do Motor: ",motorHorizontal.getCurrentPosition());
             telemetry.addData("-Posição alvo: ",targetPosition);
             telemetry.addData("setPower1",motorHorizontal.getPower());
-            telemetry.addData("-PID ", PID());
+            //telemetry.addData("-PID ", PID());
             telemetry.addData("setPower2",motorHorizontal.getPower());
             telemetry.addData("porta", motorHorizontal.getPortNumber());
             telemetry.addData("corrente",motorHorizontal.getCurrent(CurrentUnit.AMPS));
-            //telemetry.addData("modo",motorHorizontal.getMode());
+            telemetry.addData("Estado Atual", linearHorizontalInferiorState);
+            telemetry.addData("Isbusy",isBusy);
 
         }
     }

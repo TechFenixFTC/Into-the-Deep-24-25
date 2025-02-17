@@ -8,18 +8,19 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
 
 import java.util.HashMap;
 
+@Deprecated
 @Config
 public class LinearHorizontalV4 {
     public Servo servoLinearHorizontal;
     public static boolean monitor = false;
     private double targetPosition = 0;
-
     public double servoLinearHorizontalPosition;
     public HashMap<LinearHorizontalStates, Double> mapStateHorizontal = new HashMap<>();
-    public LinearHorizontalStates linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
+    public LinearHorizontalStates linearHorizontalV4States = LinearHorizontalStates.RETRACTED;
     public LinearHorizontalV4(HardwareMap hardwareMap, String hardwareName) {
         this.servoLinearHorizontal = hardwareMap.get(Servo.class, hardwareName);
 
@@ -28,8 +29,8 @@ public class LinearHorizontalV4 {
 
 
         return new InstantAction(() -> {
-            linearHorizontalInferiorState = LinearHorizontalStates.EXTENDED;
-            servoLinearHorizontalPosition = mapStateHorizontal.get(linearHorizontalInferiorState);
+            linearHorizontalV4States = LinearHorizontalStates.EXTENDED;
+            servoLinearHorizontalPosition = mapStateHorizontal.get(linearHorizontalV4States);
 
         });
     }
@@ -37,8 +38,8 @@ public class LinearHorizontalV4 {
 
 
         return new InstantAction(() -> {
-            linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
-            servoLinearHorizontalPosition = mapStateHorizontal.get(linearHorizontalInferiorState);
+            linearHorizontalV4States = LinearHorizontalStates.RETRACTED;
+            servoLinearHorizontalPosition = mapStateHorizontal.get(linearHorizontalV4States);
 
 
         });

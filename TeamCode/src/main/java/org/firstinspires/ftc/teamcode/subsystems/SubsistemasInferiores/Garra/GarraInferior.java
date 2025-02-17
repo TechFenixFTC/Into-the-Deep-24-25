@@ -36,6 +36,7 @@ public class GarraInferior extends Garra {
         mapAngulation.put(GarraAngulationStates.READY_TOTRANSFER,0.527);
         mapAngulation.put(GarraAngulationStates.READYTO_INTAKE, 0.676);
     }
+
     public Action goToReadytoIntake(){//todo okey
 
         return new InstantAction(() -> {

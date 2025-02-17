@@ -35,8 +35,8 @@ public class BracoGarraSuperior {
         mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.0);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_EJECTING, 1.0);
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.147);//todo okey
-        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE,0.87);//todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.117);//todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_CHAMBER,0.87);//todo okey
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);//todo rever as posições
 
@@ -138,7 +138,7 @@ public class BracoGarraSuperior {
        final int IDaction = 8;
         return new InstantAction(() ->{//todo okey
             ID = IDaction;
-            bracoGarraSuperiorState =BracoGarraSuperiorStates.OUTTAKE;
+            bracoGarraSuperiorState =BracoGarraSuperiorStates.OUTTAKE_CHAMBER;
             servoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
             bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
         });
@@ -155,16 +155,19 @@ public class BracoGarraSuperior {
 
 
 
-    /*public void monitor(Telemetry telemetry) {
+    public void monitor(Telemetry telemetry) {
         if (monitor) {
             telemetry.addLine("==============================");
             telemetry.addLine("  TELEMETRIA DO BRAÇO DA GARRA");
-            telemetry.addLine("======fdo braco: ",this.getAngle());
-            telemetry.addData("-alvo: ",targetAngle);
+            telemetry.addLine("===============================");
+            telemetry.addData("-PWM status: ",bracoGarraSuperiorServo.getController().getPwmStatus());
+            telemetry.addData("-get status: ",bracoGarraSuperiorServo.getPosition());
+            telemetry.addData("estado atual", bracoGarraSuperiorState);
+
             //telemetry.addData("",);
 
         }
-    }*/
+    }
 
 
 }

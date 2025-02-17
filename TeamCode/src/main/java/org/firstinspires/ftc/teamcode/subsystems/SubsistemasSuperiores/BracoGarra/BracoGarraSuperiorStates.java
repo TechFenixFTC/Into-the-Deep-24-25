@@ -6,7 +6,7 @@ public enum BracoGarraSuperiorStates {
         TRANSFER,
         INITIAL,
         INTAKE,
-        OUTTAKE,
+        OUTTAKE_CHAMBER,
         READY_OUTTAKE,
         OUTTAKE_EJECTING,
         TEST_TRANFER

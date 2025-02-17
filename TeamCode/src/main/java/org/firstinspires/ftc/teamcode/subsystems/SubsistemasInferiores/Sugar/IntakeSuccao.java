@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -32,8 +33,8 @@ public class IntakeSuccao{
     public static boolean monitor;
     private double delay = 0.25;
     private double cooldownAberturaGarra =0;
-    public static double power_Sugador = 0.3;
-    public DcMotor sugador;
+    public static double power_Sugador = 0.7;
+    public DcMotorEx sugador;
     public Servo alcapao;
 
     private HashMap<SugarAngulationStates , Double> mapAngulation = new HashMap<>();
@@ -45,16 +46,16 @@ public class IntakeSuccao{
 
     public IntakeSuccao(HardwareMap hardwareMap){
         angulacao = hardwareMap.get(Servo.class, HardwareNames.angulacaoSugarServo);
-        sugador = hardwareMap.get(DcMotor.class,HardwareNames.SugadorMotorInferior);
+        sugador = hardwareMap.get(DcMotorEx.class,HardwareNames.SugadorMotorInferior);
         alcapao = hardwareMap.get(Servo.class,HardwareNames.alcapaoSugarServo);
         colorSensorSugar = new SensorCor(hardwareMap);
 
-        mapAngulation.put(SugarAngulationStates.INTAKE, 0.125);
+        mapAngulation.put(SugarAngulationStates.INTAKE, 0.106);
         mapAngulation.put(SugarAngulationStates.INITIAL, 0.367);
 
         mapAlcapao.put(AlcapaoStates.TOTALOPEN,0.337);
         mapAlcapao.put(AlcapaoStates.INTAKE,0.518);
-        mapAlcapao.put(AlcapaoStates.TRASNFER,0.525);
+        mapAlcapao.put(AlcapaoStates.TRASNFER,0.757);
 
 
 
@@ -160,6 +161,11 @@ public class IntakeSuccao{
         return this.IntakePositionAlcapao();
 
     }
+    public Action pwmDiseable(){
+        return  new InstantAction(()->{
+            angulacao.getController().pwmDisable();
+        });
+    }
     public void monitor(Telemetry telemetry) {
         if (monitor) {
             telemetry.addLine("======================================");
@@ -169,9 +175,11 @@ public class IntakeSuccao{
             telemetry.addData("PMW status angular", angulacao.getController().getPwmStatus());
             telemetry.addData("getPoition alcapao", alcapao.getPosition());
             telemetry.addData("PMW status alcapao",alcapao.getController().getPwmStatus());
+            telemetry.addData("Estado Atual da angulação do intake",sugarAngulationStates);
+            telemetry.addData("corrente motor", sugador.getCurrent(CurrentUnit.AMPS));
 
 
             //telemetry.addData("",);
 
         }}
-        }
+}

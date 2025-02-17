@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperiorStates;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 
 import java.util.HashMap;
 
@@ -40,20 +42,41 @@ public class Garra {
     }
 
     public Action abrirGarra() {
-        this.garraOpeningState = GarraOpeningStates.OPEN;
-        return new InstantAction(() -> servoAberturaDaGarra.setPosition(mapOpening.get(this.garraOpeningState)));
+
+        return new InstantAction(() -> {
+            this.garraOpeningState = GarraOpeningStates.OPEN;
+            servoAberturaDaGarra.setPosition(mapOpening.get(this.garraOpeningState));
+        });
+    }
+    public Action abrirGarraHalf(){
+
+        return new InstantAction(() ->{
+         this.garraOpeningState = GarraOpeningStates.HALF;
+         servoAberturaDaGarra.setPosition(mapOpening.get(this.garraOpeningState));
+        }
+        );
     }
 
-    public Action gerenciadorDoFechamentoDaGarraNoTeleop(double runTime) {
+    public Action gerenciadorDoFechamentoDaGarraNoTeleop(double runTime, BracoGarraSuperiorStates bracoGarraSuperiorStates) {
         if(runTime < this.cooldownAberturaGarra) {
             return new InstantAction(() -> {});
         }
         this.cooldownAberturaGarra = runTime + this.delay;
 
-        if (this.garraOpeningState == GarraOpeningStates.OPEN) {
-            return this.fecharGarra();
+        if(bracoGarraSuperiorStates == BracoGarraSuperiorStates.INTAKE){
+            if (this.garraOpeningState == GarraOpeningStates.OPEN || this.garraOpeningState == GarraOpeningStates.HALF) {
+                return this.fecharGarra();
+            }
+            return this.abrirGarraHalf();
         }
-        return this.abrirGarra();
+        else {
+            if (this.garraOpeningState == GarraOpeningStates.OPEN || this.garraOpeningState == GarraOpeningStates.HALF) {
+                return this.fecharGarra();
+            }
+            return this.abrirGarra();
+
+        }
+
 
     }
 
@@ -62,9 +85,15 @@ public class Garra {
             telemetry.addLine("*********************************");
             telemetry.addData("TELEMETRIA DA GARRA ",garra);
             telemetry.addLine("*********************************");
-            telemetry.addData("-Angulo da Garra: ", servoAngulacaoGarra.getPosition());
             telemetry.addData("-Posição da Garra de abrir: ", servoAberturaDaGarra.getPosition());
+            telemetry.addData("-PWM abrir",servoAberturaDaGarra.getController().getPwmStatus());
+            telemetry.addData("-Angulo da Garra: ", servoAngulacaoGarra.getPosition());
+            telemetry.addData("estado atual da garra abertura", garraOpeningState);
+            telemetry.addData("estado atual da garra angulação", garraAngulationState);
+            telemetry.addData("pos atual da garra", servoAberturaDaGarra.getPosition());
+          
 
+            telemetry.addData("PWM ang", servoAngulacaoGarra.getController().getPwmStatus());
         }
     }
 

@@ -38,35 +38,35 @@ public final class HardwareNames {
         verticalR            = "verticalr",
         verticalL            = "verticall",
         bracoGarraSuperior   = "b",
-        SugadorMotorInferior = "porta2e",
+        SugadorMotorInferior = "porta3e",
     /**************************************************
      *              Servo Subsistemas Pinça           *
      **************************************************/   /* Motores Vertex */
 
     horizontalSuperiorServo = "porta2c",
-    horizontalInferiorMotor = "porta2e",//esse
-            horizontalInferiorServo = "porta5",
-    bracoGarraSuperiorServo   = "porta1c",
+    horizontalInferiorMotor = "porta2e",
+     horizontalInferiorServo = "porta5",
+    bracoGarraSuperiorServo   = "porta3c",//todo esse
 
     bracoGarraInferiorServo = "porta0",
     rotacaoGarraInferiorServo = "porta2",
 
-    rotacaoGarraSuperiorServo = "porta2c",
+    rotacaoGarraSuperiorServo = "porta4",//todo esse
 
     angulacaoGarraInferiorServo = "porta5",
 
-    angulacaoGarraSuperiorServo = "porta0c",
+    angulacaoGarraSuperiorServo = "porta1c",//todo esse
 
     aberturaGarraInferiorServo = "porta3",
 
-    aberturaGarraSuperiorServo = "porta3c",
+    aberturaGarraSuperiorServo = "porta4c",
 
     /**************************************************
      *              Servo Subsistemas Sugar               *
      **************************************************/
 
-    angulacaoSugarServo = "porta0",//esse
-    alcapaoSugarServo = "porta2",
+    angulacaoSugarServo = "porta0",//todo esse
+    alcapaoSugarServo = "porta2",//todo esse
 
     /**************************************************
      *                 Servo-motores                  *

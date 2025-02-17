@@ -36,14 +36,14 @@ public class LinearVertical {
     public int wantedTarget = 0;
     public static boolean monitor= false;
     HashMap<LinearVerticalStates, Integer> mapLinearVertical = new HashMap<>();
-    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 200 , sense = 40;
+    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 100 , sense = 40;
     public static double tempoParaEstabilizacao = 0.2;
     public PIDTargetChecker pidTargetChecker = new PIDTargetChecker(margem, tempoParaEstabilizacao);
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public int position;
     public double power;
     public static int targetPosition = 0;
-    public static double p = 0.0018, i = 0, d = 0.000,f = 0, ll = 0, kll = 0;
+    public static double p = 0.001, i = 0, d = 0.000,f = 0, ll = 0, kll = 0;
     PIDController controller = new PIDController(p, i, d);
 
     /* POSIÇÕES PRESETS */
@@ -87,7 +87,7 @@ public class LinearVertical {
             kp = p * 8;
         }
         if(linearpos > this.targetPosition + 200){
-            kp = p / 4;
+            kp = p * 2;
         }
 
         if(motorR.getCurrent(CurrentUnit.AMPS) > 2.5 && targetPosition > 2000) {
@@ -96,7 +96,7 @@ public class LinearVertical {
         if (motorR.getCurrent(CurrentUnit.AMPS) > 3.8) {
             targetPosition = (targetPosition + motorR.getCurrentPosition()) / 2; // Aproxima suavemente do valor atual
         }
-        if(this.motorR.getCurrentPosition() < 270 && targetPosition < 10 && targetPosition > -180) {
+        if(this.motorR.getCurrentPosition() < 70 && targetPosition < 10 && targetPosition > -180) {
             motorR.setPower(0);
             motorL.setPower(0);
             return controller.getPositionError();
