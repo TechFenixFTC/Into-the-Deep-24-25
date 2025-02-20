@@ -26,6 +26,7 @@ public final class HardwareNames {
         distanceSensorR      = "sensorPorta2",
         colorSensor1         = "I2Cporta1",
         colorSensor2         = "sensorPortaE2",
+        touchSensor          = "sensorToque",
 
     /**************************************************
     *         Visão Computacional / Cameras          *

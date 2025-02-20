@@ -32,11 +32,11 @@ public class BracoGarraSuperior {
         mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.652);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.171);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.14);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.0);///todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.03666666666666668);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_EJECTING, 1.0);
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.117);//todo okey
-        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_CHAMBER,0.87);//todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_CHAMBER, 0.8438888888888889);//todo okey
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);//todo rever as posições
 
@@ -59,7 +59,7 @@ public class BracoGarraSuperior {
         final int IDaction = 2;
         return new InstantAction(()->{
             ID = IDaction;
-            bracoGarraSuperiorState = BracoGarraSuperiorStates.READYTO_TRANSFER;
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.INITIAL;
             servoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
             bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
         });
@@ -161,9 +161,8 @@ public class BracoGarraSuperior {
             telemetry.addLine("  TELEMETRIA DO BRAÇO DA GARRA");
             telemetry.addLine("===============================");
             telemetry.addData("-PWM status: ",bracoGarraSuperiorServo.getController().getPwmStatus());
-            telemetry.addData("-get status: ",bracoGarraSuperiorServo.getPosition());
-
-            telemetry.addData("estado atual", bracoGarraSuperiorState);
+            telemetry.addData("Braco position: ",bracoGarraSuperiorServo.getPosition());
+            telemetry.addData("Braco Estado Atual", bracoGarraSuperiorState);
 
             //telemetry.addData("",);
 

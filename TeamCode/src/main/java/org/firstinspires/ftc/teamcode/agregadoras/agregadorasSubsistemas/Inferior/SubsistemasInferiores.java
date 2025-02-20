@@ -2,9 +2,12 @@ package org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferi
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.BracoGarra.BracoGarraInferior;
@@ -42,7 +45,7 @@ public class SubsistemasInferiores {
             underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
             carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao intake", runtime);
             carteiro.addOrder(linearHorizontalMotor.goToExtended(),0,"horizonte",runtime);
-            carteiro.addOrder(intakeSuccao.GotoIntake(),0,"angulation",runtime);
+            carteiro.addOrder(intakeSuccao.GotoIntakeSpecimen(),0,"angulation",runtime);
 
 
     }
@@ -51,19 +54,39 @@ public class SubsistemasInferiores {
         carteiro.addOrder(intakeSuccao.GoToInitial(),0,"succorIn",runtime);
         carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao transfer", runtime);
         carteiro.addOrder(linearHorizontalMotor.goToRetracted(),0,"horizonte",runtime);
+        carteiro.addOrder(intakeSuccao.pwmDiseable(), 0.9, "alcapao transfer", runtime);
     }
     public void goToReadyToIntake(OrdersManager carteiro, double runtime){
             this.underGrounSubystemStates = UnderGrounSubystemStates.READY_TOINTAKE;
-            carteiro.addOrder(intakeSuccao.GoToTransfer(),0.0,"angulation",runtime);
-            carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(),0.0,"alcapao",runtime);
-            carteiro.addOrder(linearHorizontalMotor.goToExtended(),0,"horizonte",runtime);
+            carteiro.addOrder(intakeSuccao.GotoReadyToIntakeSpecimen(),0.0,"angulation",runtime);
+            carteiro.addOrder(linearHorizontalMotor.goToExtended(),0.4,"horizonte",runtime);
     }
-    public void goToTransfer(OrdersManager carteiro, double runtime)    {
-            carteiro.addOrder(intakeSuccao.GoToTransfer(),0,"garra inferior", runtime);
-            carteiro.addOrder(linearHorizontalMotor.goToRetracted(), 0,"horizonte",runtime);
+    public void goToReadyToIntakeSample(OrdersManager carteiro, double runtime){
+        this.underGrounSubystemStates = UnderGrounSubystemStates.READY_TOINTAKE;
+        carteiro.addOrder(intakeSuccao.GotoReadyToIntakeSpecimen(),0.0,"angulation",runtime);
+        carteiro.addOrder(linearHorizontalMotor.goToExtended(),0.9,"horizonte",runtime);
+    }
+    public void goToIntakeSample(OrdersManager carteiro, double runtime){
+        underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
+        carteiro.addOrder(linearHorizontalMotor.goToExtended(),0,"horizonte",runtime);
+        carteiro.addOrder(intakeSuccao.GotoIntakeSample(),0,"angulation",runtime);
+
 
     }
-    public void gerenciadorIntake(OrdersManager carteiro, double runTime){
+    public void goToTransfer(OrdersManager carteiro, double runtime)    {
+            carteiro.addOrder(goToTransferAction(),0,"garra inferior", runtime);
+
+    }
+    public Action goToTransferAction()    {
+        return new SequentialAction(
+                linearHorizontalMotor.goToRetracted(),
+                intakeSuccao.GoToTransfer()
+
+
+
+        );
+    }
+    public void gerenciadorIntakSpecimen(OrdersManager carteiro, double runTime){
         double delay = 0.35;
         if(runTime < cooldown){
             return;
@@ -74,8 +97,25 @@ public class SubsistemasInferiores {
             goToReadyToIntake(carteiro,runTime);
             return;
         }
-        else if(intakeSuccao.sugarAngulationStates == SugarAngulationStates.INITIAL){
+        else if(intakeSuccao.sugarAngulationStates == SugarAngulationStates.READY_TOINTAKE){
             goToIntake(carteiro, runTime);
+            return;
+        }
+        goToReadyToIntake(carteiro, runTime);
+    }
+    public void gerenciadorIntakeSample(OrdersManager carteiro, double runTime){
+        double delay = 0.35;
+        if(runTime < cooldown){
+            return;
+        }
+        cooldown = runTime + delay;
+
+        if(linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED){
+            goToReadyToIntakeSample(carteiro,runTime);
+            return;
+        }
+        else if(intakeSuccao.sugarAngulationStates == SugarAngulationStates.READY_TOINTAKE){
+            goToIntakeSample(carteiro, runTime);
             return;
         }
         goToReadyToIntake(carteiro, runTime);

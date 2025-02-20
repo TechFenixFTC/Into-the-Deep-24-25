@@ -2,13 +2,14 @@ package org.firstinspires.ftc.teamcode.subsystems.common.Garra;
 
 public enum GarraAngulationStates {
 
-    INITIAL,
+    INITIAL_SPECIMEN,
     READY_TOTRANSFER,
-    BASKET,
+    ANGULAR_TRANSFER,
+    OUTTAKE_SAMPLE,
     READYTO_INTAKE,
     TRANSFER,
-    INTAKE,
-    OUTTAKE,
+    INTAKE_SPECIMEN,
+    OUTTAKE_SPECIMEN,
     OUTTAKE_EJECTING,
     READY_OUTTAKE
 }

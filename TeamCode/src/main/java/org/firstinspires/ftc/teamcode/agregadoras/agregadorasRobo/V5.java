@@ -8,19 +8,12 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
-import com.qualcomm.hardware.bosch.BHI260IMU;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
@@ -40,7 +33,7 @@ public class V5 {
 
     public Telemetry telemetry;
     public OrdersManager carteiro;
-    public V5Modes v5Modes = V5Modes.SPECIMEN;
+    public V5Modes v5Mode = V5Modes.SPECIMEN;
     List<Encoder> leftEncs =  new ArrayList<>(), rightEncs = new ArrayList<>();
 
     public SubsistemasInferiores intakeInferior;
@@ -152,7 +145,7 @@ public class V5 {
                         double cooldown = delay + time.time();
                         if (time.time() < cooldown) {
                             carteiro.addOrder(robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(), 0.0, "braco superior", runtime);
-                            carteiro.addOrder(robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeCHAMBER(), 0.0, "garra superior", runtime);
+                            carteiro.addOrder(robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeSpecimen(), 0.0, "garra superior", runtime);
                             carteiro.addOrder(robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(700), 0.0, "linear vertical", runtime);
                             // return true;
                         }

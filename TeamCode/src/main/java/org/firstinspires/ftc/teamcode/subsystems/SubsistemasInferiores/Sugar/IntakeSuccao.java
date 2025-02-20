@@ -6,9 +6,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -18,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
-import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraOpeningStates;
 
 import java.util.HashMap;
 @Config
@@ -50,12 +46,19 @@ public class IntakeSuccao{
         alcapao = hardwareMap.get(Servo.class,HardwareNames.alcapaoSugarServo);
         colorSensorSugar = new SensorCor(hardwareMap);
 
-        mapAngulation.put(SugarAngulationStates.INTAKE, 0.106);
-        mapAngulation.put(SugarAngulationStates.INITIAL, 0.367);
+        mapAngulation.put(SugarAngulationStates.INTAKE, 0.086);
 
-        mapAlcapao.put(AlcapaoStates.TOTALOPEN,0.337);
-        mapAlcapao.put(AlcapaoStates.INTAKE,0.518);
-        mapAlcapao.put(AlcapaoStates.TRASNFER,0.757);
+        mapAngulation.put(SugarAngulationStates.TRANSFER, 0.334);
+        mapAngulation.put(SugarAngulationStates.INITIAL, 0.334);
+
+        mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, 0.300);
+
+
+        mapAlcapao.put(AlcapaoStates.TOTALOPEN, 0.0);
+        mapAlcapao.put(AlcapaoStates.INTAKE,0.493);
+        mapAlcapao.put(AlcapaoStates.INITIAL,0.834);
+        mapAlcapao.put(AlcapaoStates.INTAKE_SPECIMEN,0.582);
+        mapAlcapao.put(AlcapaoStates.TRASNFER,0.557);
 
 
 
@@ -78,11 +81,41 @@ public class IntakeSuccao{
             }
         };
     }
+    public Action GotoReadyToIntakeSpecimen(){
+        return new InstantAction(()->{
+            sugarAngulationStates  = SugarAngulationStates.READY_TOINTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE_SPECIMEN;
+            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
 
-    public Action GotoIntake(){
+        });
+    }
+
+    public Action GotoIntakeSpecimen(){
         return new InstantAction(()->{
             sugarAngulationStates  = SugarAngulationStates.INTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE_SPECIMEN;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
+
+        });
+    }
+    public Action GotoReadyToIntakeSample(){
+        return new InstantAction(()->{
+            sugarAngulationStates  = SugarAngulationStates.READY_TOINTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE;
+            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
+
+        });
+    }
+
+    public Action GotoIntakeSample(){
+        return new InstantAction(()->{
+            sugarAngulationStates  = SugarAngulationStates.INTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE;
+            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
 
         });
     }
@@ -138,14 +171,17 @@ public class IntakeSuccao{
     public Action GoToInitial(){
         return new InstantAction(()->{
             sugarAngulationStates = SugarAngulationStates.INITIAL;
+            alcapaoStates = AlcapaoStates.TRASNFER;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
 
         });
     }
     public Action GoToTransfer(){
         return new InstantAction(()->{
-            sugarAngulationStates = SugarAngulationStates.INITIAL;
-            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+
+            alcapaoStates = AlcapaoStates.TRASNFER;
+            alcapao.setPosition(mapAlcapao.get(AlcapaoStates.TRASNFER));
 
         });
     }
@@ -177,6 +213,14 @@ public class IntakeSuccao{
             telemetry.addData("PMW status alcapao",alcapao.getController().getPwmStatus());
             telemetry.addData("Estado Atual da angulação do intake",sugarAngulationStates);
             telemetry.addData("corrente motor", sugador.getCurrent(CurrentUnit.AMPS));
+            telemetry.addLine("===========================================");
+            telemetry.addLine("       TELEMETRIA DO INTAKE COLORSENSOR    ");
+            telemetry.addLine("===========================================");
+            telemetry.addData("Alpha", robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha());
+            telemetry.addData("Red", robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed());
+            telemetry.addData("Blue", robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue());
+            telemetry.addData("Green", robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen());
+
 
 
             //telemetry.addData("",);

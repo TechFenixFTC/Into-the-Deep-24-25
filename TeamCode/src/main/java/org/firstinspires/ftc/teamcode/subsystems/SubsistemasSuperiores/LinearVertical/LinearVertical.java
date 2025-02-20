@@ -34,10 +34,10 @@ public class LinearVertical {
     public boolean needToChangeTarget = false;
     public double timeToChangeTarget = 0;
     public int wantedTarget = 0;
-    public static boolean monitor= false;
+    public static boolean monitor= true;
     HashMap<LinearVerticalStates, Integer> mapLinearVertical = new HashMap<>();
-    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 100 , sense = 40;
-    public static double tempoParaEstabilizacao = 0.2;
+    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 100 , sense = 40, ID = 0;
+    public static double tempoParaEstabilizacao = 0.2, correnteLimite = 2.8;
     public PIDTargetChecker pidTargetChecker = new PIDTargetChecker(margem, tempoParaEstabilizacao);
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public int position;
@@ -49,7 +49,7 @@ public class LinearVertical {
     /* POSIÇÕES PRESETS */
     private int lowBasketPos = 3500, drivingPos = 200, intakingPos = 10;
 
-
+    // todo: criar botão para reset
     public LinearVertical (HardwareMap hardwareMap) {
 
 
@@ -71,10 +71,13 @@ public class LinearVertical {
     }
 
     public void reset() {
+
         this.motorR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.motorL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        targetPosition = 0;
         this.motorL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         this.motorR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
     }
     public double PIDF() {
 
@@ -87,7 +90,7 @@ public class LinearVertical {
             kp = p * 8;
         }
         if(linearpos > this.targetPosition + 200){
-            kp = p * 2;
+            kp = p * 8;
         }
 
         if(motorR.getCurrent(CurrentUnit.AMPS) > 2.5 && targetPosition > 2000) {
@@ -96,7 +99,7 @@ public class LinearVertical {
         if (motorR.getCurrent(CurrentUnit.AMPS) > 3.8) {
             targetPosition = (targetPosition + motorR.getCurrentPosition()) / 2; // Aproxima suavemente do valor atual
         }
-        if(this.motorR.getCurrentPosition() < 70 && targetPosition < 10 && targetPosition > -180) {
+        if(this.motorR.getCurrentPosition() < 0 && targetPosition < 10 && targetPosition > -180) {
             motorR.setPower(0);
             motorL.setPower(0);
             return controller.getPositionError();
@@ -126,37 +129,47 @@ public class LinearVertical {
     public Action ElevadorGoTo(int target) {
 
         return new Action() {
-
+            int id = target;
             ElapsedTime time = new ElapsedTime();
             boolean started = false;
-
+            boolean condicaoDeParada, condicaoParadaSurtoEnergia = false, condicaoDeParadaId = false;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if(!started) {
                     targetPosition = target;
                     time.reset();
                     started = true;
+                    ID = id;
                 }
 
                 PIDF();
 
-                boolean condicaoDeParada;
+
 
                 if(target > 0) {
                     condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margemAut  &&  motorR.getCurrentPosition() <= targetPosition + margemAut ;
                 }
                 else {
                     condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margemAut  &&  motorR.getCurrentPosition() <= targetPosition + margemAut ;
+                    condicaoParadaSurtoEnergia = motorR.getCurrent(CurrentUnit.AMPS) >= correnteLimite;
+                }
+
+                condicaoDeParadaId = ID != id;
+
+                if(condicaoParadaSurtoEnergia && time.time() > 0.1) {
+                    motorL.setPower(Math.cos(Math.toRadians(target)) * f);
+                    motorR.setPower(Math.cos(Math.toRadians(target)) * f);
+                    reset();
+                    return false;
+                }
+                if(condicaoDeParada || condicaoDeParadaId) {
+                    motorL.setPower(Math.cos(Math.toRadians(target)) * f);
+                    motorR.setPower(Math.cos(Math.toRadians(target)) * f);
+                    return false;
                 }
 
 
-                    if(condicaoDeParada) {
-                        motorL.setPower(Math.cos(Math.toRadians(target)) * f);
-                        motorR.setPower(Math.cos(Math.toRadians(target)) * f);
-                        return false;
-                    }
-
-                    return true;
+                return true;
             }
 
         };

@@ -18,11 +18,13 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.HardwareNames;
+import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorToque;
 
 @Config
 public class LinearHorizontalMotor {
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public DcMotorEx motorHorizontal;
+    public SensorToque sensorToqueHorizontal;
     PIDController controller = new PIDController(p, i, d);
     public static boolean monitor, needToHold = false;
     private boolean isBusy;
@@ -33,7 +35,7 @@ public class LinearHorizontalMotor {
     public LinearHorizontalStates linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
     public LinearHorizontalMotor(HardwareMap hardwareMap) {
         this.motorHorizontal = hardwareMap.get(DcMotorEx.class, HardwareNames.horizontalInferiorMotor);
-
+        sensorToqueHorizontal = new SensorToque(hardwareMap);
         this.motorHorizontal.setDirection(DcMotorSimple.Direction.REVERSE);
         this.position = motorHorizontal.getCurrentPosition();
         this.targetPosition = this.position;
@@ -103,6 +105,12 @@ public class LinearHorizontalMotor {
 
                 if(condicaoDeParada){
                     isBusy = false;
+                    if(targetPosition < 10) {
+                        linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
+                    }
+                    if(targetPosition > 100) {
+                        linearHorizontalInferiorState = LinearHorizontalStates.EXTENDED;
+                    }
                     return false;
 
                 }
@@ -141,12 +149,12 @@ public class LinearHorizontalMotor {
 
 
     public Action goToExtended(){
-        linearHorizontalInferiorState = LinearHorizontalStates.EXTENDED;
+
         return horizontalGoTo(130);
     }
     public Action goToRetracted(){
-        linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
-        return horizontalGoTo(-10);
+
+        return horizontalGoTo(-15);
     }
     public void upSetPoint() {
         changeTarget(targetPosition + sense);
@@ -172,6 +180,9 @@ public class LinearHorizontalMotor {
             telemetry.addData("-Posição do Motor: ",motorHorizontal.getCurrentPosition());
             telemetry.addData("-Posição alvo: ",targetPosition);
             telemetry.addData("setPower1",motorHorizontal.getPower());
+            telemetry.addData("Sensor de Toque isPressed", sensorToqueHorizontal.isPressed());
+            // 0 não está tocando
+            // 1 está tocando
             //telemetry.addData("-PID ", PID());
             telemetry.addData("setPower2",motorHorizontal.getPower());
             telemetry.addData("porta", motorHorizontal.getPortNumber());

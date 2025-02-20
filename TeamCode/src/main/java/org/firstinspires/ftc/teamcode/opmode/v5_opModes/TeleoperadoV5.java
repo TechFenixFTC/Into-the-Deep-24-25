@@ -10,7 +10,6 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,10 +17,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
@@ -30,7 +25,6 @@ import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalMotor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperiorStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 
@@ -75,25 +69,28 @@ public class TeleoperadoV5 extends OpMode {
         this.gerenciarModo(robot,gamepadEx2);
 
         this.robotCentricDrive(robot,gamepadEx1);
-        if(robot.v5Modes == V5Modes.SPECIMEN){
+        if(robot.v5Mode == V5Modes.SPECIMEN){
             this.bindsChamber(robot,gamepadEx2, robot.carteiro);
-        } else if (robot.v5Modes == V5Modes.SAMPLE) {
+        } else if (robot.v5Mode == V5Modes.SAMPLE) {
             this.bindsSample(robot,gamepadEx2,robot.carteiro);
         }
         this.linearHorizontal(robot.carteiro,robot.intakeInferior.linearHorizontalMotor,gamepadEx2);
         this.linearVertical(robot.outtakeIntakeSuperior.linearVertical,gamepadEx2, robot.carteiro);
         this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
-        this.IntakeSuccao(robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
+        this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
         this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
 
         this.runActions(robot.carteiro);
 
-        telemetry.addData("MODO DE PONTUAÇÃO", robot.v5Modes);
+        telemetry.addData("MODO DE PONTUAÇÃO", robot.v5Mode);
         telemetry.addData("estados da rotacao", robot.outtakeIntakeSuperior.garraSuperior.garraRotationSuperiorState);
-        //telemetry.addData("pitch", robot.md.lazyImu.get().getRobotYawPitchRollAngles().getPitch());
-       // telemetry.addData("yaw", robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
-       // telemetry.addData("roll", robot.md.lazyImu.get().getRobotYawPitchRollAngles().getRoll());
-        telemetry.addData("heading", robot.heading);
+        telemetry.addData("pitch", robot.md.lazyImu.get().getRobotYawPitchRollAngles().getPitch());
+        telemetry.addData("yaw", robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
+        telemetry.addData("roll", robot.md.lazyImu.get().getRobotYawPitchRollAngles().getRoll());
+        telemetry.addData("heading deg", Math.toDegrees(robot.md.pose.heading.real));
+        telemetry.addData("heading rad", robot.md.pose.heading.real);
+
+
 
 
         telemetry.update();
@@ -119,7 +116,14 @@ public class TeleoperadoV5 extends OpMode {
         //if (gamepad1.left_stick_button) strafe = 0.6;
         //if ( Math.abs(strafe) < 0.8 && Math.abs(strafe) > 0.02 ) strafe = (strafe / 2.5);
 
+
+        /*double correction = 0;
+        if(gamepad1.right_stick_x>0){
+            double alvo = robot.md.lazyImu.get().getRobotYawPitchRollAngles().getPitch();
+            correction = alvo - robot.md.lazyImu.get().getRobotYawPitchRollAngles().getPitch();
+        }*/
         double turn = -gamepad.getRightX();
+
         if (gamepad1.left_trigger > 0) {
             strafe = -gamepad1.left_trigger * 0.5;
         }
@@ -152,7 +156,7 @@ public class TeleoperadoV5 extends OpMode {
             carteiro.addOrder(robot.outtakeIntakeSuperior.braco.timeActionBracoGarraSuperior(BracoGarraSuperiorStates.OUTTAKE),0.4,"nome",getRuntime());
         }*/
         if(gamepad.getButton(GamepadKeys.Button.X)){
-            robot.intakeInferior.gerenciadorIntake(carteiro,getRuntime());
+            robot.intakeInferior.gerenciadorIntakSpecimen(carteiro,getRuntime());
             //carteiro.addOrder(robot.DiseablePSESuperior(robot,getRuntime()),0.4,"nome",getRuntime());
 
         }
@@ -178,16 +182,17 @@ public class TeleoperadoV5 extends OpMode {
     private void bindsSample(V5 robot, GamepadEx gamepad, OrdersManager carteiro){
         if(gamepad.getButton(GamepadKeys.Button.B)){
             robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro,getRuntime());
+            robot.intakeInferior.goToInitial(carteiro, getRuntime());
+
         }
         if(gamepad.getButton(GamepadKeys.Button.A)){
             robot.outtakeIntakeSuperior.goToTransfer(carteiro,getRuntime());
             robot.intakeInferior.goToTransfer(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
-            robot.intakeInferior.gerenciadorIntake(carteiro,getRuntime());
+            robot.intakeInferior.gerenciadorIntakeSample(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.outtakeIntakeSuperior.goToTransfer(carteiro,getRuntime());
             robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,getRuntime());
         }
     }//todo errado
@@ -199,6 +204,9 @@ public class TeleoperadoV5 extends OpMode {
             vertical.upSetPoint();
         } else if (gamepad.getButton(GamepadKeys.Button.DPAD_DOWN)) {
             vertical.downSetPoint();
+        }
+        if(gamepad.getButton(GamepadKeys.Button.BACK)){
+           vertical.reset();
         }
 
     }//todo okey
@@ -253,10 +261,10 @@ public class TeleoperadoV5 extends OpMode {
             garra.downSetPointRot(gamepad.getRightX());
         }
     }
-    private void IntakeSuccao(IntakeSuccao intakeSuccao, OrdersManager carteiro, GamepadEx gamepad){
+    private void IntakeSuccao(V5 robot, IntakeSuccao intakeSuccao, OrdersManager carteiro, GamepadEx gamepad){
         intakeSuccao.monitor(telemetry);
         if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)){
-            carteiro.addOrder(robot.intakeInferior.intakeSuccao.gerenciadorDoFechamentoDaAlcapaoNoTeleop(getRuntime()),0.0,"garra superior",getRuntime());
+            carteiro.addOrder(robot.outtakeIntakeSuperior.garraSuperior.gerenciadorDeRotacaoDaGarraNoTeleop(getRuntime(), robot.v5Mode),0.0,"garra superior",getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)){
@@ -269,7 +277,7 @@ public class TeleoperadoV5 extends OpMode {
         } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0) {
             intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * -gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
         }
-        else {intakeSuccao.sugador.setPower(0);}
+        else {intakeSuccao.sugador.setPower(0.3);}
 
 
     }//todo okey
@@ -307,11 +315,11 @@ public class TeleoperadoV5 extends OpMode {
         if (getRuntime() >= cooldownMode) {
             cooldownMode = getRuntime() + delayMode;
 
-            if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Modes == V5Modes.SPECIMEN) {
-                this.robot.v5Modes = V5Modes.SAMPLE;
+            if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Mode == V5Modes.SPECIMEN) {
+                this.robot.v5Mode = V5Modes.SAMPLE;
             }
-            else if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Modes == V5Modes.SAMPLE) {
-                this.robot.v5Modes = V5Modes.SPECIMEN;
+            else if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Mode == V5Modes.SAMPLE) {
+                this.robot.v5Mode = V5Modes.SPECIMEN;
             }
 
         }

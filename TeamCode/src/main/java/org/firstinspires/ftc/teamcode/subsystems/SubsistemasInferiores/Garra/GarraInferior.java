@@ -31,7 +31,7 @@ public class GarraInferior extends Garra {
 
 
 
-        mapAngulation.put(GarraAngulationStates.INTAKE, 0.517);
+        mapAngulation.put(GarraAngulationStates.INTAKE_SPECIMEN, 0.517);
         mapAngulation.put(GarraAngulationStates.TRANSFER,0.529);
         mapAngulation.put(GarraAngulationStates.READY_TOTRANSFER,0.527);
         mapAngulation.put(GarraAngulationStates.READYTO_INTAKE, 0.676);
@@ -92,7 +92,7 @@ public class GarraInferior extends Garra {
         return new InstantAction(() -> {
             //garraRotationInferiorState = GarraRotationInferiorStates.PARALELA;
             garraOpeningState = GarraOpeningStates.CLOSED;
-            garraAngulationState = GarraAngulationStates.INTAKE;
+            garraAngulationState = GarraAngulationStates.INTAKE_SPECIMEN;
 
             //servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
             ServoAngulacaoPosition = mapAngulation.get(garraAngulationState);
