@@ -46,7 +46,6 @@ public class SubsistemasSuperiores {
                 carteiro.addOrder(garraSuperior.abrirGarra(),4.0,"abrir garra",runtime);
                 carteiro.addOrder(linearVertical.ElevadorGoTo(300),4,"linear vertical",runtime);
                 carteiro.addOrder(garraSuperior.fecharGarra(),4.0,"abrir garra",runtime);*/
-
         }
 
         public Action Test(){
@@ -73,7 +72,7 @@ public class SubsistemasSuperiores {
         public void goToIntakeCHAMBER(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToIntakeCHAMBER(),0.0,"braco superior",runtime);
             carteiro.addOrder(garraSuperior.goToIntakeSpecimen(),0.0,"garra superior",runtime);
-            carteiro.addOrder(linearVertical.ElevadorGoTo(-100),0.0,"linear vertical",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(-300),0.0,"linear vertical",runtime);
 
         }
         public void goToInitial(OrdersManager carteiro , double runtime){
@@ -157,7 +156,7 @@ public class SubsistemasSuperiores {
            upperSubsystemStates = UpperSubsystemStates.OUTTAKE;
            carteiro.addOrder(garraSuperior.angularTransfer(),0, "angulacao garra", runtime);
            carteiro.addOrder(braco.goToOuttakeBASKET(), 0.4,"braco garra superior", runtime);
-           carteiro.addOrder(linearVertical.ElevadorGoTo(2900), 0.3,"vertical", runtime);
+           carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0.3,"vertical", runtime);
            carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0.9,"garra superior", runtime);
 
 
@@ -171,24 +170,24 @@ public class SubsistemasSuperiores {
         /*****************************************/
 
         public Action actionGoReadyTrasnfer() {
-            if (upperSubsystemStates == UpperSubsystemStates.OUTTAKE){// todo: criar estado gerais
+            /*if (upperSubsystemStates == UpperSubsystemStates.OUTTAKE){// todo: criar estado gerais
                 return  new SequentialAction(
                         braco.goToReadyToTransfer(),
+                        garraSuperior.goToTransfer(),
                         new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
-                        linearVertical.ElevadorGoTo(-200),
+                        linearVertical.ElevadorGoTo(-300),
                         //elevador -> 200
                         new ParallelAction(
-                                garraSuperior.goToReadyToTransfer()
+
                         )
                 );
-            }
+            }*/
             return  new SequentialAction(
-                    linearVertical.ElevadorGoTo(-300),
-                    //elevador -> 200
-                    new ParallelAction(
-                            braco.goToReadyToTransfer(),
-                            garraSuperior.goToTransfer()
-                    )
+                    braco.goToReadyToTransfer(),
+                    garraSuperior.goToTransfer(),
+                    new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
+                    linearVertical.ElevadorGoTo(-300)
+
             );
         }
         public Action actionGoTrasnfer() {

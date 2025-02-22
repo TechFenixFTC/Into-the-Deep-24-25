@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferi
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
@@ -16,8 +18,10 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizonta
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.SugarAngulationStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
+import org.firstinspires.ftc.teamcode.subsystems.controls.MatchColor;
 
 public class SubsistemasInferiores {
+    public MatchColor matchColor;
     double cooldown = 0;
     public Telemetry telemetry;
     public IntakeSuccao intakeSuccao;
@@ -28,7 +32,7 @@ public class SubsistemasInferiores {
     public SensorCor colorSensor;
     HardwareMap hardwaremap;
     public SubsistemasInferiores(HardwareMap hardwareMap, Telemetry telemetry) {
-
+        this.matchColor = new MatchColor();
         this.hardwaremap = hardwareMap;
         this.telemetry = telemetry;
         this.linearHorizontalMotor = new LinearHorizontalMotor(hardwareMap);
@@ -42,34 +46,46 @@ public class SubsistemasInferiores {
         carteiro.addOrder(intakeSuccao.pwmDiseable(), 0, "PWM diseable", runtime);
     }
     public void goToIntake(OrdersManager carteiro, double runtime){
-            underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
+            this.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
             carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao intake", runtime);
             carteiro.addOrder(linearHorizontalMotor.goToExtended(),0,"horizonte",runtime);
             carteiro.addOrder(intakeSuccao.GotoIntakeSpecimen(),0,"angulation",runtime);
 
 
     }
+    public void ejectingSampleWrong(OrdersManager carteiro, double runtime, V5Modes v5Mode, String ladoAliança) {
+        if(underGrounSubystemStates == UnderGrounSubystemStates.INTAKE || underGrounSubystemStates == UnderGrounSubystemStates.READY_TOINTAKE ) {
+                carteiro.addOrder(intakeSuccao.GotoReadyToIntakeSample(), 0, "ready intake", runtime);
+                carteiro.addOrder(intakeSuccao.TotalOpenPositionAlcapao(), 0.6, "alcapao aberto", runtime);
+                carteiro.addOrder(intakeSuccao.GotoIntakeSample(), 3, "subsistemas superiores", runtime);
+            //}
+        }
+    }
     public void goToInitial(OrdersManager carteiro, double runtime){
 
         carteiro.addOrder(intakeSuccao.GoToInitial(),0,"succorIn",runtime);
         carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao transfer", runtime);
         carteiro.addOrder(linearHorizontalMotor.goToRetracted(),0,"horizonte",runtime);
-        carteiro.addOrder(intakeSuccao.pwmDiseable(), 0.9, "alcapao transfer", runtime);
+        carteiro.addOrder(intakeSuccao.pwmDiseable(), 0.9, "alcapao transfer2", runtime);
     }
     public void goToReadyToIntake(OrdersManager carteiro, double runtime){
             this.underGrounSubystemStates = UnderGrounSubystemStates.READY_TOINTAKE;
+            carteiro.addOrder(intakeSuccao.ReadytoIntakePositionAlcapao(),0.0,"alcapao aberto3",runtime);
             carteiro.addOrder(intakeSuccao.GotoReadyToIntakeSpecimen(),0.0,"angulation",runtime);
             carteiro.addOrder(linearHorizontalMotor.goToExtended(),0.4,"horizonte",runtime);
     }
     public void goToReadyToIntakeSample(OrdersManager carteiro, double runtime){
         this.underGrounSubystemStates = UnderGrounSubystemStates.READY_TOINTAKE;
+        carteiro.addOrder(intakeSuccao.ReadytoIntakePositionAlcapao(),0.0,"alcapao aberto4",runtime);
         carteiro.addOrder(intakeSuccao.GotoReadyToIntakeSpecimen(),0.0,"angulation",runtime);
-        carteiro.addOrder(linearHorizontalMotor.goToExtended(),0.9,"horizonte",runtime);
+        carteiro.addOrder(linearHorizontalMotor.goToExtended(),0.4,"horizonte",runtime);
     }
     public void goToIntakeSample(OrdersManager carteiro, double runtime){
         underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
+        carteiro.addOrder(intakeSuccao.IntakePositionAlcapao(),0.0,"alcapao aberto2",runtime);
         carteiro.addOrder(linearHorizontalMotor.goToExtended(),0,"horizonte",runtime);
         carteiro.addOrder(intakeSuccao.GotoIntakeSample(),0,"angulation",runtime);
+
 
 
     }

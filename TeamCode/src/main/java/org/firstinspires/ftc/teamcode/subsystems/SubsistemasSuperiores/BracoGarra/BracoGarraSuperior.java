@@ -160,9 +160,9 @@ public class BracoGarraSuperior {
             telemetry.addLine("==============================");
             telemetry.addLine("  TELEMETRIA DO BRAÇO DA GARRA");
             telemetry.addLine("===============================");
-            telemetry.addData("-PWM status: ",bracoGarraSuperiorServo.getController().getPwmStatus());
-            telemetry.addData("Braco position: ",bracoGarraSuperiorServo.getPosition());
-            telemetry.addData("Braco Estado Atual", bracoGarraSuperiorState);
+            telemetry.addData("BRACO PWM status: ",bracoGarraSuperiorServo.getController().getPwmStatus());
+            telemetry.addData("BRACO position: ",bracoGarraSuperiorServo.getPosition());
+            telemetry.addData("BRACO Estado Atual", bracoGarraSuperiorState);
 
             //telemetry.addData("",);
 

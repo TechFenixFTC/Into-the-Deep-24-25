@@ -28,7 +28,7 @@ public class LinearHorizontalMotor {
     PIDController controller = new PIDController(p, i, d);
     public static boolean monitor, needToHold = false;
     private boolean isBusy;
-    public static double p = 0.025, i = 0, d = 0.000,f = 0, ll = 0, kll = 0;
+    public static double p = 0.015, i = 0, d = 0.000,f = 0, ll = 0, kll = 0;
     public int position;
     private  int margem = 5, margemAut = 20 , sense = 4;
     public static int targetPosition = 0;

@@ -3,6 +3,7 @@ public enum AlcapaoStates {
     TRASNFER,
     INTAKE,
     INTAKE_SPECIMEN,
+    READY_TOINTAKE,
     INITIAL,
     TOTALCLOSE,
     TOTALOPEN

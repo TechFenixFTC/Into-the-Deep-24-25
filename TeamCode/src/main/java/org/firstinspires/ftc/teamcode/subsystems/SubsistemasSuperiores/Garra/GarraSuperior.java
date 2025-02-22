@@ -60,7 +60,7 @@ public class GarraSuperior extends Garra {
     public Action goToReadyToTransfer(){
                 return new InstantAction(() -> {
                     garraOpeningState = GarraOpeningStates.HALF;
-                    garraAngulationState = GarraAngulationStates.TRANSFER;
+                    garraAngulationState = GarraAngulationStates.READY_TOTRANSFER;
                     garraRotationSuperiorState = GarraSuperiorRotetionStates.CHAMBER;
 
                     servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
@@ -79,7 +79,7 @@ public class GarraSuperior extends Garra {
             if (this.garraRotationSuperiorState == GarraSuperiorRotetionStates.PERPENDICULAR) {
                 return this.garraChamber();
             }
-            return this.garraChamber();
+            return this.garraPerpendicular();
         }
         else {
             if (this.garraRotationSuperiorState == GarraSuperiorRotetionStates.CHAMBER) {
@@ -130,11 +130,11 @@ public class GarraSuperior extends Garra {
     public Action goToOuttakeSample(){
 
         return new InstantAction(()->{
-
+            garraOpeningState = GarraOpeningStates.CLOSED;
             garraAngulationState = GarraAngulationStates.OUTTAKE_SAMPLE;
             garraRotationSuperiorState = GarraSuperiorRotetionStates.PARALELA;
 
-            angulacaoSuperiorPosition = mapAngulation.get(garraAngulationState);
+            servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
             servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
             servoRotacaoDaGarra.setPosition(mapRotation.get(garraRotationSuperiorState));
         });
@@ -225,6 +225,10 @@ public class GarraSuperior extends Garra {
 
 
     public void monitor(Telemetry telemetry) {
-        this.monitor(telemetry,"Superior");
+        super.monitor(telemetry);
+        telemetry.addData("GARRA rotação POSIÇÃO: ", servoRotacaoDaGarra.getPosition());
+        telemetry.addData("GARRA rotação PWM",servoRotacaoDaGarra.getController().getPwmStatus());
+        telemetry.addData("GARRA rotação Atual",garraRotationSuperiorState);
+
     }
 }

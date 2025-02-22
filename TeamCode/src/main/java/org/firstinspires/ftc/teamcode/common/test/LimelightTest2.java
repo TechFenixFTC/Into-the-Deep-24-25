@@ -58,12 +58,12 @@ public class LimelightTest2 extends OpMode {
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
             int id = fiducial.getFiducialId(); // O numerous ID do fiducial
             LLResultTypes.FiducialResult detection = null;
-            double x = detection.getTargetXDegrees(); // Onde está (esquerda-direita)
-            double y = detection.getTargetYDegrees(); // Onde está (cima-baixo)
+           // double x = detection.getTargetXDegrees(); // Onde está (esquerda-direita)
+           // double y = detection.getTargetYDegrees(); // Onde está (cima-baixo)
             YawPitchRollAngles StrafeDistance_3D = fiducial.getRobotPoseTargetSpace().getOrientation();
             double distance = 2;
 
-            telemetry.addData("Fiducial " + id, "está a " + distance + " metros de distância" + "x:"+x+"y:"+y);
+         //   telemetry.addData("Fiducial " + id, "está a " + distance + " metros de distância" + "x:"+x+"y:"+y);
         }
         //fiducialResult.getRobotPoseTargetSpace(); // Pose do robô relativa ao Sistema de Coordenadas do AprilTag (Mais Útil)
         //fiducialResult.getCameraPoseTargetSpace(); // Pose da câmera relativa ao AprilTag (útil)

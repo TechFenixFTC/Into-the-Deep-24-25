@@ -81,20 +81,21 @@ public class Garra {
     }
 
 
-    public void monitor(Telemetry telemetry, String garra) {
+    public void monitor(Telemetry telemetry) {
         if (monitor) {
             telemetry.addLine("*********************************");
-            telemetry.addData("TELEMETRIA DA GARRA ",garra);
+            telemetry.addLine("TELEMETRIA DA GARRA ");
             telemetry.addLine("*********************************");
-            telemetry.addData("-Posição da Garra de abrir: ", servoAberturaDaGarra.getPosition());
-            telemetry.addData("-PWM abrir",servoAberturaDaGarra.getController().getPwmStatus());
-            telemetry.addData("-Angulo da Garra: ", servoAngulacaoGarra.getPosition());
-            telemetry.addData("estado atual da garra abertura", garraOpeningState);
-            telemetry.addData("estado atual da garra angulação", garraAngulationState);
-            telemetry.addData("pos atual da garra", servoAberturaDaGarra.getPosition());
+            //abertura
+            telemetry.addData("GARRA ABERTURA POSIÇÃO: ", servoAberturaDaGarra.getPosition());
+            telemetry.addData("GARRA ABERTURA PWM",servoAberturaDaGarra.getController().getPwmStatus());
+            telemetry.addData("GARRA Abertura estado ",garraOpeningState);
+            //angulação
+            telemetry.addData("GARRA angulação POSIÇÃO: ", servoAngulacaoGarra.getPosition());
+            telemetry.addData("GARRA angulação PWM",servoAngulacaoGarra.getController().getPwmStatus());
+            telemetry.addData("GARRA angulação Atual",garraAngulationState);
 
 
-            telemetry.addData("PWM ang", servoAngulacaoGarra.getController().getPwmStatus());
         }
     }
 

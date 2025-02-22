@@ -36,14 +36,14 @@ public class LinearVertical {
     public int wantedTarget = 0;
     public static boolean monitor= true;
     HashMap<LinearVerticalStates, Integer> mapLinearVertical = new HashMap<>();
-    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 100 , sense = 40, ID = 0;
+    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 200 , sense = 40, ID = 0;
     public static double tempoParaEstabilizacao = 0.2, correnteLimite = 2.8;
     public PIDTargetChecker pidTargetChecker = new PIDTargetChecker(margem, tempoParaEstabilizacao);
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public int position;
     public double power;
     public static int targetPosition = 0;
-    public static double p = 0.001, i = 0, d = 0.000,f = 0, ll = 0, kll = 0;
+    public static double p = 0.00015, i = 0, d = 0.000,f = 0, ll = 0, kll = 0,valorDeSurtoDeCorrente = 3.8, valorDeSurtoDeCorrenteTopo = 0.9;
     PIDController controller = new PIDController(p, i, d);
 
     /* POSIÇÕES PRESETS */
@@ -93,10 +93,10 @@ public class LinearVertical {
             kp = p * 8;
         }
 
-        if(motorR.getCurrent(CurrentUnit.AMPS) > 2.5 && targetPosition > 2000) {
+        if(motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrenteTopo && targetPosition > 2700 && motorR.getCurrentPosition() > 2600) {
             targetPosition -= 20;
         }
-        if (motorR.getCurrent(CurrentUnit.AMPS) > 3.8) {
+        if (motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrente && targetPosition < 1800 && targetPosition > 0) {
             targetPosition = (targetPosition + motorR.getCurrentPosition()) / 2; // Aproxima suavemente do valor atual
         }
         if(this.motorR.getCurrentPosition() < 0 && targetPosition < 10 && targetPosition > -180) {
@@ -143,7 +143,7 @@ public class LinearVertical {
                 }
 
                 PIDF();
-
+                telemetryPacket.addLine("Linear pos:"+motorR.getCurrentPosition()+" | Linear Alvo"+targetPosition);
 
 
                 if(target > 0) {

@@ -60,7 +60,7 @@ public final class HardwareNames {
 
     aberturaGarraInferiorServo = "porta3",
 
-    aberturaGarraSuperiorServo = "porta4c",
+    aberturaGarraSuperiorServo = "porta5c",
 
     /**************************************************
      *              Servo Subsistemas Sugar               *
