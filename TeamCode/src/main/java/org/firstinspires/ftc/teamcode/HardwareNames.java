@@ -25,7 +25,7 @@ public final class HardwareNames {
         distanceSensorL      = "sensorporta3",
         distanceSensorR      = "sensorPorta2",
         colorSensor1         = "I2Cporta1",
-        colorSensor2         = "sensorPortaE2",
+        colorSensor2         = "I2Cporta2",
         touchSensor          = "sensorToque",
 
     /**************************************************
@@ -52,7 +52,7 @@ public final class HardwareNames {
     bracoGarraInferiorServo = "porta0",
     rotacaoGarraInferiorServo = "porta2",
 
-    rotacaoGarraSuperiorServo = "porta4",//todo esse
+    rotacaoGarraSuperiorServo = "porta1",//todo esse
 
     angulacaoGarraInferiorServo = "porta5",
 
@@ -60,13 +60,13 @@ public final class HardwareNames {
 
     aberturaGarraInferiorServo = "porta3",
 
-    aberturaGarraSuperiorServo = "porta5c",
+    aberturaGarraSuperiorServo = "porta4c", //todo esse
 
     /**************************************************
      *              Servo Subsistemas Sugar               *
      **************************************************/
 
-    angulacaoSugarServo = "porta0",//todo esse
+    angulacaoSugarServo = "porta5",//todo esse
     alcapaoSugarServo = "porta2",//todo esse
 
     /**************************************************

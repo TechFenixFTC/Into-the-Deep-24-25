@@ -33,7 +33,7 @@ public class GarraInferior extends Garra {
 
         mapAngulation.put(GarraAngulationStates.INTAKE_SPECIMEN, 0.517);
         mapAngulation.put(GarraAngulationStates.TRANSFER,0.529);
-        mapAngulation.put(GarraAngulationStates.READY_TOTRANSFER,0.527);
+
         mapAngulation.put(GarraAngulationStates.READYTO_INTAKE, 0.676);
     }
 

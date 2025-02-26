@@ -6,23 +6,16 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Trajectory;
-import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
-import org.firstinspires.ftc.teamcode.roadrunner.TankDrive;
-import org.opencv.core.Mat;
 
-import java.util.HashMap;
-
-
+@Deprecated
 @Config
-@Autonomous(name = "AutonomoSpecimen4+0", group = "Autonomous")
+@Autonomous(name = "AutonomoSpecimen8+0", group = "Autonomous")
 public class AutoSpecimen5mais0 extends LinearOpMode {
     V5 robot;
     Action push;
@@ -235,5 +228,6 @@ public class AutoSpecimen5mais0 extends LinearOpMode {
 
         );
     }
+
 
 }

@@ -9,7 +9,9 @@ public enum BracoGarraSuperiorStates {
         OUTTAKE_CHAMBER,
         READY_OUTTAKE,
         OUTTAKE_EJECTING,
-        TEST_TRANFER
+        TEST_TRANFER,
+        READY_TO_HANG,
+        HANG
 
 
 

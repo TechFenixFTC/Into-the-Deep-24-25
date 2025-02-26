@@ -14,11 +14,12 @@ import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
+import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class V5 {
 
     public Telemetry telemetry;
     public OrdersManager carteiro;
-    public V5Modes v5Mode = V5Modes.SPECIMEN;
+    public  static  V5Modes v5Mode = V5Modes.SPECIMEN;
     List<Encoder> leftEncs =  new ArrayList<>(), rightEncs = new ArrayList<>();
 
     public SubsistemasInferiores intakeInferior;
@@ -55,6 +56,8 @@ public class V5 {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+
+        LinearVertical.hang = false;
         //imu = hardwareMap.get(BNO055IMU.class, "imu");
         //angles =  imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         //heading = angles.firstAngle;
@@ -127,6 +130,18 @@ public class V5 {
         );
     }
 
+    public Action actionTransfer(){
+         return new SequentialAction(
+                 outtakeIntakeSuperior.actionGoReadyTransfer(),
+                 intakeInferior.intakeSuccao.TransferPositionAlcapao(),
+                 intakeInferior.actionIntakeIrPraInitial(),
+                 outtakeIntakeSuperior.actionGoTransfer()
+         );
+    }
+
+    public void transfer(OrdersManager carteiro, double runtime) {
+        carteiro.addOrder(actionTransfer(), 0, "transfer", runtime);
+    }
     public Action DiseablePSESuperior(V5 robot, double runtime){
         return new Action() {
             ElapsedTime time = new ElapsedTime();
@@ -162,4 +177,34 @@ public class V5 {
             }
         };
     }
+
+    public void goReadytoHang(OrdersManager carteiro, double runtime) {
+        carteiro.addOrder(actionGoReadytoHang(), 0, "goReadyHang", runtime);
+    }
+    public void goToHang(OrdersManager carteiro, double runtime) {
+        carteiro.addOrder(actionGotoHang(), 0, "goToHang", runtime);
+    }
+    public Action actionGoReadytoHang() {
+        Action readyToHangAction = new SequentialAction(
+
+                outtakeIntakeSuperior.braco.goToReadyHang(),
+                outtakeIntakeSuperior.garraSuperior.goToReadyHang(),
+                intakeInferior.actionIntakeIrPraInitial(),
+                outtakeIntakeSuperior.linearVertical.goToReadyHang()
+
+        );
+        return readyToHangAction;
+    }
+    public Action actionGotoHang() {
+        LinearVertical.hang = true;
+        Action readyToHangAction = new SequentialAction(
+                outtakeIntakeSuperior.braco.goToHang(),
+                outtakeIntakeSuperior.garraSuperior.goToHang(),
+                intakeInferior.actionIntakeIrPraInitial(),
+                outtakeIntakeSuperior.linearVertical.goToHang()
+        );
+        return readyToHangAction;
+    }
+
+
 }

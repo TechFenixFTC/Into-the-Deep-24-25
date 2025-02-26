@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior;
+package org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior;
 
 public enum UnderGrounSubystemStates {
     READY_TOINTAKE,

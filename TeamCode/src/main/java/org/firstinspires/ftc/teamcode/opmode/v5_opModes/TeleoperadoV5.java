@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.FtcDashboard;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -21,17 +20,19 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Superior.UpperSubsystemStates;
-import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
+import org.firstinspires.ftc.teamcode.common.JsonFileCreator;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.SugarAngulationStates;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
+import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalMotor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
-import org.firstinspires.ftc.teamcode.subsystems.controls.MatchColor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,13 +42,14 @@ import java.util.List;
 public class TeleoperadoV5 extends OpMode {
     List<Servo> servos = new ArrayList<>(4);
     private V5 robot;
+    boolean sugadorEstado= false ;
 
     GamepadEx gamepadEx1,gamepadEx2;
     private FtcDashboard dashboard = FtcDashboard.getInstance();
     private Telemetry dashboardTelemetry = dashboard.getTelemetry();
     public static double powerDriveOut = -1, powerStrafeOut = 1,powerDriveInt  = 1,powerStrafeInt = -1;
 
-    private double delayMode = 0.2, cooldownMode = 0, lastUpdateTime = 0, updateInterval = 0.050; // 50ms;
+    private double delayMode = 0.3, cooldownMode = 0, lastUpdateTime = 0, updateInterval = 0.050, loopTime = 0, lastTime = 0; // 50ms;
 
 
 
@@ -62,18 +64,61 @@ public class TeleoperadoV5 extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         gamepadEx1 = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
-        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRASNFER;
-        robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
-        robot.intakeInferior.goToInitial(robot.carteiro,getRuntime());
-        robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
+
+        //JsonFileCreator.createJsonFile();
 
         //robot.imu.initialize(robot.parameters);
+
+    }
+
+    /*********************************************************************************************************************************************************************\
+     Depois que o código for executado, o código dentro desse metodo será executado continuamente até que o botão START seja pressionado na estação do driver.init()
+     \********************************************************************************************************************************************************************/
+    @Override
+    public void init_loop(){
+        calculaTempoDeLoop();
+        this.gerenciarModo(robot,gamepadEx2);
+        this.gerenciarModoSuccao(robot,gamepadEx2);
+        telemetry.addData(" MODO DE PONTUAÇÃO", robot.v5Mode);
+        telemetry.addData(" TEMPO DE EXECUÇÃO", getRuntime());
+        telemetry.addData("Distancia horizontal", robot.intakeInferior.linearHorizontalMotor.colorSensor.getDistance());
+        telemetry.addData("Horizontal ta sendo visto", robot.intakeInferior.linearHorizontalMotor.sensorIsDetectingHorintontal());
+        if (getRuntime() - lastUpdateTime >= updateInterval) {
+            telemetry.update();
+            lastUpdateTime = getRuntime();
+        }
+        if(!IntakeSuccao.toggle){
+            telemetry.addLine("Manual");
+        }
+        else if(IntakeSuccao.toggle){
+            telemetry.addLine("Toggle");
+        }
+
+    }
+
+
+    @Override
+    public void  start() {
+        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRASNFER;
+        robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
+        robot.intakeInferior.goToInitial_goToReadyTransfer(robot.carteiro, getRuntime());
+        robot.intakeInferior.linearHorizontalMotor.reset();
+        if(robot.v5Mode == V5Modes.SPECIMEN){
+            robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
+        }
+        if(robot.v5Mode == V5Modes.SAMPLE){
+            robot.outtakeIntakeSuperior.goToReadyTransfer(robot.carteiro, getRuntime());
+        }
+
+
+
+        resetRuntime();
 
     }
     @Override
     public void loop() {
 
-
+        calculaTempoDeLoop();
         this.gerenciarModo(robot,gamepadEx2);
 
         this.robotCentricDrive(robot,gamepadEx1);
@@ -87,11 +132,19 @@ public class TeleoperadoV5 extends OpMode {
         this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
         this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
         this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
-        this.verificarsample(robot,robot.carteiro, "Azul");
+        this.hang(gamepadEx1, robot.carteiro);
+        //this.verificarsample(robot,robot.carteiro, "Azul");
 
         this.runActions(robot.carteiro);
 
-        telemetry.addData("MODO DE PONTUAÇÃO", robot.v5Mode);
+        telemetry.addData(" MODO DE PONTUAÇÃO", robot.v5Mode);
+        telemetry.addData(" TEMPO DE EXECUÇÃO", getRuntime());
+       // telemetry.addData("motor frontal direito",robot.md.rightFront.getCurrent(CurrentUnit.AMPS));
+       // telemetry.addData("motor traseiro direito",robot.md.rightBack.getCurrent(CurrentUnit.AMPS));
+       // telemetry.addData("motor frontal esquerdo",robot.md.leftFront.getCurrent(CurrentUnit.AMPS));
+       // telemetry.addData("motor traseiro esquerdo",robot.md.leftBack.getCurrent(CurrentUnit.AMPS));
+
+
 
 
 
@@ -147,6 +200,7 @@ public class TeleoperadoV5 extends OpMode {
             drive = powerDriveInt;
             strafe = powerStrafeInt;
         }
+        /*
         if(gamepad.getButton(GamepadKeys.Button.A)){
             Actions.runBlocking(
                     new SequentialAction(
@@ -156,8 +210,9 @@ public class TeleoperadoV5 extends OpMode {
                                     .build()
                     )
             );
-        }
-        if(gamepad.getButton(GamepadKeys.Button.B)){
+        }*/
+
+        if(gamepad.getButton(GamepadKeys.Button.A)){
             Actions.runBlocking(
                     new SequentialAction(
                             robot.md.actionBuilder(robot.md.pose)
@@ -167,7 +222,6 @@ public class TeleoperadoV5 extends OpMode {
                     )
             );
         }
-
         turn = Range.clip(turn / 1.3, -0.7, 0.7);
 
         robot.md.setDrivePowers(new PoseVelocity2d(new Vector2d(drive, strafe), turn));
@@ -177,53 +231,54 @@ public class TeleoperadoV5 extends OpMode {
     }
     private void testar1servo(V5 robot, GamepadEx gamepad,OrdersManager carteiro) {
     }
-
+    private void hang(GamepadEx gamepad, OrdersManager carteiro) {
+        if(gamepad.getButton(GamepadKeys.Button.X)) {
+            robot.goReadytoHang(carteiro, getRuntime());
+        }
+        if(gamepad.getButton(GamepadKeys.Button.B)) {
+            robot.goToHang(carteiro, getRuntime());
+        }
+    }
     private void bindsChamber(V5 robot, GamepadEx gamepad, OrdersManager carteiro) {
 
         if(gamepad.getButton(GamepadKeys.Button.A)){
-            robot.intakeInferior.DiseablePSEinferior(carteiro, getRuntime());
             robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
         }
-        /*if(gamepad.getButton(GamepadKeys.Button.A)){
-
-            carteiro.addOrder(robot.outtakeIntakeSuperior.braco.timeActionBracoGarraSuperior(BracoGarraSuperiorStates.OUTTAKE),0.4,"nome",getRuntime());
-        }*/
         if(gamepad.getButton(GamepadKeys.Button.X)){
             robot.intakeInferior.gerenciadorIntakSpecimen(carteiro,getRuntime());
-            //carteiro.addOrder(robot.DiseablePSESuperior(robot,getRuntime()),0.4,"nome",getRuntime());
+
 
         }
-        // todo: grafico cortado por tempo -> media do sensor
-        // todo: automatizar o retorno do intake
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.intakeInferior.goToInitial(carteiro,getRuntime());
+            robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
             robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
         }
-
         if(gamepad.getButton(GamepadKeys.Button.B)){
-            //ejeting sugar
-          robot.intakeInferior.goToInitial(carteiro,getRuntime());
-          robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
+            if(LinearVertical.hang) {
+                LinearVertical.p /= 8;
+                LinearVertical.hang = false;
+            }
 
-            //ejeting transfer
-            /*robot.intakeInferior.goToInitial(carteiro,getRuntime());
-            //  wait
-            robot.outtakeIntakeSuperior.goToOuttakeTransfer(carteiro,getRuntime(),2.0);*/
+
+          robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
+          robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
         }
 
     }//todo okey
     private void bindsSample(V5 robot, GamepadEx gamepad, OrdersManager carteiro){
         if(gamepad.getButton(GamepadKeys.Button.B)){
+            if(LinearVertical.hang) {
+                LinearVertical.p /= 8;
+                LinearVertical.hang = false;
+            }
+
             robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro,getRuntime());
-            robot.intakeInferior.goToInitial(carteiro, getRuntime());
+            robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro, getRuntime());
 
         }
-
-        // fazer para isso só acontecer dps do meu intake dar certo
-        // ou seja ele realmente verficar que eu peguei o sample correto
         if(gamepad.getButton(GamepadKeys.Button.A)){
-            robot.outtakeIntakeSuperior.goToTransfer(carteiro,getRuntime());
-            robot.intakeInferior.goToTransfer(carteiro,getRuntime());
+            robot.outtakeIntakeSuperior.CorreProTransfer(carteiro,getRuntime()
+            );
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
             robot.intakeInferior.gerenciadorIntakeSample(carteiro,getRuntime());
@@ -242,6 +297,7 @@ public class TeleoperadoV5 extends OpMode {
             vertical.downSetPoint();
         }
         if(gamepad.getButton(GamepadKeys.Button.BACK)){
+
            vertical.reset();
         }
 
@@ -305,10 +361,12 @@ public class TeleoperadoV5 extends OpMode {
         intakeSuccao.monitor(telemetry);
         if(IntakeSuccao.monitor){
             telemetry.addData("Tem sample", robot.intakeInferior.matchColor.verifyPositionSampleToTransfer());
-            telemetry.addData("red sample", robot.intakeInferior.matchColor.isRed(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha(), robot.intakeInferior.intakeSuccao));
-            telemetry.addData("blue sample", robot.intakeInferior.matchColor.isBlue(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(), robot.intakeInferior.intakeSuccao));
-            telemetry.addData("yellow sample",robot.intakeInferior.matchColor.isYellow(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha(), robot.intakeInferior.intakeSuccao));
-
+            telemetry.addData("red sample", robot.intakeInferior.matchColor.isRed(robot.intakeInferior.intakeSuccao));
+            telemetry.addData("blue sample", robot.intakeInferior.matchColor.isBlue(robot.intakeInferior.intakeSuccao));
+            telemetry.addData("yellow sample",robot.intakeInferior.matchColor.isYellow(robot.intakeInferior.intakeSuccao));
+            telemetry.addData("Somared", robot.intakeInferior.matchColor.getRed(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed()));
+            telemetry.addData("Somazul", robot.intakeInferior.matchColor.getBlue(robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue()));
+            telemetry.addData("Somagreen", robot.intakeInferior.matchColor.getGreen(robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen()));
             telemetry.addData("Distancia", robot.intakeInferior.intakeSuccao.colorSensorSugar.getDistance());
             telemetry.addData("media", robot.intakeInferior.matchColor.media);
 
@@ -318,12 +376,17 @@ public class TeleoperadoV5 extends OpMode {
 
         }
 
-        if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0){
-            intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
-        } else if (gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0) {
-            intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador * -gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+
+        if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > IntakeSuccao.pontoAtiv || gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > IntakeSuccao.pontoAtiv){
+            if(IntakeSuccao.toggle){
+                robot.intakeInferior.intakeSuccao.gerenciadorDoSugador(gamepad, getRuntime());
+            }
+
         }
-        else {intakeSuccao.sugador.setPower(0);}
+        if(!IntakeSuccao.toggle){
+            robot.intakeInferior.intakeSuccao.gerenciadorDoSugadorManual(gamepad, getRuntime());
+        }
+
 
 
     }//todo okey
@@ -356,41 +419,60 @@ public class TeleoperadoV5 extends OpMode {
 
     }
     private void gerenciarModo(V5 robot,GamepadEx gamepadEx) {
-        // todo: this may cause issues, needs a delay to implement right bc of the velocity of loop vs human input time
-        // tudú: dhí´ss mei cóz ichues
-        if (getRuntime() >= cooldownMode) {
-            cooldownMode = getRuntime() + delayMode;
+        if(gamepadEx.getButton(GamepadKeys.Button.START)) {
+            if (getRuntime() >= cooldownMode) {
+                cooldownMode = getRuntime() + delayMode;
 
-            if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Mode == V5Modes.SPECIMEN) {
-                this.robot.v5Mode = V5Modes.SAMPLE;
-            }
-            else if (gamepadEx.getButton(GamepadKeys.Button.START) && this.robot.v5Mode == V5Modes.SAMPLE) {
-                this.robot.v5Mode = V5Modes.SPECIMEN;
-            }
+                if (this.robot.v5Mode == V5Modes.SPECIMEN) {
+                    robot.v5Mode = V5Modes.SAMPLE;
+                } else {
+                    robot.v5Mode = V5Modes.SPECIMEN;
+                }
 
+            }
         }
+    }
+    private void gerenciarModoSuccao(V5 robot,GamepadEx gamepadEx) {
+        if(gamepadEx.getButton(GamepadKeys.Button.BACK)) {
+            if (getRuntime() >= cooldownMode) {
+                cooldownMode = getRuntime() + delayMode;
+
+                if (IntakeSuccao.toggle) {
+                    IntakeSuccao.toggle = false;
+                } else {
+                    IntakeSuccao.toggle = true;
+                }
+
+            }
+        }
+    }
+
+    private void calculaTempoDeLoop() {
+        loopTime = getRuntime() - lastTime;
+        telemetry.addData("Latência código", String.format("%.0f",loopTime*1000) + "ms");
+        lastTime = getRuntime();
     }
 
     private void verificarsample(V5 robot, OrdersManager carteiro, String ladoAlianca){
         if(robot.v5Mode == V5Modes.SAMPLE && ladoAlianca.equals("Azul")){
-            if(robot.intakeInferior.matchColor.isRed(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha(), robot.intakeInferior.intakeSuccao)){
+            if(robot.intakeInferior.matchColor.isRed(robot.intakeInferior.intakeSuccao)){
                 robot.intakeInferior.ejectingSampleWrong(carteiro,getRuntime(),robot.v5Mode, ladoAlianca);
             }
         }
         //MIGUEL DESCOMENTE ISSO EU COMENTEI PRA TESTAR
         if(robot.v5Mode == V5Modes.SPECIMEN && ladoAlianca.equals("Azul")){
-            if(robot.intakeInferior.matchColor.isRed(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha(), robot.intakeInferior.intakeSuccao) || robot.intakeInferior.matchColor.isYellow(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha(), robot.intakeInferior.intakeSuccao)){
+            if(robot.intakeInferior.matchColor.isRed(robot.intakeInferior.intakeSuccao) || robot.intakeInferior.matchColor.isYellow(robot.intakeInferior.intakeSuccao)){
                 robot.intakeInferior.ejectingSampleWrong(carteiro,getRuntime(),robot.v5Mode, ladoAlianca);
             }
         }
         if(robot.v5Mode == V5Modes.SAMPLE && ladoAlianca.equals("Red")){
-            if(robot.intakeInferior.matchColor.isBlue(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(), robot.intakeInferior.intakeSuccao)){
+            if(robot.intakeInferior.matchColor.isBlue( robot.intakeInferior.intakeSuccao)){
                 robot.intakeInferior.ejectingSampleWrong(carteiro,getRuntime(),robot.v5Mode, ladoAlianca);
             }
         }
         //MIGUEL DESCOMENTE ISSO EU COMENTEI PRA TESTAR
         if(robot.v5Mode == V5Modes.SPECIMEN && ladoAlianca.equals("Red")){
-            if(robot.intakeInferior.matchColor.isBlue(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(), robot.intakeInferior.intakeSuccao) || robot.intakeInferior.matchColor.isYellow(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue(),robot.intakeInferior.intakeSuccao.colorSensorSugar.getAlpha(), robot.intakeInferior.intakeSuccao)){
+            if(robot.intakeInferior.matchColor.isBlue( robot.intakeInferior.intakeSuccao) || robot.intakeInferior.matchColor.isYellow(  robot.intakeInferior.intakeSuccao)){
                 robot.intakeInferior.ejectingSampleWrong(carteiro,getRuntime(),robot.v5Mode, ladoAlianca);
             }
         }

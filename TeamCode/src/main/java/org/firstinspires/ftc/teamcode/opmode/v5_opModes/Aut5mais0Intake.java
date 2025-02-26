@@ -20,8 +20,8 @@ public class Aut5mais0Intake extends LinearOpMode {
     V5 robot;
     Action push;
     public static double sample1y = -25,
-            sample2Ax = 39, sample2Ay = -46, sample2Ah = 68,
-            sample2Bh = -35,
+            sample2Ax = 37, sample2Ay = -42, sample2Ah = 85,
+            sample2Bh = -55,
             sample3Ax = 39, sample3Ay = -40, sample3Ah = 55,
             sample3Bh = -35,
             sample4Ax = 50, sample4Ay = -23, sample4Ah = 0,
@@ -85,7 +85,7 @@ public class Aut5mais0Intake extends LinearOpMode {
                 .turnTo(Math.toRadians(sampleh))
                 .build();
     }
-    public Action goToEjetingSample2(double posex, double posey, double poseh) {
+    public Action goToEjetingSample3(double posex, double posey, double poseh) {
         return robot.md.actionBuilder(new Pose2d(posex, posey, Math.toRadians(poseh)))
                 .setTangent(Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(sample4Bx, sample4By, Math.toRadians(sample4Bh)), Math.toRadians(-90))
@@ -150,11 +150,12 @@ public class Aut5mais0Intake extends LinearOpMode {
         return new SequentialAction(
                 new ParallelAction(
                         robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(),
-                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(900),
+                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(870),
                         robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeSpecimen(),
                         new SequentialAction(
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
-                                goToDeposit()
+                                goToDeposit(),
+                                robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSpecimen()
                         )
                 ),
 
@@ -167,51 +168,52 @@ public class Aut5mais0Intake extends LinearOpMode {
         return new SequentialAction(
                 new ParallelAction(
                         robot.md.actionBuilder(new Pose2d(0, sample1y, -90))
-                                //.setTangent(Math.toRadians(sample2Ah))
-                                .splineToLinearHeading(new Pose2d(sample2Ax, sample2Ay, Math.toRadians(sample2Ah)),Math.toRadians(30))
+                                .setTangent(Math.toRadians(-90))
+                                .splineTo(new Vector2d(sample2Ax,sample2Ay),Math.toRadians(sample2Ah))
                                 .build(),
                         new SequentialAction(
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.6).build(),
-                                positionIntake()
+                                positionIntake(),
+                                robot.intakeInferior.linearHorizontalMotor.goToExtended()
                         )
                 )
                 // todo; COLETAR SAMPLE
                ,
-                robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSpecimen(),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.6).build(),
-                robot.intakeInferior.linearHorizontalMotor.goToExtended(),
-                robot.intakeInferior.intakeSuccao.ReadytoIntakePositionAlcapao(),
                 robot.intakeInferior.intakeSuccao.GotoIntakeSpecimen(),
 
                 new InstantAction(()-> {
                     robot.intakeInferior.intakeSuccao.sugador.setPower(0.8);
                 }),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
+                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.6).build(),
                 // todo; EXPULSAR SAMPLE
-
                 robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSpecimen(),
                 robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
-                robot.intakeInferior.intakeSuccao.GotoIntakeSpecimen(),
                 goToEjectSample(sample2Ax,sample2Ay,sample2Ah,sample2Bh),
-                new InstantAction(()-> {
-                    robot.intakeInferior.intakeSuccao.sugador.setPower(-0.8);
-                 }),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.8).build(),
-                robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSpecimen(),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.6).build()
+                robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
+                new ParallelAction(
+                    robot.intakeInferior.intakeSuccao.IntakeRepelir(),
+                        robot.intakeInferior.intakeSuccao.GotoIntakeSpecimen(),
+                        robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build()
+
+                 )
         );
+
     }
     public Action collectSample3() {//todo okey
         return new SequentialAction(
                 // todo; COLETAR SAMPLE
-                robot.md.actionBuilder(new Pose2d(sample2Ax, sample2Ay,Math.toRadians(sample2Bh))).waitSeconds(0.2)
-                        .strafeToLinearHeading(new Vector2d(sample3Ax, sample3Ay), Math.toRadians(sample3Ah))
-                        .build(),
-                robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSpecimen(),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
-                robot.intakeInferior.linearHorizontalMotor.goToExtended(),
+                new ParallelAction(
+                        robot.md.actionBuilder(new Pose2d(sample2Ax, sample2Ay,Math.toRadians(sample2Bh))).waitSeconds(0.2)
+                                // x maior para coletar
+                                .strafeToLinearHeading(new Vector2d(sample3Ax, sample3Ay), Math.toRadians(sample3Ah))
+                                .build(),
+                        new SequentialAction(
+                                robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSpecimen(),
+                                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
+                                robot.intakeInferior.linearHorizontalMotor.goToExtended()
+                        )
+                ),
                 robot.intakeInferior.intakeSuccao.GotoIntakeSpecimen(),
-
                 new InstantAction(()-> {
                     robot.intakeInferior.intakeSuccao.sugador.setPower(0.8);
                 }),
@@ -223,9 +225,10 @@ public class Aut5mais0Intake extends LinearOpMode {
                 new InstantAction(()-> {
                     robot.intakeInferior.intakeSuccao.sugador.setPower(-0.8);
                 }),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.8).build(),
+                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.5).build(),
                 robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSpecimen(),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.6).build()
+                robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
+                robot.intakeInferior.intakeSuccao.GotoIntakeSpecimen()
         );
     }
     public Action collectSample4() {
@@ -245,7 +248,7 @@ public class Aut5mais0Intake extends LinearOpMode {
                 robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
                 // todo; EXPULSAR SAMPLE
                 robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSpecimen(),
-                goToEjetingSample2(sample4Ax,sample4Ay,sample4Ah)
+                goToEjetingSample3(sample4Ax,sample4Ay,sample4Ah)
         );
     }
 }

@@ -19,11 +19,11 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 @Deprecated
-@Config
 public class LinearHorizontal {
     protected Servo servoLinearHorizontal;
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public DcMotorEx motorHorizontal;
+
     PIDController controller = new PIDController(p, i, d);
     public static boolean monitor, needToHold = false;
     public static double p = 0.025, i = 0, d = 0.000,f = 0, ll = 0, kll = 0;
@@ -98,6 +98,9 @@ public class LinearHorizontal {
                 condicaoDeParada = motorHorizontal.getCurrentPosition() >= targetPosition - margem && motorHorizontal.getCurrentPosition() <= targetPosition + margem ;
 
                 if(condicaoDeParada){
+                    if (alvo < 10) {
+
+                    }
                     return false;
                 }
 
@@ -105,34 +108,6 @@ public class LinearHorizontal {
             }
         };
     }//todo não testado
-
-
-    public Action goTo(int target){
-        //linearHorizontalInferiorState = LinearHorizontalStates.EXTENDED;
-        return new Action() {
-            ElapsedTime time = new ElapsedTime();
-            private boolean start= false;
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(!start) {
-                    time.reset();
-                }
-                if(10< motorHorizontal.getCurrentPosition()&&motorHorizontal.getCurrentPosition()<120){
-                    motorHorizontal.setPower(1);
-                }
-                if ( motorHorizontal.getCurrentPosition()>target && !start) {
-                    motorHorizontal.setPower(0.3);
-                    return false;
-                }
-                if(motorHorizontal.getCurrentPosition()<20&& !start){
-                    motorHorizontal.setPower(-0.2);
-                    return false;
-                }
-
-                return true;
-            }
-        };}
-
 
     public Action goToExtended(){
 

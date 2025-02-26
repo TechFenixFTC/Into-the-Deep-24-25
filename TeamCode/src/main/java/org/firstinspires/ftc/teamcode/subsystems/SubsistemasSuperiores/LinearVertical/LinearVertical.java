@@ -34,15 +34,17 @@ public class LinearVertical {
     public boolean needToChangeTarget = false;
     public double timeToChangeTarget = 0;
     public int wantedTarget = 0;
-    public static boolean monitor= true;
+    public static boolean monitor= false, isBusy = false, hang = false;
     HashMap<LinearVerticalStates, Integer> mapLinearVertical = new HashMap<>();
-    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 200 , sense = 40, ID = 0;
-    public static double tempoParaEstabilizacao = 0.2, correnteLimite = 2.8;
+    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 70 , sense = 40, ID = 0, readyHangPos = 1750, hangPos = -100;
+    public static double tempoParaEstabilizacao = 0.2, correnteLimite = 2.4;
     public PIDTargetChecker pidTargetChecker = new PIDTargetChecker(margem, tempoParaEstabilizacao);
+    public PIDTargetChecker pidTargetCheckerAut = new PIDTargetChecker(margemAut, tempoParaEstabilizacao);
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public int position;
     public double power;
     public static int targetPosition = 0;
+    public static  int alturaOuttakeChamber = 950;
     public static double p = 0.00015, i = 0, d = 0.000,f = 0, ll = 0, kll = 0,valorDeSurtoDeCorrente = 3.8, valorDeSurtoDeCorrenteTopo = 0.9;
     PIDController controller = new PIDController(p, i, d);
 
@@ -96,7 +98,7 @@ public class LinearVertical {
         if(motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrenteTopo && targetPosition > 2700 && motorR.getCurrentPosition() > 2600) {
             targetPosition -= 20;
         }
-        if (motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrente && targetPosition < 1800 && targetPosition > 0) {
+        if ((motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrente && targetPosition < 1800 && targetPosition > 0) && !hang) {
             targetPosition = (targetPosition + motorR.getCurrentPosition()) / 2; // Aproxima suavemente do valor atual
         }
         if(this.motorR.getCurrentPosition() < 0 && targetPosition < 10 && targetPosition > -180) {
@@ -140,6 +142,8 @@ public class LinearVertical {
                     time.reset();
                     started = true;
                     ID = id;
+                    isBusy = true;
+                    if(hang) { p *= 8; }
                 }
 
                 PIDF();
@@ -147,24 +151,26 @@ public class LinearVertical {
 
 
                 if(target > 0) {
-                    condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margemAut  &&  motorR.getCurrentPosition() <= targetPosition + margemAut ;
+                    condicaoDeParada = chegouNoTargetAut();
                 }
                 else {
                     condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margemAut  &&  motorR.getCurrentPosition() <= targetPosition + margemAut ;
-                    condicaoParadaSurtoEnergia = motorR.getCurrent(CurrentUnit.AMPS) >= correnteLimite;
+                    condicaoParadaSurtoEnergia = (motorR.getCurrent(CurrentUnit.AMPS) >= correnteLimite) && !hang;
                 }
 
                 condicaoDeParadaId = ID != id;
 
-                if(condicaoParadaSurtoEnergia && time.time() > 0.1) {
+                if(condicaoParadaSurtoEnergia && time.time() > 0.1 && motorR.getCurrentPosition() < 230) {
                     motorL.setPower(Math.cos(Math.toRadians(target)) * f);
                     motorR.setPower(Math.cos(Math.toRadians(target)) * f);
                     reset();
+                    isBusy = false;
                     return false;
                 }
                 if(condicaoDeParada || condicaoDeParadaId) {
                     motorL.setPower(Math.cos(Math.toRadians(target)) * f);
                     motorR.setPower(Math.cos(Math.toRadians(target)) * f);
+                    isBusy = false;
                     return false;
                 }
 
@@ -176,7 +182,17 @@ public class LinearVertical {
 
     }
 
+    public Action goToReadyHang() {
+        return ElevadorGoTo(readyHangPos);
+    }
+
+    public Action goToHang() {
+        return ElevadorGoTo(hangPos);
+    }
     public boolean chegouNoTarget() {
+        return pidTargetChecker.hasReachedTarget(targetPosition, motorR.getCurrentPosition());
+    }
+    public boolean chegouNoTargetAut() {
         return pidTargetChecker.hasReachedTarget(targetPosition, motorR.getCurrentPosition());
     }
 
@@ -184,15 +200,16 @@ public class LinearVertical {
 
     public void monitor(Telemetry telemetry) {
         if (monitor) {
-            telemetry.addLine("======================================");
-            telemetry.addLine("TELEMETRIA DO BRAÇO DO LINEAR VERTICAL");
-            telemetry.addLine("======================================");
+
             telemetry.addData("VERTICAL-Posição Motor Left: ",motorL.getCurrentPosition());
             telemetry.addData("VERTICAL-Posição Motor Right: ",motorR.getCurrentPosition());
             telemetry.addData("VERTICAL-alvo: ",targetPosition);
-            telemetry.addData("VERTICAL-Corrente",motorR.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("VERTICAL-Corrente motorR",motorR.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("VERTICAL-Corrente motorL",motorL.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("VERTICAL- chegou na posição alvo e estabilizou", chegouNoTarget());
             telemetry.addData("VERTICAL- getPower", motorR.getPower());
+            telemetry.addData("VERTICAL- getPower", motorR.getPower());
+            telemetry.addData("VERTICAL- isBusy", isBusy);
             //telemetry.addData("",);
 
         }

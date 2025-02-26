@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas;
+package org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
+import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.DistanceSensor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalMotor;

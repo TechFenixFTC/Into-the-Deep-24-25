@@ -33,8 +33,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
                         robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
                         robot.outtakeIntakeSuperior.braco.goToInital(),
                         robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
-                        robot.outtakeIntakeSuperior.garraSuperior.goToInitialSpecimen(),
-                        new InstantAction(() -> {robot.intakeInferior.intakeSuccao.angulacao.setPosition(0.250);})
+                        robot.outtakeIntakeSuperior.garraSuperior.goToInitialSpecimen()
                         //robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()
                         //robot.intakeInferior.horizontalInferior.goToRetracted()
 
@@ -62,7 +61,8 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
                         intake(),
                         deposit2(),
                         intake(),
-                        deposit2()
+                        deposit2(),
+                        irParaCasa()
 
                 )
         );
@@ -129,8 +129,8 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action goToDeposit(){
         return robot.md.actionBuilder(robot.md.pose)
                 //todo: colocar primeiro specimen
-                .setTangent(Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(-6, -26), Math.toRadians(90))
+                .strafeTo(new Vector2d(-6,-26))
+                //.splineToConstantHeading(new Vector2d(-6, -26), Math.toRadians(90))
                 //todo: Go to empurrar sample 1
                 .build();
 
@@ -138,32 +138,28 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action pushSamples() {
         return
                 robot.md.actionBuilder(robot.md.pose)
+
                         .setTangent(Math.toRadians(-45))
                         .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(-85)), Math.toRadians(90))
-                        //.setTangent(Math.toRadians(-90))
                         .splineToLinearHeading(new Pose2d(44, -5, Math.toRadians(-90)), Math.toRadians(0))
 
-                        //.setTangent(Math.toRadians(0))
-                        //.splineToLinearHeading(new Pose2d(42, -10, Math.toRadians(-90)), Math.toRadians(-90))
-                        //.strafeToLinearHeading(new Vector2d(42, -10), -90)
                         .setTangent(Math.toRadians(-90))
-                        //.splineToLinearHeading(new Pose2d(44, -62, Math.toRadians(-85)), Math.toRadians(-90))
                         .lineToY(-58)
 
                         //todo empurrar sample 2
-                        //.setReversed(true)
-                        //.splineToLinearHeading(new Pose2d(44, -10, Math.toRadians(-90)), Math.toRadians(90))
-                        //.lineToY(-5)
+
                         .setTangent(Math.toRadians(90))
                         .splineToLinearHeading(new Pose2d(56, -5, Math.toRadians(-90)), Math.toRadians(-90))
 
-                        //.setTangent(Math.toRadians(-90))
-                        //.splineToLinearHeading(new Pose2d(56, -52, Math.toRadians(-85)), Math.toRadians(-90))
+
+
                         .lineToY(-57)
-                        .setTangent(Math.toRadians(-90))
-                        .splineToLinearHeading(new Pose2d(55, -45, Math.toRadians(-90)), Math.toRadians(-85))
+                        .setTangent(Math.toRadians(90))
+                        //.strafeToConstantHeading(new Vector2d(47, -63))
+                        .splineToLinearHeading(new Pose2d(47, -63, Math.toRadians(-90)), Math.toRadians(-90))
+                        //.splineToLinearHeading(new Pose2d(55, -45, Math.toRadians(-90)), Math.toRadians(-85))
                         .waitSeconds(0.5)
-                        .lineToY(-66)
+                        //.lineToY(-66)
 
                         .build();
 
@@ -172,8 +168,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action goToDeposit2() {
         return robot.md.actionBuilder(robot.md.pose)
                 //todo: colocar primeiro specimen
-                .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(-5, -26, Math.toRadians(-85)), Math.toRadians(90))
+                .strafeTo(new Vector2d(-5,-26))
                 .build();
     }
     public Action goToDeposit3() {
@@ -197,8 +192,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action goToPark() {
         return new SequentialAction(
                 robot.md.actionBuilder(robot.md.pose)
-                        .setTangent(Math.toRadians(-135))
-                        .splineToLinearHeading(new Pose2d(30, 10, Math.toRadians(180)), Math.toRadians(-135))
+                        .strafeTo(new Vector2d(-5,-40))
                         .build()
         );
 
@@ -207,7 +201,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
         return new SequentialAction(
                 new ParallelAction(
                         robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(),
-                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(750),
+                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(870),
                         robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeSpecimen(),
                         new SequentialAction(
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
@@ -224,7 +218,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
         return new SequentialAction(
                 new ParallelAction(
                         robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(),
-                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(750),
+                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(870),
                         robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeSpecimen(),
                         new SequentialAction(
                                 //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
@@ -269,7 +263,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
                 robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()                                                                                                                                                                                                           ,
                 robot.outtakeIntakeSuperior.braco.goToIntakeCHAMBER(),
                 robot.outtakeIntakeSuperior.garraSuperior.goToIntakeSpecimen(),
-                robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(0)
+                robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(-100)
 
 
         );
@@ -331,7 +325,12 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action irParaCasa(){
         return new SequentialAction(
                 new ParallelAction(
-                        //mover lineares para estacionar
+                        goToPark(),
+                        new SequentialAction(
+                        robot.md.actionBuilder(robot.md.pose).waitSeconds(0.45).build(),
+                        robot.outtakeIntakeSuperior.braco.goToInital(),
+                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(0)
+                        )
 
                 )
 

@@ -11,5 +11,7 @@ public enum GarraAngulationStates {
     INTAKE_SPECIMEN,
     OUTTAKE_SPECIMEN,
     OUTTAKE_EJECTING,
-    READY_OUTTAKE
+    READY_OUTTAKE,
+    READY_TO_HANG,
+    HANG
 }

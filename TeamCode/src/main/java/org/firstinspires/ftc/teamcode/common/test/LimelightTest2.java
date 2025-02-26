@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.HardwareNames;
 
 import java.util.List;
 
+
 @TeleOp (name = "Limelight Teste")
 public class LimelightTest2 extends OpMode {
     Limelight3A limelight;
@@ -26,13 +27,14 @@ public class LimelightTest2 extends OpMode {
         limelight = hardwareMap.get(Limelight3A.class, HardwareNames.limelight);
         limelight.setPollRateHz(100); // Isso define quantas vezes pedimos dados ao Limelight (100 vezes por segundo)
         limelight.start(); // Isso diz ao Limelight para começar a procurar!
-        limelight.pipelineSwitch(0); // Muda para o pipeline número 0
+
 
     }
 
     @Override
     public void loop() {
 
+        limelight.pipelineSwitch(0); // Muda para o pipeline número 0
         LLResult result = limelight.getLatestResult();
 
 
@@ -52,7 +54,7 @@ public class LimelightTest2 extends OpMode {
 
 
 
-
+        if (result != null){
         List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
 
         for (LLResultTypes.FiducialResult fiducial : fiducials) {
@@ -70,12 +72,32 @@ public class LimelightTest2 extends OpMode {
         //fiducialResult.getRobotPoseFieldSpace(); // Pose do robô no sistema de coordenadas do campo baseado apenas nesta tag (útil)
         //fiducialResult.getTargetPoseCameraSpace(); // Pose do AprilTag no sistema de coordenadas da câmera (não muito útil)
         //fiducialResult.getTargetPoseRobotSpace(); // Pose do AprilTag no sistema de coordenadas do robô (não muito útil)
-
+        }
         if(gamepad1.a){
             limelight.captureSnapshot("auto_pov_10s");
         }
     }
 
+    /*LimelightResults results = LimelightHelpers.getLatestResults("");
+    if (results.targetingResults.valid && results.targetingResults.targets_Fiducials.length > 0) {
+    // Há resultados válidos de fiduciais}
+    LimelightTarget_Fiducial fiducial = results.targetingResults.targets_Fiducials[0];
+    Pose3d robotPoseTargetSpace = fiducial.getRobotPoseTargetSpace();
+    // Obter a posição (translação)
+    Translation3d position = robotPoseTargetSpace.getTranslation();
+    double x = position.getX();
+    double y = position.getY();
+    double z = position.getZ();
+
+    // Obter a rotação
+    Rotation3d rotation = robotPoseTargetSpace.getRotation();
+    double roll = rotation.getX();
+    double pitch = rotation.getY();
+    double yaw = rotation.getZ();
+
+    System.out.println("Posição do robô relativa ao AprilTag: X=" + x + ", Y=" + y + ", Z=" + z);
+    System.out.println("Rotação do robô relativa ao AprilTag: Roll=" + roll + ", Pitch=" + pitch + ", Yaw=" + yaw);*/
+    //todo verificar se funciona
 
 
 

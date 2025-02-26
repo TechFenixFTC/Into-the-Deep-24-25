@@ -6,15 +6,21 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
+import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraAngulationStates;
 
 import java.util.HashMap;
 @Config
@@ -26,10 +32,11 @@ public class IntakeSuccao{
                 green,
                 alpha;
     public Servo angulacao;
-    public static boolean monitor;
+    public static boolean monitor, toggle = false;
     private double delay = 0.25;
-    private double cooldownAberturaGarra =0;
-    public static double power_Sugador = 0.7;
+    double cooldown = 0;
+    private double cooldownAberturaGarra = 0;
+    public static double power_Sugador = 0.7, pontoAtiv = 0.9;
     public DcMotorEx sugador;
     public Servo alcapao;
 
@@ -44,14 +51,12 @@ public class IntakeSuccao{
         angulacao = hardwareMap.get(Servo.class, HardwareNames.angulacaoSugarServo);
         sugador = hardwareMap.get(DcMotorEx.class,HardwareNames.SugadorMotorInferior);
         alcapao = hardwareMap.get(Servo.class,HardwareNames.alcapaoSugarServo);
-        colorSensorSugar = new SensorCor(hardwareMap);
+        colorSensorSugar = new SensorCor(hardwareMap, HardwareNames.colorSensor1);
 
-        mapAngulation.put(SugarAngulationStates.INTAKE, 0.086);
-
-        mapAngulation.put(SugarAngulationStates.TRANSFER, 0.334);
-        mapAngulation.put(SugarAngulationStates.INITIAL, 0.334);
-
-        mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, 0.300);
+        mapAngulation.put(SugarAngulationStates.INTAKE, 0.234);
+        mapAngulation.put(SugarAngulationStates.TRANSFER, 0.121);
+        mapAngulation.put(SugarAngulationStates.INITIAL, 0.122);
+        mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, 0.057);
 
 
         mapAlcapao.put(AlcapaoStates.TOTALOPEN, 0.0);
@@ -60,13 +65,6 @@ public class IntakeSuccao{
         mapAlcapao.put(AlcapaoStates.INITIAL,0.834);
         mapAlcapao.put(AlcapaoStates.INTAKE_SPECIMEN,0.582);
         mapAlcapao.put(AlcapaoStates.TRASNFER,0.672);
-
-
-
-
-        // alcapão aberto 0.463
-        // transfer 0.769
-        // intake 0.674
     }
     public Action verifyColorSensor(){
         return new Action() {
@@ -156,6 +154,7 @@ public class IntakeSuccao{
 
         });
     }
+
     public Action IntakePositionAlcapao(){
         return new InstantAction(()->{
             alcapaoStates = AlcapaoStates.INTAKE;
@@ -193,8 +192,9 @@ public class IntakeSuccao{
         return new InstantAction(()->{
 
             alcapaoStates = AlcapaoStates.TRASNFER;
+            sugarAngulationStates = SugarAngulationStates.TRANSFER;
             alcapao.setPosition(mapAlcapao.get(AlcapaoStates.TRASNFER));
-
+            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
         });
     }
     public Action gerenciadorDoFechamentoDaAlcapaoNoTeleop(double runTime) {
@@ -209,6 +209,48 @@ public class IntakeSuccao{
         return this.IntakePositionAlcapao();
 
     }
+    public void gerenciadorDoSugador(GamepadEx gamepad, double runTime){
+        if(runTime < cooldown){
+            return;
+        }
+        cooldown = runTime + 0.35;
+
+        if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= pontoAtiv){
+            if(sugador.getPower() <= 0) {
+                sugador.setPower(+power_Sugador);
+                return;
+            }
+            if(sugador.getPower() > 0) {
+                sugador.setPower(0);
+                return;
+            }
+        }
+        if(gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) >= pontoAtiv){
+
+            if(sugador.getPower() >= 0) {
+                sugador.setPower(-power_Sugador);
+                return;
+            }
+            if(sugador.getPower() < 0) {
+                sugador.setPower(0);
+            }
+        }
+    }
+
+    public void gerenciadorDoSugadorManual(GamepadEx gamepad, double runTime){
+        if(gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0){
+            sugador.setPower(-power_Sugador * gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+        }
+        else if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)>0){
+            sugador.setPower(-power_Sugador *-gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+        }
+        else if(sugarAngulationStates  != SugarAngulationStates.INTAKE){
+            sugador.setPower(0);
+        }
+
+    }
+
+
     public Action pwmDiseable(){
         return  new InstantAction(()->{
             angulacao.getController().pwmDisable();
@@ -219,26 +261,18 @@ public class IntakeSuccao{
             telemetry.addLine("======================================");
             telemetry.addLine("       TELEMETRIA DO INTAKE SUCÇÃO    ");
             telemetry.addLine("======================================");
-            telemetry.addData("getPosition angular",angulacao.getPosition());
-            telemetry.addData("PMW status angular", angulacao.getController().getPwmStatus());
-            telemetry.addData("getPoition alcapao", alcapao.getPosition());
-            telemetry.addData("PMW status alcapao",alcapao.getController().getPwmStatus());
-            telemetry.addData("Estado Atual da angulação do intake",sugarAngulationStates);
-            telemetry.addData("corrente motor", sugador.getCurrent(CurrentUnit.AMPS));
-            telemetry.addLine("===========================================");
-            telemetry.addLine("       TELEMETRIA DO INTAKE COLORSENSOR    ");
-            telemetry.addLine("===========================================");
+            telemetry.addData("INTK ANGULAR getPosition",angulacao.getPosition());
+            telemetry.addData("INTK ANGULAR PMW", angulacao.getController().getPwmStatus());
+            telemetry.addData("INTK ALCAPAO getPosition", alcapao.getPosition());
+            telemetry.addData("INTK ALCAPAO PMW",alcapao.getController().getPwmStatus());
+            telemetry.addData("INTK ANGULAR State",sugarAngulationStates);
+            telemetry.addData("INTK current", sugador.getCurrent(CurrentUnit.AMPS) + " AMPS");
+
+
             telemetry.addData("Alpha", colorSensorSugar.getAlpha());
             telemetry.addData("Red", colorSensorSugar.getRed());
             telemetry.addData("Blue",colorSensorSugar.getBlue());
             telemetry.addData("Green", colorSensorSugar.getGreen());
             telemetry.addData("Distancia", colorSensorSugar.getDistance());
-
-
-
-
-
-            //telemetry.addData("",);
-
         }}
 }

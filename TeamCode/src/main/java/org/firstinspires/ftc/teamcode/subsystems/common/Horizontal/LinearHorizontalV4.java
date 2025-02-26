@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizonta
 import java.util.HashMap;
 
 @Deprecated
-@Config
 public class LinearHorizontalV4 {
     public Servo servoLinearHorizontal;
     public static boolean monitor = false;
