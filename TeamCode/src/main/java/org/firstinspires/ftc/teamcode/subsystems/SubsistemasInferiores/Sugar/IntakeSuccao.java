@@ -53,7 +53,7 @@ public class IntakeSuccao{
         alcapao = hardwareMap.get(Servo.class,HardwareNames.alcapaoSugarServo);
         colorSensorSugar = new SensorCor(hardwareMap, HardwareNames.colorSensor1);
 
-        mapAngulation.put(SugarAngulationStates.INTAKE, 0.234);
+        mapAngulation.put(SugarAngulationStates.INTAKE, 0.199);
         mapAngulation.put(SugarAngulationStates.TRANSFER, 0.121);
         mapAngulation.put(SugarAngulationStates.INITIAL, 0.122);
         mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, 0.057);

@@ -36,7 +36,7 @@ public class LinearVertical {
     public int wantedTarget = 0;
     public static boolean monitor= false, isBusy = false, hang = false;
     HashMap<LinearVerticalStates, Integer> mapLinearVertical = new HashMap<>();
-    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 70 , sense = 40, ID = 0, readyHangPos = 1750, hangPos = -100;
+    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 150 , sense = 40, ID = 0, readyHangPos = 1950, hangPos = -100;
     public static double tempoParaEstabilizacao = 0.2, correnteLimite = 2.4;
     public PIDTargetChecker pidTargetChecker = new PIDTargetChecker(margem, tempoParaEstabilizacao);
     public PIDTargetChecker pidTargetCheckerAut = new PIDTargetChecker(margemAut, tempoParaEstabilizacao);
@@ -45,7 +45,7 @@ public class LinearVertical {
     public double power;
     public static int targetPosition = 0;
     public static  int alturaOuttakeChamber = 950;
-    public static double p = 0.00015, i = 0, d = 0.000,f = 0, ll = 0, kll = 0,valorDeSurtoDeCorrente = 3.8, valorDeSurtoDeCorrenteTopo = 0.9;
+    public static double p = 0.0002, i = 0, d = 0.000,f = 0, ll = 0, kll = 0,valorDeSurtoDeCorrente = 3.8, valorDeSurtoDeCorrenteTopo = 0.9;
     PIDController controller = new PIDController(p, i, d);
 
     /* POSIÇÕES PRESETS */
@@ -143,7 +143,7 @@ public class LinearVertical {
                     started = true;
                     ID = id;
                     isBusy = true;
-                    if(hang) { p *= 8; }
+                    if(hang) { p *= 4; }
                 }
 
                 PIDF();
@@ -193,7 +193,7 @@ public class LinearVertical {
         return pidTargetChecker.hasReachedTarget(targetPosition, motorR.getCurrentPosition());
     }
     public boolean chegouNoTargetAut() {
-        return pidTargetChecker.hasReachedTarget(targetPosition, motorR.getCurrentPosition());
+        return pidTargetCheckerAut.hasReachedTarget(targetPosition, motorR.getCurrentPosition());
     }
 
 

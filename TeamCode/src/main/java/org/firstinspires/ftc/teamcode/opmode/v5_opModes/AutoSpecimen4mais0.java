@@ -166,9 +166,9 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
 
     }
     public Action goToDeposit2() {
-        return robot.md.actionBuilder(robot.md.pose)
+        return robot.md.actionBuilder(new Pose2d(51, -63, Math.toRadians(-90)))
                 //todo: colocar primeiro specimen
-                .strafeTo(new Vector2d(-5,-26))
+                .strafeTo(new Vector2d(-6,-28))
                 .build();
     }
     public Action goToDeposit3() {
@@ -222,7 +222,6 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
                         robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeSpecimen(),
                         new SequentialAction(
                                 //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
-                                goToDeposit(),
                                 goToDeposit2()
                         )
                 ),

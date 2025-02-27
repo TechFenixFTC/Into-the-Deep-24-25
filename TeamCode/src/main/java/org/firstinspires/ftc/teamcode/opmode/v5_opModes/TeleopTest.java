@@ -39,9 +39,9 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVer
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp(name="Teleoperado V5")
+@TeleOp(name="TeleopTest")
 @Config
-public class TeleoperadoV5 extends OpMode {
+public class TeleopTest extends OpMode {
     List<Servo> servos = new ArrayList<>(4);
     private V5 robot;
     boolean sugadorEstado= false ;
@@ -141,12 +141,19 @@ public class TeleoperadoV5 extends OpMode {
 
         telemetry.addData(" MODO DE PONTUAÇÃO", robot.v5Mode);
         telemetry.addData(" TEMPO DE EXECUÇÃO", getRuntime());
+        telemetry.addData("yaw",robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
+        //telemetry.addData("imu", robot.md.pose.heading.real);
+        //telemetry.addData("imu", Math.toRadians( robot.md.pose.heading.real));
+        //telemetry.addData("imu", Math.toRadians(robot.md.pose.heading.imag));
+        //telemetry.addData("imu",Math.toRadians(robot.heading));
+        //telemetry.addData("imu",robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        //telemetry.addData("imu", robot.md.lazyImu.get().getRobotYawPitchRollAngles().getPitch(AngleUnit.RADIANS));
+        //telemetry.addData("imu",robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
-
-       // telemetry.addData("motor frontal direito",robot.md.rightFront.getCurrent(CurrentUnit.AMPS));
-       // telemetry.addData("motor traseiro direito",robot.md.rightBack.getCurrent(CurrentUnit.AMPS));
-       // telemetry.addData("motor frontal esquerdo",robot.md.leftFront.getCurrent(CurrentUnit.AMPS));
-       // telemetry.addData("motor traseiro esquerdo",robot.md.leftBack.getCurrent(CurrentUnit.AMPS));
+        // telemetry.addData("motor frontal direito",robot.md.rightFront.getCurrent(CurrentUnit.AMPS));
+        // telemetry.addData("motor traseiro direito",robot.md.rightBack.getCurrent(CurrentUnit.AMPS));
+        // telemetry.addData("motor frontal esquerdo",robot.md.leftFront.getCurrent(CurrentUnit.AMPS));
+        // telemetry.addData("motor traseiro esquerdo",robot.md.leftBack.getCurrent(CurrentUnit.AMPS));
 
 
 
@@ -270,8 +277,8 @@ public class TeleoperadoV5 extends OpMode {
             }
 
 
-          robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
-          robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
+            robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
+            robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
         }
 
     }//todo okey
@@ -308,7 +315,7 @@ public class TeleoperadoV5 extends OpMode {
         }
         if(gamepad.getButton(GamepadKeys.Button.BACK)){
 
-           vertical.reset();
+            vertical.reset();
         }
 
     }//todo okey
@@ -324,12 +331,12 @@ public class TeleoperadoV5 extends OpMode {
     private void linearHorizontal(OrdersManager carteiro, LinearHorizontalMotor horizontal, GamepadEx gamepad)  {
         horizontal.monitor(telemetry,"horizontal inferior");
         horizontal.PID();
-       // if(gamepad.getButton(GamepadKeys.Button.A)){
-          //  carteiro.addOrder(horizontal.horizontalGoTo(140),0,"horizonte",getRuntime());
-       // }
+        // if(gamepad.getButton(GamepadKeys.Button.A)){
+        //  carteiro.addOrder(horizontal.horizontalGoTo(140),0,"horizonte",getRuntime());
+        // }
         //if(gamepad.getButton(GamepadKeys.Button.B)){
-            //carteiro.addOrder(horizontal.horizontalGoTo(0),0,"horizonte",getRuntime());
-       // }
+        //carteiro.addOrder(horizontal.horizontalGoTo(0),0,"horizonte",getRuntime());
+        // }
         if(gamepad.getButton(GamepadKeys.Button.DPAD_LEFT)){
             horizontal.downSetPoint();
         }
@@ -338,7 +345,7 @@ public class TeleoperadoV5 extends OpMode {
         }
 
         //if(gamepad.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
-           // horizontal.reset();
+        // horizontal.reset();
         //}
 
 
