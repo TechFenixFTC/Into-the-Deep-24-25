@@ -4,9 +4,11 @@ import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
+import org.firstinspires.ftc.teamcode.common.controls.ColorMatcher;
 
 public class SensorCor {
     private V2 robot;
@@ -14,8 +16,10 @@ public class SensorCor {
     int red,green,alpha,blue;
     double distance;
 
+    ColorMatcher colorMatcher;
     public SensorCor(HardwareMap hardwareMap, String hardwareName){
         sensorColor = hardwareMap.get(ColorRangeSensor.class, hardwareName);
+        colorMatcher = new ColorMatcher(this);
     }
 
     public double getDistance(){this.distance = sensorColor.getDistance(DistanceUnit.CM); return this.distance;}
