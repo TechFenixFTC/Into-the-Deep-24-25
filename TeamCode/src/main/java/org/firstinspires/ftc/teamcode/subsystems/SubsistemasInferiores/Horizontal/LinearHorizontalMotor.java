@@ -8,6 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -20,15 +21,17 @@ import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorToque;
 
+@Photon
 @Config
 public class LinearHorizontalMotor {
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
     public DcMotorEx motorHorizontal;
     public SensorToque sensorToqueHorizontal;
+    public static double delayRetrair = 0.2;
     PIDController controller = new PIDController(p, i, d);
     public static boolean monitor = true, needToHold = false;
     public SensorCor colorSensor;
-    private boolean isBusy;
+    public boolean isBusy;
     public static double p = 0.0040, i = 0, d = 0.000,f = 0, ll = 0, kll = 0, valorSurtoCorrente = 1.5,
             limiarDistance = 2.7;
 
@@ -131,7 +134,7 @@ public class LinearHorizontalMotor {
                     return false;
                 }
 
-                if(condicaoDeParadaColorRange && timeInReset.time() > 0.2){
+                if(condicaoDeParadaColorRange && timeInReset.time() > delayRetrair){
                     isBusy = false;
                     linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
                     reset();

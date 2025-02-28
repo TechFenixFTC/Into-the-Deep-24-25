@@ -35,8 +35,8 @@ public class BracoGarraSuperior {
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.652);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.171);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.14);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.04766666666666668);///todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.075);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.075);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_EJECTING, 1.0);
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_TO_HANG, bracoReadyToHangPos);
         mapBracoSuperior.put(BracoGarraSuperiorStates.HANG, bracoHangPos);
@@ -67,7 +67,7 @@ public class BracoGarraSuperior {
         final int IDaction = 2;
         return new InstantAction(()->{
             ID = IDaction;
-            bracoGarraSuperiorState = BracoGarraSuperiorStates.INITIAL;
+            bracoGarraSuperiorState = BracoGarraSuperiorStates.READYTO_TRANSFER;
             servoBracoSuperiorPosition = mapBracoSuperior.get(bracoGarraSuperiorState);
             bracoGarraSuperiorServo.setPosition(mapBracoSuperior.get(bracoGarraSuperiorState));
             lastStateBracoSuperior = bracoGarraSuperiorState;

@@ -1,16 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystems.controls;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
-import org.firstinspires.ftc.teamcode.subsystems.configSample.BlueSample;
-import org.firstinspires.ftc.teamcode.subsystems.configSample.RedSample;
-import org.firstinspires.ftc.teamcode.subsystems.configSample.YellowSample;
 import org.firstinspires.ftc.teamcode.subsystems.configSample.BlueSample;
 import org.firstinspires.ftc.teamcode.subsystems.configSample.RedSample;
 import org.firstinspires.ftc.teamcode.subsystems.configSample.YellowSample;

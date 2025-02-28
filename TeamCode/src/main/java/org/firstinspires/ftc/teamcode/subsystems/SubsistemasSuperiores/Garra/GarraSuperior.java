@@ -23,7 +23,7 @@ public class GarraSuperior extends Garra {
     public double angulacaoSuperiorPosition;
     public Servo servoRotacaoDaGarra;
     public GarraSuperiorRotetionStates garraRotationSuperiorState = GarraSuperiorRotetionStates.PARALELA;
-
+    public static double positionTransfer  = 0.6456;
     double delay = 0.3;
     double cooldownRotacaoGarra;
     public double ServoRotacaoInferiorPosition,ServoAberturaInferiorPoition,ServoAngulacaoPosition;
@@ -34,11 +34,11 @@ public class GarraSuperior extends Garra {
 
         super(hardwareMap,HardwareNames.aberturaGarraSuperiorServo, HardwareNames.angulacaoGarraSuperiorServo);
         servoRotacaoDaGarra = hardwareMap.get(Servo.class, HardwareNames.rotacaoGarraSuperiorServo);
-        mapOpening.put(GarraOpeningStates.OPEN, 0.53);//todo okey
+        mapOpening.put(GarraOpeningStates.OPEN, 0.512);//todo okey
         mapOpening.put(GarraOpeningStates.CLOSED, 1.0);//todo okey
         mapOpening.put(GarraOpeningStates.HALF, 0.779);// transfer
 
-        mapAngulation.put(GarraAngulationStates.TRANSFER, 0.6194444444444445);//todo okey
+        mapAngulation.put(GarraAngulationStates.TRANSFER, positionTransfer);//todo okey não
         mapAngulation.put(GarraAngulationStates.OUTTAKE_SAMPLE,0.13277777777777777);//todo okey
 
         mapAngulation.put(GarraAngulationStates.INTAKE_SPECIMEN, 0.22833333333333333);//todo okey
@@ -153,7 +153,7 @@ public class GarraSuperior extends Garra {
     public Action goToTransfer(){
         return new InstantAction(() -> {
 
-            garraOpeningState = GarraOpeningStates.HALF;
+            garraOpeningState = GarraOpeningStates.OPEN;
             garraRotationSuperiorState = GarraSuperiorRotetionStates.CHAMBER;
             garraAngulationState = GarraAngulationStates.TRANSFER;
 

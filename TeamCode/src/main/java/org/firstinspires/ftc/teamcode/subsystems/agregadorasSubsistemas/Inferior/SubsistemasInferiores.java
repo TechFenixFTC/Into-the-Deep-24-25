@@ -49,6 +49,7 @@ public class SubsistemasInferiores {
     }
 
     public void goToInitial_goToReadyTransfer(OrdersManager carteiro, double runtime){
+        underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
         carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao transfer", runtime);
         carteiro.addOrder(actionIntakeIrPraInitial(),0,"horizonte",runtime);
     }
@@ -60,7 +61,6 @@ public class SubsistemasInferiores {
                     // muda o estado para going to retracted
                     actionLevantarAntesDeRetrair(),
                     linearHorizontalMotor.goToRetracted(),
-                    new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.1).build(),
                     intakeSuccao.GoToTransfer()
             );
 
@@ -72,7 +72,7 @@ public class SubsistemasInferiores {
         }
         else { // se não ele levanta o intake antes de retrair
             return new SequentialAction(
-                    intakeSuccao.GotoReadyToIntakeSpecimen(),
+                    intakeSuccao.GotoReadyToIntakeSample(),
                     new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.1).build()
             );
         }
@@ -102,8 +102,8 @@ public class SubsistemasInferiores {
     }
     public void goToIntakeSample(OrdersManager carteiro, double runtime){
         underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
-        carteiro.addOrder(intakeSuccao.IntakePositionAlcapao(),0.0,"alcapao aberto2",runtime);
         carteiro.addOrder(linearHorizontalMotor.goToExtended(),0,"horizonte",runtime);
+        carteiro.addOrder(intakeSuccao.IntakePositionAlcapao(),0.2,"alcapao aberto2",runtime);
         carteiro.addOrder(intakeSuccao.GotoIntakeSample(),0,"angulation",runtime);
     }
     public void goToIntakeSpecimen(OrdersManager carteiro, double runtime){
@@ -135,13 +135,13 @@ public class SubsistemasInferiores {
         if(runTime < cooldown){
             return;
         }
-        cooldown = runTime + 0.35;
+        cooldown = runTime + 0.15; // 0.35
 
         if(linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED){
             goToReadyToIntakeSample(carteiro,runTime);
             return;
         }
-        else if(intakeSuccao.sugarAngulationStates == SugarAngulationStates.READY_TOINTAKE){
+        else if(intakeSuccao.sugarAngulationStates == SugarAngulationStates.READY_TOINTAKE && !linearHorizontalMotor.isBusy){//
             goToIntakeSample(carteiro, runTime);
             return;
         }

@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
+import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperiorStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 
@@ -63,7 +65,7 @@ public class Garra {
         }
         this.cooldownAberturaGarra = runTime + this.delay;
 
-        if(bracoGarraSuperiorStates == BracoGarraSuperiorStates.INTAKE){
+        if(bracoGarraSuperiorStates == BracoGarraSuperiorStates.INTAKE && V5.v5Mode == V5Modes.SPECIMEN){
             if (this.garraOpeningState == GarraOpeningStates.OPEN || this.garraOpeningState == GarraOpeningStates.HALF) {
                 return this.fecharGarra();
             }

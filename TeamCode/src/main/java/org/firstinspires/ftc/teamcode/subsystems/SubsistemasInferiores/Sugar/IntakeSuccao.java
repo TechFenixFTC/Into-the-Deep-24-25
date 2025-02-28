@@ -9,18 +9,14 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
-import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraAngulationStates;
 
 import java.util.HashMap;
 @Config
@@ -39,12 +35,16 @@ public class IntakeSuccao{
     public static double power_Sugador = 0.7, pontoAtiv = 0.9;
     public DcMotorEx sugador;
     public Servo alcapao;
+    public static double posicaoReadyIntakeAlcapao = 0.616;
+    public static double posicaoIntakeAlcapao = 0.7;
+
+    public static double posicaoTransferAngulacao = 0.033;
 
     private HashMap<SugarAngulationStates , Double> mapAngulation = new HashMap<>();
     public  SugarAngulationStates sugarAngulationStates  = SugarAngulationStates.INITIAL;
 
     private HashMap<AlcapaoStates , Double> mapAlcapao = new HashMap<>();
-    private AlcapaoStates alcapaoStates  = AlcapaoStates.TRASNFER;
+    public AlcapaoStates alcapaoStates  = AlcapaoStates.TRASNFER;
 
 
     public IntakeSuccao(HardwareMap hardwareMap){
@@ -54,17 +54,17 @@ public class IntakeSuccao{
         colorSensorSugar = new SensorCor(hardwareMap, HardwareNames.colorSensor1);
 
         mapAngulation.put(SugarAngulationStates.INTAKE, 0.199);
-        mapAngulation.put(SugarAngulationStates.TRANSFER, 0.121);
-        mapAngulation.put(SugarAngulationStates.INITIAL, 0.122);
-        mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, 0.057);
+        mapAngulation.put(SugarAngulationStates.TRANSFER, posicaoTransferAngulacao);
+        mapAngulation.put(SugarAngulationStates.INITIAL, posicaoTransferAngulacao);
+        mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, 0.056);
 
 
         mapAlcapao.put(AlcapaoStates.TOTALOPEN, 0.0);
-        mapAlcapao.put(AlcapaoStates.INTAKE,0.616);
-        mapAlcapao.put(AlcapaoStates.READY_TOINTAKE,1.0);
+        mapAlcapao.put(AlcapaoStates.INTAKE, posicaoIntakeAlcapao);
+        mapAlcapao.put(AlcapaoStates.READY_TOINTAKE, posicaoReadyIntakeAlcapao);
         mapAlcapao.put(AlcapaoStates.INITIAL,0.834);
         mapAlcapao.put(AlcapaoStates.INTAKE_SPECIMEN,0.582);
-        mapAlcapao.put(AlcapaoStates.TRASNFER,0.672);
+        mapAlcapao.put(AlcapaoStates.TRASNFER, 1.0);
     }
     public Action verifyColorSensor(){
         return new Action() {
@@ -100,7 +100,7 @@ public class IntakeSuccao{
     public Action GotoReadyToIntakeSample(){
         return new InstantAction(()->{
             sugarAngulationStates  = SugarAngulationStates.READY_TOINTAKE;
-            alcapaoStates = AlcapaoStates.READY_TOINTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE;
             alcapao.setPosition(mapAlcapao.get(alcapaoStates));
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
 
@@ -244,9 +244,10 @@ public class IntakeSuccao{
         else if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)>0){
             sugador.setPower(-power_Sugador *-gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
         }
-        else if(sugarAngulationStates  != SugarAngulationStates.INTAKE){
+        else if(sugarAngulationStates  != SugarAngulationStates.INTAKE ){
             sugador.setPower(0);
         }
+
 
     }
 

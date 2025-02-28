@@ -39,8 +39,8 @@ public class SubsistemasSuperiores {
                 carteiro.addOrder(actionGoTransfer(), 0, "subsistemas superiores", runtime);
         }
 
-        public void goToReadyTransfer(OrdersManager carteiro,double runtime){
-            carteiro.addOrder(actionGoReadyTransfer(), 0, "braco garra superior", runtime);
+        public void goToReadyTransfer(OrdersManager carteiro, double delay, double runtime){
+            carteiro.addOrder(actionGoReadyTransfer(), delay, "braco garra superior", runtime);
 
             //carteiro.addOrder(garraSuperior.goToTransfer(), 1.0,"garra Superior", runtime);
             //carteiro.addOrder(braco.goToTransfer(), 0.5,"braco superior", runtime);
@@ -73,12 +73,12 @@ public class SubsistemasSuperiores {
 
     }
 
-        public void goToOuttakeBASKET(OrdersManager carteiro, double runtime){
+        public void goToOuttakeBASKET(OrdersManager carteiro, double delay, double runtime){
            upperSubsystemStates = UpperSubsystemStates.OUTTAKE;
-           carteiro.addOrder(garraSuperior.angularTransfer(),0, "angulacao garra", runtime);
-           carteiro.addOrder(braco.goToOuttakeBASKET(), 0.4,"braco garra superior", runtime);
-           carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0.3,"vertical", runtime);
-           carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0.9,"garra superior", runtime);
+           carteiro.addOrder(garraSuperior.fecharGarra(), delay, "fechar garra", runtime);
+           carteiro.addOrder(braco.goToOuttakeBASKET(), 0.4 + delay,"braco garra superior", runtime);
+           carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0.4 + delay,"vertical", runtime);
+           carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0.9 + delay,"garra superior", runtime);
 
 
         }
@@ -108,7 +108,18 @@ public class SubsistemasSuperiores {
                         new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
                         braco.goToReadyToTransfer()
                 );
-            }else {
+            }
+            else if(linearVertical.motorR.getCurrentPosition()> 2800){
+                returnedAction = new SequentialAction(
+                        garraSuperior.abrirGarra(),
+                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(1.5).build(),
+                        garraSuperior.goToTransfer(),
+                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
+                        linearVertical.ElevadorGoTo(-700),
+                        braco.goToReadyToTransfer()
+                );
+
+            } else {
                 returnedAction = new SequentialAction(
                         garraSuperior.goToTransfer(),
                         new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),

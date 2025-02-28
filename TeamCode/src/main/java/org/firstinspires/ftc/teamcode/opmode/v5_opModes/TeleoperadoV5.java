@@ -26,6 +26,8 @@ import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
 import org.firstinspires.ftc.teamcode.common.LogJsonManager;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.AlcapaoStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.SugarAngulationStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
@@ -109,7 +111,7 @@ public class TeleoperadoV5 extends OpMode {
             robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
         }
         if(robot.v5Mode == V5Modes.SAMPLE){
-            robot.outtakeIntakeSuperior.goToReadyTransfer(robot.carteiro, getRuntime());
+            robot.outtakeIntakeSuperior.goToReadyTransfer(robot.carteiro, 0,  getRuntime());
         }
 
 
@@ -134,6 +136,7 @@ public class TeleoperadoV5 extends OpMode {
         this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
         this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
         this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
+        //fullAutoOuttakeChamber(robot.carteiro);
         this.hang(gamepadEx1, robot.carteiro);
         //this.verificarsample(robot,robot.carteiro, "Azul");
 
@@ -281,8 +284,7 @@ public class TeleoperadoV5 extends OpMode {
                 LinearVertical.p /= 8;
                 LinearVertical.hang = false;
             }
-
-            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro,getRuntime());
+            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
             robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro, getRuntime());
 
         }
@@ -291,10 +293,11 @@ public class TeleoperadoV5 extends OpMode {
             );
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
+            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
             robot.intakeInferior.gerenciadorIntakeSample(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,getRuntime());
+            robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,0.3,getRuntime());
         }
     }//todo errado
 
@@ -370,6 +373,7 @@ public class TeleoperadoV5 extends OpMode {
     private void IntakeSuccao(V5 robot, IntakeSuccao intakeSuccao, OrdersManager carteiro, GamepadEx gamepad){
         intakeSuccao.monitor(telemetry);
         if(IntakeSuccao.monitor){
+            /*
             telemetry.addData("Tem sample", robot.intakeInferior.matchColor.verifyPositionSampleToTransfer());
             telemetry.addData("red sample", robot.intakeInferior.matchColor.isRed(robot.intakeInferior.intakeSuccao));
             telemetry.addData("blue sample", robot.intakeInferior.matchColor.isBlue(robot.intakeInferior.intakeSuccao));
@@ -379,53 +383,44 @@ public class TeleoperadoV5 extends OpMode {
             telemetry.addData("Somagreen", robot.intakeInferior.matchColor.getGreen(robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen()));
             telemetry.addData("Distancia", robot.intakeInferior.intakeSuccao.colorSensorSugar.getDistance());
             telemetry.addData("media", robot.intakeInferior.matchColor.media);
-
+             */
+            robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.monitor(telemetry);
         }
         if(gamepad.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)){
             intakeSuccao.angulacao.getController().pwmDisable();
 
         }
 
+        /*if((robot.intakeInferior.linearHorizontalMotor.isBusy == true && robot.intakeInferior.linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.EXTENDED) || (robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.getSampleColor().equals("Não há samples por Perto") && robot.intakeInferior.underGrounSubystemStates != UnderGrounSubystemStates.INTAKE)) {
+             if(gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0){
+                 robot.intakeInferior.intakeSuccao.gerenciadorDoSugadorManual(gamepad, getRuntime());
+             }
+             else{
+                 robot.intakeInferior.intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador / 1.5);
+             }
 
-        if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > IntakeSuccao.pontoAtiv || gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > IntakeSuccao.pontoAtiv){
-            if(IntakeSuccao.toggle){
-                robot.intakeInferior.intakeSuccao.gerenciadorDoSugador(gamepad, getRuntime());
-            }
-
-        }
-        if(!IntakeSuccao.toggle){
-            robot.intakeInferior.intakeSuccao.gerenciadorDoSugadorManual(gamepad, getRuntime());
-        }
-
-
-
-    }//todo okey
-    private void fullAutoOuttakeChamber(V5 robot , GamepadEx gamepad,OrdersManager carteiro){
-        /*if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.md.updatePoseEstimate();
-            Actions.runBlocking(
-                new SequentialAction(
-
-                        new ParallelAction(
-
-                            //robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(),
-                            robot.MoveOuttake(robot)
-
-                    ),
-                    robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()
-
-                )
-            );
-        }
-        if(gamepad.getButton(GamepadKeys.Button.X)){
-            robot.md.updatePoseEstimate();
-            Actions.runBlocking(
-                    new SequentialAction(
-                            robot.outtakeIntakeSuperior.goToIntakeChamber2(),
-                            robot.MoveIntake(robot)
-                    )
-            );
         }*/
+
+     //   else {
+            if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > IntakeSuccao.pontoAtiv || gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > IntakeSuccao.pontoAtiv){
+                if(IntakeSuccao.toggle){
+                    robot.intakeInferior.intakeSuccao.gerenciadorDoSugador(gamepad, getRuntime());
+                }
+
+            }
+            if(!IntakeSuccao.toggle){
+                robot.intakeInferior.intakeSuccao.gerenciadorDoSugadorManual(gamepad, getRuntime());
+            }
+       // }
+
+    }
+    private void fullAutoOuttakeChamber(OrdersManager carteiro){
+
+        if(V5.v5Mode == V5Modes.SAMPLE && robot.intakeInferior.intakeSuccao.alcapaoStates == AlcapaoStates.TRASNFER && robot.intakeInferior.linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED) {
+            if (!robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.getSampleColor().equals("Não há samples por Perto")) {
+                robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,0.3,getRuntime());
+            }
+        }
 
     }
     private void gerenciarModo(V5 robot,GamepadEx gamepadEx) {

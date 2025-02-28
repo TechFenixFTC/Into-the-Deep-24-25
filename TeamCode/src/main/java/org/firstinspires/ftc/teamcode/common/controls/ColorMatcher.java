@@ -50,7 +50,7 @@ public class ColorMatcher {
             return "Azul";  // Azul -> 210° a 270°
         } else if (hue >= 330 || hue <= 30) {
             return "Vermelho"; // Vermelho -> 330° a 30°
-        } else if (hue >= 40 && hue <= 60) {
+        } else if (hue >= 40 && hue <= 100) {
             return "Amarelo"; // Amarelo -> 40° a 60°
         } else {
 

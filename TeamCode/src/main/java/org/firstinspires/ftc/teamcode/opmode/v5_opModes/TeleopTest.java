@@ -109,7 +109,7 @@ public class TeleopTest extends OpMode {
             robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
         }
         if(robot.v5Mode == V5Modes.SAMPLE){
-            robot.outtakeIntakeSuperior.goToReadyTransfer(robot.carteiro, getRuntime());
+            robot.outtakeIntakeSuperior.goToReadyTransfer(robot.carteiro, 0, getRuntime());
         }
 
 
@@ -289,7 +289,7 @@ public class TeleopTest extends OpMode {
                 LinearVertical.hang = false;
             }
 
-            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro,getRuntime());
+            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
             robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro, getRuntime());
 
         }
@@ -301,7 +301,7 @@ public class TeleopTest extends OpMode {
             robot.intakeInferior.gerenciadorIntakeSample(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,getRuntime());
+            robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,0.2,getRuntime());
         }
     }//todo errado
 
