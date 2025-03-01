@@ -95,6 +95,16 @@ public class OrdersManager {
         orders.removeIf(order -> order.getName().equals(name));
     }
 
+    public boolean hasOrder(String name) {
+        for (Order order : orders) {
+            if (order.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public void checkIfCanRun(double runtime) {
         List<Order> ordersToRemove = new ArrayList<>();
 
@@ -130,6 +140,8 @@ public class OrdersManager {
         }
         runningActions = newActions;
     }
+
+
 
     // 🔥 Função para salvar os logs em JSON
     public void saveLogsToJson() {

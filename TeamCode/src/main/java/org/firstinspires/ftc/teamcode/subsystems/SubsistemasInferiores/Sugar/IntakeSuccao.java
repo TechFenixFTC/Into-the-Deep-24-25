@@ -123,9 +123,9 @@ public class IntakeSuccao{
             sugador.setPower(power_Sugador);
         });
     }
-    public Action IntakeSugarMedio(){
+    public Action IntakeAjeitarSample(){
         return new InstantAction(()->{
-            sugador.setPower(0.5);
+            sugador.setPower(power_Sugador * 0.8);
         });
     }
     public Action IntakeRepelir(){

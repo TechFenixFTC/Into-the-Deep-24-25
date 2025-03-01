@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
 
 
 public class ColorMatcher {
-    public static double distanciaMinima = 1.6;
+    public static double distanciaMinima = 0.9, distanciaMaxima = 3.5;
     private final SensorCor sensorCor;
     public ColorMatcher(SensorCor sensorCor) {
         this.sensorCor = sensorCor;
@@ -43,19 +43,41 @@ public class ColorMatcher {
     // Método para determinar a cor do elemento baseado no Hue
     public String getSampleColor() {
         float hue = getHueValue();
+
+        if( sensorCor.getDistance() > ColorMatcher.distanciaMaxima ){
+            return "Não há samples no intake";
+        }
         if (sensorCor.getDistance() > ColorMatcher.distanciaMinima) {
-            return "Não há samples por Perto";
+            return "Sample no intake em posição incorreta pra transfer";
         }
         if (hue >= 210 && hue <= 270) {
             return "Azul";  // Azul -> 210° a 270°
         } else if (hue >= 330 || hue <= 30) {
             return "Vermelho"; // Vermelho -> 330° a 30°
         } else if (hue >= 40 && hue <= 100) {
-            return "Amarelo"; // Amarelo -> 40° a 60°
+            return "Amarelo"; // Amarelo -> 40° a 100°
         } else {
 
             return "Indefinido"; // Caso o sensor pegue um valor inesperado
         }
+    }
+
+    public boolean temUmaSampleNoIntake() {
+        double distancia = sensorCor.getDistance();
+
+        // Se a distância for maior que a máxima, não há sample
+        if (distancia > ColorMatcher.distanciaMaxima) {
+            return false;
+        }
+        // Se a distância for menor que a máxima, há uma sample no intake
+        return true;
+    }
+
+    public boolean sampleNaPosicaoCorreta() {
+        double distancia = sensorCor.getDistance();
+
+        // Se a distância for maior que a mínima, a sample não está na posição correta
+        return distancia <= ColorMatcher.distanciaMinima;
     }
 
     // 🔍 Função para depuração e monitoramento com Telemetria

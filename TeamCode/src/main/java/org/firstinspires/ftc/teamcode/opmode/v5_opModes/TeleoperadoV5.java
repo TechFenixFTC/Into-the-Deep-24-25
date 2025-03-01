@@ -373,17 +373,6 @@ public class TeleoperadoV5 extends OpMode {
     private void IntakeSuccao(V5 robot, IntakeSuccao intakeSuccao, OrdersManager carteiro, GamepadEx gamepad){
         intakeSuccao.monitor(telemetry);
         if(IntakeSuccao.monitor){
-            /*
-            telemetry.addData("Tem sample", robot.intakeInferior.matchColor.verifyPositionSampleToTransfer());
-            telemetry.addData("red sample", robot.intakeInferior.matchColor.isRed(robot.intakeInferior.intakeSuccao));
-            telemetry.addData("blue sample", robot.intakeInferior.matchColor.isBlue(robot.intakeInferior.intakeSuccao));
-            telemetry.addData("yellow sample",robot.intakeInferior.matchColor.isYellow(robot.intakeInferior.intakeSuccao));
-            telemetry.addData("Somared", robot.intakeInferior.matchColor.getRed(robot.intakeInferior.intakeSuccao.colorSensorSugar.getRed()));
-            telemetry.addData("Somazul", robot.intakeInferior.matchColor.getBlue(robot.intakeInferior.intakeSuccao.colorSensorSugar.getBlue()));
-            telemetry.addData("Somagreen", robot.intakeInferior.matchColor.getGreen(robot.intakeInferior.intakeSuccao.colorSensorSugar.getGreen()));
-            telemetry.addData("Distancia", robot.intakeInferior.intakeSuccao.colorSensorSugar.getDistance());
-            telemetry.addData("media", robot.intakeInferior.matchColor.media);
-             */
             robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.monitor(telemetry);
         }
         if(gamepad.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)){

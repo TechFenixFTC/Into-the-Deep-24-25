@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -12,6 +14,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraInferior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalMotor;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.AlcapaoStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.SugarAngulationStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
@@ -23,6 +26,8 @@ public class SubsistemasInferiores {
     public Telemetry telemetry;
     public IntakeSuccao intakeSuccao;
     public UnderGrounSubystemStates underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
+
+
     public GarraInferior garraInferior;
     public LinearHorizontalMotor linearHorizontalMotor;
     HardwareMap hardwaremap;
@@ -35,9 +40,97 @@ public class SubsistemasInferiores {
     }
     private double getVoltage() { return hardwaremap.voltageSensor.iterator().next().getVoltage(); }
 
+    public void runStates(OrdersManager carteiro, double runtime, V5Modes v5Mode, GamepadEx gamepad) {
 
-    public void DiseablePSEinferior(OrdersManager carteiro, double runtime){
-        carteiro.addOrder(intakeSuccao.pwmDiseable(), 0, "PWM diseable", runtime);
+        switch (underGrounSubystemStates) {
+            case INITIAL:
+                Initial_ReadyToTransferSample(carteiro, runtime, v5Mode, gamepad);
+            case TRASNFER:
+
+        }
+
+    }
+    public void Initial_ReadyToTransferSample(OrdersManager carteiro, double runtime, V5Modes v5Mode, GamepadEx gamepad) {
+        boolean linearEstaRetraido         = linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED;
+        boolean intakeSuccaoTaNoModoIntake = intakeSuccao.sugarAngulationStates == SugarAngulationStates.INTAKE;
+        boolean alcapaoPosicaoProTransfer  = intakeSuccao.alcapaoStates == AlcapaoStates.TRASNFER;
+        boolean alcapaoPosicaoPraIntake    = intakeSuccao.alcapaoStates == AlcapaoStates.INTAKE;
+        boolean temUmaSampleNoIntake       = intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake();
+        boolean samplePosicaoPraTransfer   = intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+        boolean usandoControleManual       = gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0 || gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0;
+        double delay = 0;
+        // AÇÕES DE TRANSIÇÃO Automática
+            /* todo: ir para Transfer quando> 1- tiver uma sample na posição 2- alçapão pra transfer 3- horizontal retraido*/
+            if(samplePosicaoPraTransfer && alcapaoPosicaoProTransfer && linearEstaRetraido) {
+                carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.TRASNFER), 0, "Mudar modo subsistemas inferiores pra transfer", runtime);
+            }
+        // AÇÕES DO ESTADO
+            /* todo: levanto o intake antes de retrair */
+            if(!linearEstaRetraido && intakeSuccaoTaNoModoIntake && !linearHorizontalMotor.isBusy) {
+                    delay = 0.2;
+                if (!carteiro.hasOrder("Intake Sucção Pra ReadyToIntake")) {
+                    carteiro.addOrder(
+                            intakeSuccao.GotoReadyToIntakeSample(),
+                            0.07,
+                            "Intake Sucção Pra ReadyToIntake",
+                            runtime
+                    );
+                }
+
+            }
+
+            /* todo: retrai o horizontal*/
+            if(!linearEstaRetraido && !linearHorizontalMotor.isBusy && !intakeSuccaoTaNoModoIntake) {
+                carteiro.addOrder(linearHorizontalMotor.goToRetracted(), delay, "retrairLinear", runtime);
+            }
+
+            /* todo: Manter pressionando o horiontal enquanto tiver uma sample no intake e o horizontal estiver retraido */
+            if(linearEstaRetraido) {
+                if(temUmaSampleNoIntake && LinearHorizontalMotor.targetPosition != -10){
+                    LinearHorizontalMotor.targetPosition = -10;
+                }else if(!temUmaSampleNoIntake && LinearHorizontalMotor.targetPosition != 25) {
+                    LinearHorizontalMotor.targetPosition = 25;
+                }
+            }
+
+            /* todo: Ações do intake de sucção quando tem uma sampleNoIntake */
+            if(temUmaSampleNoIntake){
+                if(samplePosicaoPraTransfer){
+                    /* todo: alçapão na posição de transfer */
+                    if(linearEstaRetraido && !alcapaoPosicaoProTransfer) {
+                        carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao transfer", runtime);
+                    }
+                }
+            }
+
+            /* todo: Ações do intake de sucção quando NÃO tem uma sampleNoIntake */
+            if(!samplePosicaoPraTransfer) {
+                /* todo: alçapão pra posição onde a sample consiga entrar e encaiaxr */
+                if(linearEstaRetraido && !alcapaoPosicaoPraIntake) {
+                    carteiro.addOrder(intakeSuccao.IntakePositionAlcapao(), 0, "alcapao transfer", runtime);
+                }
+                /* todo: enquanto a sample não entra, ficar sugando ali */
+                if(!usandoControleManual) {
+                    intakeSuccao.IntakeAjeitarSample();
+                }
+            }
+
+
+
+
+
+    }
+
+    public void TransferSample(OrdersManager carteiro, double runtime, V5Modes v5Mode, GamepadEx gamepad) {
+        boolean linearEstaRetraido         = linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED;
+        boolean intakeSuccaoTaNoModoIntake = intakeSuccao.sugarAngulationStates == SugarAngulationStates.INTAKE;
+        boolean alcapaoPosicaoProTransfer  = intakeSuccao.alcapaoStates == AlcapaoStates.TRASNFER;
+        boolean alcapaoPosicaoPraIntake    = intakeSuccao.alcapaoStates == AlcapaoStates.INTAKE;
+        boolean temUmaSampleNoIntake       = intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake();
+        boolean samplePosicaoPraTransfer   = intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+        boolean usandoControleManual       = gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0 || gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0;
+        double delay = 0;
+
     }
 
     public void ejectingSampleWrong(OrdersManager carteiro, double runtime, V5Modes v5Mode, String ladoAliança) {

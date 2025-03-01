@@ -144,41 +144,6 @@ public class V5 {
     public void transfer(OrdersManager carteiro, double runtime) {
         carteiro.addOrder(actionTransfer(), 0, "transfer", runtime);
     }
-    public Action DiseablePSESuperior(V5 robot, double runtime){
-        return new Action() {
-            ElapsedTime time = new ElapsedTime();
-            boolean FIRST = true;
-            double delay = 1;
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(FIRST) {
-                    time.reset();
-                    FIRST = false;
-                }
-                if(robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.getController().getPwmStatus()== ServoController.PwmStatus.ENABLED) {
-                    return false;
-                }
-                    if (robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.READY_TOINTAKE) {
-                        double cooldown = delay + time.time();
-                        if (time.time() < cooldown) {
-                            carteiro.addOrder(robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(), 0.0, "braco superior", runtime);
-                            carteiro.addOrder(robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeSpecimen(), 0.0, "garra superior", runtime);
-                            carteiro.addOrder(robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(700), 0.0, "linear vertical", runtime);
-                            // return true;
-                        }
-
-                }
-                    robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.getController().pwmDisable();
-                    robot.outtakeIntakeSuperior.garraSuperior.servoRotacaoDaGarra.getController().pwmDisable();
-                    robot.outtakeIntakeSuperior.garraSuperior.servoAngulacaoGarra.getController().pwmDisable();
-                    robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.getController().pwmDisable();
-                    robot.outtakeIntakeSuperior.linearVertical.motorR.setPower(0);
-                    robot.outtakeIntakeSuperior.linearVertical.motorL.setPower(0);
-                    return false;
-
-            }
-        };
-    }
 
     public void goReadytoHang(OrdersManager carteiro, double runtime) {
         carteiro.addOrder(actionGoReadytoHang(), 0, "goReadyHang", runtime);
