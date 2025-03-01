@@ -3,6 +3,6 @@ package org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferio
 public enum UnderGrounSubystemStates {
     READY_TOINTAKE,
     INTAKE,
-    TRASNFER,
+    TRANSFER,
     INITIAL,
 }

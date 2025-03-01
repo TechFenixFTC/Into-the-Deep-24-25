@@ -20,15 +20,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
-import org.firstinspires.ftc.teamcode.common.LogJsonManager;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.common.ControlHubServer;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.AlcapaoStates;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.SugarAngulationStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
 import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
@@ -38,6 +34,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarr
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,6 +43,7 @@ import java.util.List;
 public class TeleoperadoV5 extends OpMode {
     List<Servo> servos = new ArrayList<>(4);
     private V5 robot;
+    private ControlHubServer server;
     boolean sugadorEstado= false ;
 
     GamepadEx gamepadEx1,gamepadEx2;
@@ -103,7 +101,7 @@ public class TeleoperadoV5 extends OpMode {
 
     @Override
     public void  start() {
-        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRASNFER;
+        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRANSFER;
         robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
         robot.intakeInferior.goToInitial_goToReadyTransfer(robot.carteiro, getRuntime());
         robot.intakeInferior.linearHorizontalMotor.reset();
@@ -113,7 +111,11 @@ public class TeleoperadoV5 extends OpMode {
         if(robot.v5Mode == V5Modes.SAMPLE){
             robot.outtakeIntakeSuperior.goToReadyTransfer(robot.carteiro, 0,  getRuntime());
         }
-
+        try {
+            server = new ControlHubServer(8181); // Roda na porta 8080
+        } catch (IOException e) {
+            telemetry.addData("Erro", "Não foi possível iniciar o servidor!");
+        }
 
 
         resetRuntime();
@@ -213,17 +215,18 @@ public class TeleoperadoV5 extends OpMode {
             drive = powerDriveInt;
             strafe = powerStrafeInt;
         }
-        /*
-        if(gamepad.getButton(GamepadKeys.Button.A)){
+
+        if(gamepad.getButton(GamepadKeys.Button.Y)){
             Actions.runBlocking(
                     new SequentialAction(
                             robot.md.actionBuilder(robot.md.pose)
                                     .setTangent(Math.toRadians(90))
-                                    .splineToLinearHeading(new Pose2d(-5, -26, Math.toRadians(-90)), Math.toRadians(90))
+                                    .strafeToLinearHeading(new Vector2d(-5,-26),Math.toRadians(-90))
+                                    //.splineToLinearHeading(new Pose2d(-5, -26, Math.toRadians(-90)), Math.toRadians(90))
                                     .build()
                     )
             );
-        }*/
+        }
 
         if(gamepad.getButton(GamepadKeys.Button.A)){
             Actions.runBlocking(

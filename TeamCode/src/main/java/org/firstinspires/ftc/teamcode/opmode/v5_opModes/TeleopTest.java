@@ -20,12 +20,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
-import org.firstinspires.ftc.teamcode.common.LogJsonManager;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.SugarAngulationStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
@@ -39,19 +36,22 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVer
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp(name="TeleopTest")
+@TeleOp(name="TeleopTest F")
 @Config
 public class TeleopTest extends OpMode {
     List<Servo> servos = new ArrayList<>(4);
     private V5 robot;
     boolean sugadorEstado= false ;
-
+    double turnAlvo;
+    double correction;
+    double turn;
+    double heading;
     GamepadEx gamepadEx1,gamepadEx2;
     private FtcDashboard dashboard = FtcDashboard.getInstance();
     private Telemetry dashboardTelemetry = dashboard.getTelemetry();
-    public static double powerDriveOut = -1, powerStrafeOut = 1,powerDriveInt  = 1,powerStrafeInt = -1;
+    public static double powerDriveOut = -1, powerStrafeOut = -1,powerDriveInt  = 1,powerStrafeInt = 1,kp =0.1, tempoIncercia = 0.1;
 
-    private double delayMode = 0.3, cooldownMode = 0, lastUpdateTime = 0, updateInterval = 0.050, loopTime = 0, lastTime = 0; // 50ms;
+    private double delayMode = 0.3, cooldownMode = 0, cooldownInercia = 0, lastUpdateTime = 0, updateInterval = 0.050, loopTime = 0, lastTime = 0; // 50ms;
 
 
 
@@ -61,6 +61,7 @@ public class TeleopTest extends OpMode {
     public  void init() {
         robot = this.createRobot(hardwareMap);
         Pose2d initialPose = new Pose2d(8.5, -61, Math.toRadians(-90));
+        turnAlvo = -90;
 
         robot.md.pose = initialPose;
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -101,7 +102,7 @@ public class TeleopTest extends OpMode {
 
     @Override
     public void  start() {
-        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRASNFER;
+        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRANSFER;
         robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
         robot.intakeInferior.goToInitial_goToReadyTransfer(robot.carteiro, getRuntime());
         robot.intakeInferior.linearHorizontalMotor.reset();
@@ -141,19 +142,14 @@ public class TeleopTest extends OpMode {
 
         telemetry.addData(" MODO DE PONTUAÇÃO", robot.v5Mode);
         telemetry.addData(" TEMPO DE EXECUÇÃO", getRuntime());
-        telemetry.addData("yaw",robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
-        //telemetry.addData("imu", robot.md.pose.heading.real);
-        //telemetry.addData("imu", Math.toRadians( robot.md.pose.heading.real));
-        //telemetry.addData("imu", Math.toRadians(robot.md.pose.heading.imag));
-        //telemetry.addData("imu",Math.toRadians(robot.heading));
-        //telemetry.addData("imu",robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
-        //telemetry.addData("imu", robot.md.lazyImu.get().getRobotYawPitchRollAngles().getPitch(AngleUnit.RADIANS));
-        //telemetry.addData("imu",robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        //telemetry.addData("yaw",robot.md.lazyImu.get().getRobotYawPitchRollAngles().getYaw());
 
-        // telemetry.addData("motor frontal direito",robot.md.rightFront.getCurrent(CurrentUnit.AMPS));
-        // telemetry.addData("motor traseiro direito",robot.md.rightBack.getCurrent(CurrentUnit.AMPS));
-        // telemetry.addData("motor frontal esquerdo",robot.md.leftFront.getCurrent(CurrentUnit.AMPS));
-        // telemetry.addData("motor traseiro esquerdo",robot.md.leftBack.getCurrent(CurrentUnit.AMPS));
+
+        ;
+        telemetry.addData("motor frontal direito",robot.md.rightFront.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("motor traseiro direito",robot.md.rightBack.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("motor frontal esquerdo",robot.md.leftFront.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("motor traseiro esquerdo",robot.md.leftBack.getCurrent(CurrentUnit.AMPS));
 
 
 
@@ -180,8 +176,11 @@ public class TeleopTest extends OpMode {
     private void robotCentricDrive(V5 robot,GamepadEx gamepad) {
         //todo: botao para andar diagonal sem alteração no heading
         robot.md.updatePoseEstimate();
-
+        telemetry.addData("Heading (Graus)", heading);
+        telemetry.addData("turn alvo:",turnAlvo);
+        telemetry.addData("correction",correction);
         double drive = Range.clip(gamepad.getLeftY(), -1, 1);
+
 
         //if( Math.abs(drive) < 0.8 && Math.abs(drive) > 0.02  ) drive = (drive / 1.5);
 
@@ -189,22 +188,31 @@ public class TeleopTest extends OpMode {
         //if (gamepad1.right_stick_button) strafe = -0.6;
         //if (gamepad1.left_stick_button) strafe = 0.6;
         //if ( Math.abs(strafe) < 0.8 && Math.abs(strafe) > 0.02 ) strafe = (strafe / 2.5);
+        heading = Math.toDegrees(Math.atan2(robot.md.pose.heading.imag, robot.md.pose.heading.real));
 
+        if(Math.abs(gamepad.getRightX()) > 0.4 ){
+            turn = Range.clip(-gamepad.getRightX(),-1,1);
+            turnAlvo = heading;
+            cooldownInercia = tempoIncercia + getRuntime();
+        }
+        else if(robot.intakeInferior.intakeSuccao.sugarAngulationStates ==SugarAngulationStates.INTAKE||robot.intakeInferior.intakeSuccao.sugarAngulationStates== SugarAngulationStates.READY_TOINTAKE){
+            correction=0;
+        }
+        else if(getRuntime() >= cooldownInercia) {
+            correction = (turnAlvo - heading) * kp;
+            turn = Range.clip(correction,-1,1);
+        }
+        else{
+            turnAlvo = heading;
+        }
 
-        double correction = 0;
-        /*if(gamepad1.left_stick_x!=0){
-
-            double alvo = robot.md.lazyImu.get().getRobotYawPitchRollAngles().getPitch();
-            correction = alvo - robot.md.lazyImu.get().getRobotYawPitchRollAngles().getPitch();
-        }*/
-        double turn = Range.clip(-gamepad.getRightX()+correction,-1,1);
 
         if (gamepad1.left_trigger > 0) {
-            strafe = -gamepad1.left_trigger * 0.5;
+            strafe = -gamepad1.left_trigger * 1;
         }
 
         if (gamepad1.right_trigger > 0) {
-            strafe = gamepad1.right_trigger * 0.5;
+            strafe = gamepad1.right_trigger * 1;
         }
         if(strafe != 0 && turn == 0){
 

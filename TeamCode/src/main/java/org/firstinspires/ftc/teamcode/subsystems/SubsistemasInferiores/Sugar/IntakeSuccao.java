@@ -60,7 +60,7 @@ public class IntakeSuccao{
 
 
         mapAlcapao.put(AlcapaoStates.TOTALOPEN, 0.0);
-        mapAlcapao.put(AlcapaoStates.INTAKE, posicaoIntakeAlcapao);
+        mapAlcapao.put(AlcapaoStates.INTAKE_SAMPLE, posicaoIntakeAlcapao);
         mapAlcapao.put(AlcapaoStates.READY_TOINTAKE, posicaoReadyIntakeAlcapao);
         mapAlcapao.put(AlcapaoStates.INITIAL,0.834);
         mapAlcapao.put(AlcapaoStates.INTAKE_SPECIMEN,0.582);
@@ -100,7 +100,7 @@ public class IntakeSuccao{
     public Action GotoReadyToIntakeSample(){
         return new InstantAction(()->{
             sugarAngulationStates  = SugarAngulationStates.READY_TOINTAKE;
-            alcapaoStates = AlcapaoStates.INTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE_SAMPLE;
             alcapao.setPosition(mapAlcapao.get(alcapaoStates));
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
 
@@ -111,7 +111,7 @@ public class IntakeSuccao{
     public Action GotoIntakeSample(){
         return new InstantAction(()->{
             sugarAngulationStates  = SugarAngulationStates.INTAKE;
-            alcapaoStates = AlcapaoStates.INTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE_SAMPLE;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
             alcapao.setPosition(mapAlcapao.get(alcapaoStates));
 
@@ -155,9 +155,9 @@ public class IntakeSuccao{
         });
     }
 
-    public Action IntakePositionAlcapao(){
+    public Action IntakeSamplePositionAlcapao(){
         return new InstantAction(()->{
-            alcapaoStates = AlcapaoStates.INTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE_SAMPLE;
             alcapao.setPosition(mapAlcapao.get(alcapaoStates));
         });
     }
@@ -203,10 +203,10 @@ public class IntakeSuccao{
         }
         this.cooldownAberturaGarra = runTime + this.delay;
 
-        if (this.alcapaoStates == AlcapaoStates.INTAKE) {
+        if (this.alcapaoStates == AlcapaoStates.INTAKE_SAMPLE) {
             return this.TransferPositionAlcapao();
         }
-        return this.IntakePositionAlcapao();
+        return this.IntakeSamplePositionAlcapao();
 
     }
     public void gerenciadorDoSugador(GamepadEx gamepad, double runTime){
