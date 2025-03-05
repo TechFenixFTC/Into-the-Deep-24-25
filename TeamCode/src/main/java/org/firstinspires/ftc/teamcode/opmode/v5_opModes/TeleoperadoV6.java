@@ -41,7 +41,7 @@ import java.util.List;
 
 @TeleOp(name="Teleoperado V6")
 @Config
-public class TeleoperadoV5_NOVO extends OpMode {
+public class TeleoperadoV6 extends OpMode {
     List<Servo> servos = new ArrayList<>(4);
     private V5 robot;
     private ControlHubServer server;
@@ -140,7 +140,7 @@ public class TeleoperadoV5_NOVO extends OpMode {
         this.linearVertical(robot.outtakeIntakeSuperior.linearVertical,gamepadEx2, robot.carteiro);
         //this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
         //this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
-        //this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
+        this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
         //fullAutoOuttakeChamber(robot.carteiro);
         this.hang(gamepadEx1, robot.carteiro);
 
@@ -158,6 +158,7 @@ public class TeleoperadoV5_NOVO extends OpMode {
         robot.intakeInferior.linearHorizontalMotor.monitor(telemetry,"horizontal inferior");
         telemetry.addData("🏗️ Estado Geral Superiores", robot.outtakeIntakeSuperior.upperSubsystemStates);
         telemetry.addData("🕰️", robot.outtakeIntakeSuperior.tempoInferiorEmTransfer.time());
+        telemetry.addData("♻️Voltando Pra pegar Sample", robot.outtakeIntakeSuperior.voltandoPraPegarUmaSample);
         if(IntakeSuccao.monitor){
             robot.intakeInferior.intakeSuccao.monitor(telemetry);
             robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.monitor(telemetry);
@@ -174,6 +175,10 @@ public class TeleoperadoV5_NOVO extends OpMode {
 
     @Override
     public void stop() {
+        if(LinearVertical.hang) {
+            LinearVertical.p /= 10;
+            LinearVertical.hang = false;
+        }
         robot.carteiro.saveLogsToJson();
     }
 
@@ -260,6 +265,9 @@ public class TeleoperadoV5_NOVO extends OpMode {
         if(gamepad.getButton(GamepadKeys.Button.X)) {
             robot.goReadytoHang(carteiro, getRuntime());
         }
+        if(gamepad.getButton(GamepadKeys.Button.X)) {
+            robot.goReadytoHang(carteiro, getRuntime());
+        }
         if(gamepad.getButton(GamepadKeys.Button.B)) {
             robot.goToHang(carteiro, getRuntime());
         }
@@ -280,7 +288,7 @@ public class TeleoperadoV5_NOVO extends OpMode {
         }
         if(gamepad.getButton(GamepadKeys.Button.B)){
             if(LinearVertical.hang) {
-                LinearVertical.p /= 8;
+                LinearVertical.p /= 10;
                 LinearVertical.hang = false;
             }
 

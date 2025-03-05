@@ -29,10 +29,10 @@ public class SubsistemasSuperiores {
         public GarraSuperior garraSuperior;
         public BracoGarraSuperior braco;
         HardwareMap hardwaremap;
-        public ElapsedTime tempoInferiorEmTransfer = new ElapsedTime();
+        public ElapsedTime tempoInferiorEmTransfer = new ElapsedTime(), tempoVerticalResetado = new ElapsedTime();
 
 
-
+        public boolean voltandoPraPegarUmaSample = false;
 
 
         public SubsistemasSuperiores(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -114,35 +114,92 @@ public class SubsistemasSuperiores {
                 Initial_ReadyToTransferSample(carteiro, runtime, robot, gamepad);
             }
             if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE) {
-                Outake(carteiro, runtime, robot, gamepad);
+                OutakeHighBasket(carteiro, runtime, robot, gamepad);
             }
 
 
         }
+
+    public void runStatesSpecimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+
+        if(upperSubsystemStates == UpperSubsystemStates.TRANSFER || upperSubsystemStates == UpperSubsystemStates.INITIAL) {
+
+        }
+
+        if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE) {
+
+        }
+
+    }
+
+    public  void  Initial_Specimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+        //todo okey
+        //Posição Vertical
+        boolean verticalEstaRetraido  = linearVertical.position <50;
+        boolean verticalEstaExtendido = linearVertical.position >900;
+        //Estados braço
+        boolean bracoEstaNaPosicaoOuttakeSpecimen = braco.bracoGarraSuperiorState == BracoGarraSuperiorStates.OUTTAKE_CHAMBER;
+        boolean bracoEstaNaPosicaoInitial = braco.bracoGarraSuperiorState == BracoGarraSuperiorStates.INITIAL;
+        //Estado angulação
+        boolean angulacaoEstaNaPosicaoInitialSpecimen = garraSuperior.garraAngulationState == GarraAngulationStates.INITIAL_SPECIMEN;
+
+
+        double delay = 0;
+        // AÇÕES DE TRANSIÇÃO Automática
+        /* todo: ir para Initial quando> 1- Vertical Retraido 2- Braco no estado initial 3- Angulação no estado inicial*/
+        if(verticalEstaRetraido && bracoEstaNaPosicaoInitial && angulacaoEstaNaPosicaoInitialSpecimen){
+            carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "Mudar modo subsistemas superiores para initial", runtime);
+        }
+        // AÇÕES DO ESTADO
+
+            //todo abre a garra se estiver em estado de outtake/
+        if(bracoEstaNaPosicaoOuttakeSpecimen){
+            carteiro.addOrder(garraSuperior.abrirGarra(),0,"abrirGarra",runtime);
+        }
+
+        /* todo: mudar o braco para initial */
+        if(!bracoEstaNaPosicaoInitial){
+            carteiro.addOrder(braco.goToInital(), 0.0,"bracoSuperior",runtime);
+        }
+        /* todo: mudar a Angulação  e Rotação para initial */
+        if(!angulacaoEstaNaPosicaoInitialSpecimen){
+            carteiro.addOrder(garraSuperior.goToInitialSpecimen(),0,"garraSuperior",runtime);
+        }
+            //todo: retrair o vertical/
+        if(!verticalEstaRetraido){
+            carteiro.addOrder(linearVertical.ElevadorGoTo(0),0,"linearVertical",runtime);
+        }
+
+
+
+    }//todo não testado by pedro ;)
+
+
 
     private void Initial_ReadyToTransferSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
         int maxPositionVerticalTransfer = 78;
         boolean intakeInferiorTaProntoProTransfer   = robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER;
-        boolean intakeProntoProTransferAalgumTempo  = tempoInferiorEmTransfer.time() >= 0.100;
+        boolean intakeProntoProTransferAalgumTempo  = tempoInferiorEmTransfer.time() >= 0.200;
         boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
         boolean bracoTaNaPosicaoDeTransfer          = braco.bracoGarraSuperiorState ==  BracoGarraSuperiorStates.TRANSFER;
         boolean garraTaAberta                       = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN;
-        boolean angulacaoGarraTaPraTransfer         = garraSuperior.garraAngulationState == GarraAngulationStates.ANGULAR_TRANSFER;
+        boolean angulacaoGarraTaPraTransfer         = garraSuperior.garraAngulationState == GarraAngulationStates.TRANSFER;
         boolean estaApertandoParaResetar            = gamepad.getButton(GamepadKeys.Button.B);
+        boolean precisaTirarOSistemaDaBasket        = linearVertical.motorR.getCurrentPosition() > 2500;
 
-        /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta*/
-        if(verticalEstaResetado && intakeProntoProTransferAalgumTempo && angulacaoGarraTaPraTransfer && garraTaAberta){
+       /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta 4:NãoTaVoltandoPraPegarSample*/
+        if(verticalEstaResetado && intakeProntoProTransferAalgumTempo && angulacaoGarraTaPraTransfer && garraTaAberta && !voltandoPraPegarUmaSample && runtime > 1.6){
             if (!carteiro.hasOrder("ir pra modo Outake superior")) {
                 carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
             }
         }
-        /*todo: Precisa resetar o Linear?*/
-        if(!verticalEstaResetado || estaApertandoParaResetar || runtime <= 0.1) {
+       /*todo: Precisa resetar o Linear?*/
+        if((!verticalEstaResetado || estaApertandoParaResetar)|| runtime <= 0.1) {
             if(!carteiro.hasOrder("resetarOvertical")) {
                 carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
             }
         }
-        /*todo: precisa por os servos pra transfer?*/
+       /*todo: precisa por os servos pra transfer?*/
         if(!garraTaAberta || !angulacaoGarraTaPraTransfer) {
             Action goToTransfer;
             if(!garraTaAberta) {
@@ -166,19 +223,25 @@ public class SubsistemasSuperiores {
             }
 
         }
-        /*todo: gerenciar se deve resetar o Timer que conta quanto tempo tem sample pra transfer*/
-        if(!intakeInferiorTaProntoProTransfer){
-            tempoInferiorEmTransfer.reset();
+
+       /*todo: gerenciar se deve resetar o Timer que conta quanto tempo tem sample pra transfer*/
+        if(!intakeInferiorTaProntoProTransfer){ tempoInferiorEmTransfer.reset(); }
+       /*todo: gerenciar se deve resetar o Timer que conta quanto tempo o vertical ta resetado*/
+        if(!verticalEstaResetado) { tempoVerticalResetado.reset();}
+
+       /*todo: Adicionar Função pra mover os sistemas de servo manualmente*/
+
+       /*todo: Adicionar Função pra abrir e fechar a garra e rotacionar ela pra posições predefinidas com apenas um botão*/
+
+       /*todo: Adicionar Função de mover o vertical manualmente*/
+
+       /*todo: nessa função ele vê se o  robo esta voltando pra pegar uma sample, dai verifica se o vertical ta resetado a uns 200ms e ai ele desliga a condição pro transfer acontecer*/
+        if(voltandoPraPegarUmaSample && tempoVerticalResetado.time() >= 0.200){
+            voltandoPraPegarUmaSample = false;
         }
 
-        /*todo: Adicionar Função pra mover os sistemas de servo manualmente*/
-
-        /*todo: Adicionar Função pra abrir e fechar a garra e rotacionar ela pra posições predefinidas com apenas um botão*/
-
-        /*todo: Adicionar Função de mover o vertical manualmente*/
-
     }
-    private void Outake(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+    private void OutakeHighBasket(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
         int maxPositionVerticalTransfer = 78;
         int positionVerticalVerificaSeNaoPegou = 600;
 
@@ -188,18 +251,47 @@ public class SubsistemasSuperiores {
         boolean verticalJaFoiMandadoProAlto         = LinearVertical.targetPosition > 2000;
         boolean bracoTaEmOutake                     = braco.bracoGarraSuperiorState ==  BracoGarraSuperiorStates.BASKET;
         boolean garraTaFechada                      = garraSuperior.garraOpeningState == GarraOpeningStates.CLOSED;
+        boolean garraTaFechando                     = garraSuperior.garraOpeningState == GarraOpeningStates.GOING_TO_CLOSE;
+        boolean angulacaoGarraTaPraTransfer         = garraSuperior.garraAngulationState == GarraAngulationStates.OUTTAKE_SAMPLE;
         boolean garraFoiAbertaEsoltouUmaSample      = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN && linearVertical.motorR.getCurrentPosition() > 2500;
 
 
         /*todo: Fechar a garra Se necessário*/
+        if(!garraTaFechada && !garraTaFechando && !voltandoPraPegarUmaSample && !verticalPodeVerificarSeNaoPegou){
+            if(!carteiro.hasOrder("esperar a garra fechar")) {
+                carteiro.addOrder(garraSuperior.fecharGarraTempo(), 0, "esperar a garra fechar", runtime);
+            }
 
-        /*todo: Subir o Linear Se necessário*/
-
-        /*todo: Mover os Subsistemas de servo pra Posição De Outake*/
+        }
+        /*todo: Mandar Subir o Linear quando a garra pegar o sample*/
+        if(!verticalJaFoiMandadoProAlto && garraTaFechada && !voltandoPraPegarUmaSample){
+            carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0, "Sobe o LinearVertical", runtime);
+        }
+        /*todo: Mover o Braço pra Posição De Outake*/
+        if(!bracoTaEmOutake && verticalPodeVerificarSeNaoPegou && !temSampleIntakeInferiorAinda && !voltandoPraPegarUmaSample){
+            if(!carteiro.hasOrder("braco vai pra outake")){
+                carteiro.addOrder(braco.goToOuttakeBASKET(), 0, "braco vai pra outake", runtime);
+            }
+        }
+        /*todo: Mover a Garra pra Posição De Outake*/
+        if(!angulacaoGarraTaPraTransfer && verticalPodeVerificarSeNaoPegou && !temSampleIntakeInferiorAinda && !voltandoPraPegarUmaSample){
+            if(!carteiro.hasOrder("garra vai pra outake")){
+                carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0, "garra vai pra outake", runtime);
+            }
+        }
 
         /*todo: Verificar se pegou errado e a sample continua no intake*/
+        if(verticalJaFoiMandadoProAlto && verticalPodeVerificarSeNaoPegou && temSampleIntakeInferiorAinda){
+            voltandoPraPegarUmaSample = true;
+        }
+        /*todo: Voltar pro Intake pra pegar a sample que tentou pegar e não conseguiu*/
+        if(voltandoPraPegarUmaSample) {
+            if(!carteiro.hasOrder("superior pra transfer")) {
+                tempoInferiorEmTransfer.reset();
+                carteiro.addOrder( new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "superior pra transfer", runtime);
+            }
+        }
 
-        /*todo: Voltar pro Intake pra pegar a sample que tentou pegar*/
 
         /*todo: Adicionar Função pra mover os sistemas de servo manualmente*/
 
@@ -228,6 +320,137 @@ public class SubsistemasSuperiores {
     }
 
 
+    public void runStatesSampleAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
+
+        if(upperSubsystemStates == UpperSubsystemStates.TRANSFER || upperSubsystemStates == UpperSubsystemStates.INITIAL) {
+            Initial_ReadyToTransferSampleAutonomo(carteiro, runtime, robot);
+        }
+        if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE) {
+            OutakeHighBasketAutonomo(carteiro, runtime, robot);
+        }
+
+
+    }
+    private void Initial_ReadyToTransferSampleAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
+        int maxPositionVerticalTransfer = 78;
+        boolean intakeInferiorTaProntoProTransfer   = robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER;
+        boolean intakeProntoProTransferAalgumTempo  = tempoInferiorEmTransfer.time() >= 0.500;
+        boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
+        boolean bracoTaNaPosicaoDeTransfer          = braco.bracoGarraSuperiorState ==  BracoGarraSuperiorStates.TRANSFER;
+        boolean garraTaAberta                       = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN;
+        boolean angulacaoGarraTaPraTransfer         = garraSuperior.garraAngulationState == GarraAngulationStates.TRANSFER;
+        boolean precisaTirarOSistemaDaBasket        = linearVertical.motorR.getCurrentPosition() > 2500;
+
+        /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta 4:NãoTaVoltandoPraPegarSample*/
+        if(verticalEstaResetado && intakeProntoProTransferAalgumTempo && angulacaoGarraTaPraTransfer && garraTaAberta && !voltandoPraPegarUmaSample && runtime > 1.6){
+            if (!carteiro.hasOrder("ir pra modo Outake superior")) {
+                carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
+            }
+        }
+        /*todo: Precisa resetar o Linear?*/
+        if(!verticalEstaResetado || runtime <= 0.1) {
+            if(!carteiro.hasOrder("resetarOvertical")) {
+                carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
+            }
+        }
+        /*todo: precisa por os servos pra transfer?*/
+        if(!garraTaAberta || !angulacaoGarraTaPraTransfer) {
+            Action goToTransfer;
+            if(!garraTaAberta) {
+                goToTransfer = new SequentialAction(
+                        garraSuperior.abrirGarra(),
+                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.1).build(),
+                        garraSuperior.goToTransfer(),
+                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
+                        braco.goToReadyToTransfer()
+                );
+            }
+            else{
+                goToTransfer = new SequentialAction(
+                        garraSuperior.goToTransfer(),
+                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
+                        braco.goToReadyToTransfer()
+                );
+            }
+            if(!carteiro.hasOrder("sistemas Superiores indo pra intake")) {
+                carteiro.addOrder(goToTransfer, 0, "sistemas Superiores indo pra intake", runtime);
+            }
+
+        }
+
+        /*todo: gerenciar se deve resetar o Timer que conta quanto tempo tem sample pra transfer*/
+        if(!intakeInferiorTaProntoProTransfer){ tempoInferiorEmTransfer.reset(); }
+        /*todo: gerenciar se deve resetar o Timer que conta quanto tempo tem sample pra transfer*/
+        if(!verticalEstaResetado) { tempoVerticalResetado.reset();}
+
+        /*todo: Adicionar Função pra mover os sistemas de servo manualmente*/
+
+        /*todo: Adicionar Função pra abrir e fechar a garra e rotacionar ela pra posições predefinidas com apenas um botão*/
+
+        /*todo: Adicionar Função de mover o vertical manualmente*/
+
+        /*todo: nessa função ele vê se o  robo esta voltando pra pegar uma sample, dai verifica se o vertical ta resetado a uns 200ms e ai ele desliga a condição pro transfer acontecer*/
+        if(voltandoPraPegarUmaSample && tempoVerticalResetado.time() >= 0.200){
+            voltandoPraPegarUmaSample = false;
+        }
+
+    }
+    private void OutakeHighBasketAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
+        int maxPositionVerticalTransfer = 78;
+        int positionVerticalVerificaSeNaoPegou = 600;
+
+        boolean temSampleIntakeInferiorAinda        = robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+        boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
+        boolean verticalPodeVerificarSeNaoPegou     = linearVertical.motorR.getCurrentPosition() > positionVerticalVerificaSeNaoPegou;
+        boolean verticalJaFoiMandadoProAlto         = LinearVertical.targetPosition > 2000;
+        boolean verticalTaProAlto                   = linearVertical.motorR.getCurrentPosition() > 3000;
+        boolean bracoTaEmOutake                     = braco.bracoGarraSuperiorState ==  BracoGarraSuperiorStates.BASKET;
+        boolean garraTaFechada                      = garraSuperior.garraOpeningState == GarraOpeningStates.CLOSED;
+        boolean garraTaFechando                     = garraSuperior.garraOpeningState == GarraOpeningStates.GOING_TO_CLOSE;
+        boolean angulacaoGarraTaPraTransfer         = garraSuperior.garraAngulationState == GarraAngulationStates.OUTTAKE_SAMPLE;
+        boolean garraFoiAbertaEsoltouUmaSample      = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN && linearVertical.motorR.getCurrentPosition() > 2500;
+
+
+        /*todo: Fechar a garra Se necessário*/
+        //if(!garraTaFechada && !garraTaFechando && !voltandoPraPegarUmaSample && !verticalPodeVerificarSeNaoPegou){
+           // if(!carteiro.hasOrder("esperar a garra fechar")) {
+                carteiro.addOrder(garraSuperior.fecharGarraTempo(), 0, "esperar a garra fechar", runtime);
+           // }
+
+     //   }
+        /*todo: Mandar Subir o Linear quando a garra pegar o sample*/
+        if(!verticalJaFoiMandadoProAlto && garraTaFechada && !voltandoPraPegarUmaSample){
+            carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0, "Sobe o LinearVertical", runtime);
+        }
+        /*todo: Mover o Braço pra Posição De Outake*/
+        if(!bracoTaEmOutake && verticalPodeVerificarSeNaoPegou && !temSampleIntakeInferiorAinda && !voltandoPraPegarUmaSample){
+            if(!carteiro.hasOrder("braco vai pra outake")){
+                carteiro.addOrder(braco.goToOuttakeBASKET(), 0, "braco vai pra outake", runtime);
+            }
+        }
+        /*todo: Mover a Garra pra Posição De Outake*/
+        if(!angulacaoGarraTaPraTransfer && verticalPodeVerificarSeNaoPegou && !temSampleIntakeInferiorAinda && !voltandoPraPegarUmaSample){
+            if(!carteiro.hasOrder("garra vai pra outake")){
+                carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0, "garra vai pra outake", runtime);
+            }
+        }
+
+        if(verticalTaProAlto && garraTaFechada){
+            carteiro.addOrder(garraSuperior.abrirGarra(), 0,"garra abrir", runtime);
+        }
+        /*todo: Verificar se pegou errado e a sample continua no intake*/
+        if(verticalJaFoiMandadoProAlto && verticalPodeVerificarSeNaoPegou && temSampleIntakeInferiorAinda){
+            voltandoPraPegarUmaSample = true;
+        }
+        /*todo: Voltar pro Intake pra pegar a sample que tentou pegar e não conseguiu*/
+        if(voltandoPraPegarUmaSample) {
+            if(!carteiro.hasOrder("superior pra transfer")) {
+                tempoInferiorEmTransfer.reset();
+                carteiro.addOrder( new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "superior pra transfer", runtime);
+            }
+        }
+
+    }
 
 
     public Action actionGoReadyTransfer() {

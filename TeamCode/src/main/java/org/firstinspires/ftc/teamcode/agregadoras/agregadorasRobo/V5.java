@@ -134,6 +134,13 @@ public class V5 {
         intakeInferior.runStatesSample(carteiro, runtime, robot, gamepad);
 
     }
+
+    public void runStatesSampleAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
+        outtakeIntakeSuperior.runStatesSampleAutonomo(carteiro, runtime, robot);
+        intakeInferior.runStatesSampleAutonomo(carteiro, runtime, robot);
+        carteiro.checkIfCanRun(runtime);
+        carteiro.runTeleopActions(runtime);
+    }
     public Action actionTransfer(){
          return new SequentialAction(
                  outtakeIntakeSuperior.actionGoReadyTransfer(),
@@ -150,10 +157,24 @@ public class V5 {
     public void goReadytoHang(OrdersManager carteiro, double runtime) {
         carteiro.addOrder(actionGoReadytoHang(), 0, "goReadyHang", runtime);
     }
+    public void goReadytoHang2(OrdersManager carteiro, double runtime) {
+        carteiro.addOrder(actionGoReadytoHang(), 0, "goReadyHang", runtime);
+    }
     public void goToHang(OrdersManager carteiro, double runtime) {
         carteiro.addOrder(actionGotoHang(), 0, "goToHang", runtime);
     }
     public Action actionGoReadytoHang() {
+        Action readyToHangAction = new SequentialAction(
+
+                outtakeIntakeSuperior.braco.goToReadyHang(),
+                outtakeIntakeSuperior.garraSuperior.goToReadyHang(),
+                intakeInferior.actionIntakeIrPraInitial(),
+                outtakeIntakeSuperior.linearVertical.goToReadyHang()
+
+        );
+        return readyToHangAction;
+    }
+    public Action actionGoReadytoHang2() {
         Action readyToHangAction = new SequentialAction(
 
                 outtakeIntakeSuperior.braco.goToReadyHang(),

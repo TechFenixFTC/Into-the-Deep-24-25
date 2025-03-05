@@ -1,13 +1,10 @@
 package org.firstinspires.ftc.teamcode.common.test;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-import static org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior.distance;
+
+import android.annotation.SuppressLint;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -22,7 +19,7 @@ import java.util.List;
 public class LimelightTest2 extends OpMode {
     Limelight3A limelight;
     LLResultTypes.FiducialResult fiducialResult;
-
+    Pose3D botPose3d;
     @Override
     public void init() {
         limelight = hardwareMap.get(Limelight3A.class, HardwareNames.limelight);
@@ -32,6 +29,7 @@ public class LimelightTest2 extends OpMode {
 
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
     public void loop() {
 
@@ -48,6 +46,16 @@ public class LimelightTest2 extends OpMode {
             }
         }
         */
+
+        LLResult result1 = limelight.getLatestResult();
+        if (result1 != null) {
+            if (result1.isValid()) {
+               botPose3d = result1.getBotpose_MT2();
+                // Use os dados de botpose
+            }
+        }
+
+        telemetry.addData("posição 3d ", botPose3d);
         if (result != null && result.isValid()) {
             double tx = result.getTx(); // Quão longe o alvo está para a esquerda ou direita (graus)
             double ty = result.getTy(); // Quão longe o alvo está para cima ou para baixo (graus)

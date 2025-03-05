@@ -36,7 +36,7 @@ public class IntakeSuccao{
     public DcMotorEx sugador;
     public Servo alcapao;
     public static double posicaoReadyIntakeAlcapao = 0.616;
-    public static double posicaoIntakeAlcapao = 0.7;
+    public static double posicaoIntakeAlcapao = 0.625;
 
     public static double posicaoTransferAngulacao = 0.033;
 
@@ -53,7 +53,7 @@ public class IntakeSuccao{
         alcapao = hardwareMap.get(Servo.class,HardwareNames.alcapaoSugarServo);
         colorSensorSugar = new SensorCor(hardwareMap, HardwareNames.colorSensor1);
 
-        mapAngulation.put(SugarAngulationStates.INTAKE, 0.199);
+        mapAngulation.put(SugarAngulationStates.INTAKE, 0.195);
         mapAngulation.put(SugarAngulationStates.TRANSFER, posicaoTransferAngulacao);
         mapAngulation.put(SugarAngulationStates.INITIAL, posicaoTransferAngulacao);
         mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, 0.056);
