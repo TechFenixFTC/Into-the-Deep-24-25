@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.opmode.v5_opModes;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -20,27 +20,28 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
 import org.firstinspires.ftc.teamcode.common.ControlHubServer;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalMotor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.AlcapaoStates;
-import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
-import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
-import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalMotor;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp(name="Teleoperado V5")
+@TeleOp(name="Teleoperado V6")
 @Config
-public class TeleoperadoV5 extends OpMode {
+public class TeleoperadoV5_NOVO extends OpMode {
     List<Servo> servos = new ArrayList<>(4);
     private V5 robot;
     private ControlHubServer server;
@@ -101,11 +102,13 @@ public class TeleoperadoV5 extends OpMode {
 
     @Override
     public void  start() {
-        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRANSFER;
+        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
         robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
-        robot.intakeInferior.goToInitial_goToReadyTransfer(robot.carteiro, getRuntime());
+
         robot.intakeInferior.linearHorizontalMotor.reset();
+
         if(robot.v5Mode == V5Modes.SPECIMEN){
+            robot.intakeInferior.goToInitial_goToReadyTransfer(robot.carteiro, getRuntime());
             robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
         }
         if(robot.v5Mode == V5Modes.SAMPLE){
@@ -133,14 +136,13 @@ public class TeleoperadoV5 extends OpMode {
         } else if (robot.v5Mode == V5Modes.SAMPLE) {
             this.bindsSample(robot,gamepadEx2,robot.carteiro);
         }
-        this.linearHorizontal(robot.carteiro,robot.intakeInferior.linearHorizontalMotor,gamepadEx2);
+        //this.linearHorizontal(robot.carteiro,robot.intakeInferior.linearHorizontalMotor,gamepadEx2);
         this.linearVertical(robot.outtakeIntakeSuperior.linearVertical,gamepadEx2, robot.carteiro);
-        this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
-        this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
-        this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
+        //this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
+        //this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
+        //this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
         //fullAutoOuttakeChamber(robot.carteiro);
         this.hang(gamepadEx1, robot.carteiro);
-        //this.verificarsample(robot,robot.carteiro, "Azul");
 
         this.runActions(robot.carteiro);
 
@@ -153,7 +155,13 @@ public class TeleoperadoV5 extends OpMode {
        // telemetry.addData("motor frontal esquerdo",robot.md.leftFront.getCurrent(CurrentUnit.AMPS));
        // telemetry.addData("motor traseiro esquerdo",robot.md.leftBack.getCurrent(CurrentUnit.AMPS));
 
-
+        robot.intakeInferior.linearHorizontalMotor.monitor(telemetry,"horizontal inferior");
+        telemetry.addData("🏗️ Estado Geral Superiores", robot.outtakeIntakeSuperior.upperSubsystemStates);
+        telemetry.addData("🕰️", robot.outtakeIntakeSuperior.tempoInferiorEmTransfer.time());
+        if(IntakeSuccao.monitor){
+            robot.intakeInferior.intakeSuccao.monitor(telemetry);
+            robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.monitor(telemetry);
+        }
 
 
 
@@ -283,25 +291,32 @@ public class TeleoperadoV5 extends OpMode {
 
     }//todo okey
     private void bindsSample(V5 robot, GamepadEx gamepad, OrdersManager carteiro){
+        if(SubsistemasInferiores.monitorEstadosInferiores) {
+            robot.intakeInferior.monitorEstados();
+        }
+        robot.runStatesSample(robot.carteiro, getRuntime(), robot, gamepad);
+
+
         if(gamepad.getButton(GamepadKeys.Button.B)){
             if(LinearVertical.hang) {
-                LinearVertical.p /= 8;
+                LinearVertical.p /= 10;
                 LinearVertical.hang = false;
             }
-            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
-            robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro, getRuntime());
+            //robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo Inicial inferior", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "ir pra modo Inicial superior", getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.A)){
-            robot.outtakeIntakeSuperior.CorreProTransfer(carteiro,getRuntime()
-            );
+            //robot.outtakeIntakeSuperior.CorreProTransfer(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
-            robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
-            robot.intakeInferior.gerenciadorIntakeSample(carteiro,getRuntime());
+            //robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE), 0, "ir pra modo INTAKE", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,0.3,getRuntime());
+
+           // robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,0.3,getRuntime());
         }
     }//todo errado
 
@@ -330,7 +345,7 @@ public class TeleoperadoV5 extends OpMode {
     }
     private void linearHorizontal(OrdersManager carteiro, LinearHorizontalMotor horizontal, GamepadEx gamepad)  {
         horizontal.monitor(telemetry,"horizontal inferior");
-        horizontal.PID();
+
        // if(gamepad.getButton(GamepadKeys.Button.A)){
           //  carteiro.addOrder(horizontal.horizontalGoTo(140),0,"horizonte",getRuntime());
        // }
@@ -375,10 +390,7 @@ public class TeleoperadoV5 extends OpMode {
         }
     }
     private void IntakeSuccao(V5 robot, IntakeSuccao intakeSuccao, OrdersManager carteiro, GamepadEx gamepad){
-        intakeSuccao.monitor(telemetry);
-        if(IntakeSuccao.monitor){
-            robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.monitor(telemetry);
-        }
+
         if(gamepad.getButton(GamepadKeys.Button.LEFT_STICK_BUTTON)){
             intakeSuccao.angulacao.getController().pwmDisable();
 

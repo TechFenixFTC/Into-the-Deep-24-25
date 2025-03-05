@@ -143,7 +143,7 @@ public class LinearVertical {
                     started = true;
                     ID = id;
                     isBusy = true;
-                    if(hang) { p *= 4; }
+                    if(hang) { p *= 10; }
                 }
 
                 PIDF();

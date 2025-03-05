@@ -32,12 +32,12 @@ public class LinearHorizontalMotor {
     public static boolean monitor = true, needToHold = false;
     public SensorCor colorSensor;
     public boolean isBusy;
-    public static double p = 0.0040, i = 0, d = 0.000,f = 0, ll = 0, kll = 0, valorSurtoCorrente = 1.5,
+    public static double p = 0.0040, i = 0, d = 0.000,f = 0, ll = 0, kll = 0, valorSurtoCorrente = 1.3,
             limiarDistance = 2.7;
 
     public int position;
     public static int margem = 200, margemAut = 20 , sense = 24;
-    public static int targetPosition = 10, ID = targetPosition, minPos = -100, maxPos = 1300;
+    public static int targetPosition = 10, ID = targetPosition, minPos = -100, maxPos = 1250;
     // -800 , 1450
     public LinearHorizontalStates linearHorizontalInferiorState = LinearHorizontalStates.RETRACTED;
     public LinearHorizontalMotor(HardwareMap hardwareMap) {

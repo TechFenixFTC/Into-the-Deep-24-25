@@ -1,16 +1,25 @@
 package org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperior;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperiorStates;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
+import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraAngulationStates;
+import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraOpeningStates;
 
 public class SubsistemasSuperiores {
 
@@ -20,6 +29,7 @@ public class SubsistemasSuperiores {
         public GarraSuperior garraSuperior;
         public BracoGarraSuperior braco;
         HardwareMap hardwaremap;
+        public ElapsedTime tempoInferiorEmTransfer = new ElapsedTime();
 
 
 
@@ -74,11 +84,22 @@ public class SubsistemasSuperiores {
     }
 
         public void goToOuttakeBASKET(OrdersManager carteiro, double delay, double runtime){
-           upperSubsystemStates = UpperSubsystemStates.OUTTAKE;
-           carteiro.addOrder(garraSuperior.fecharGarra(), delay, "fechar garra", runtime);
-           carteiro.addOrder(braco.goToOuttakeBASKET(), 0.4 + delay,"braco garra superior", runtime);
-           carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0.4 + delay,"vertical", runtime);
-           carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0.9 + delay,"garra superior", runtime);
+
+            // upperSubsystemStates = UpperSubsystemStates.OUTTAKE;
+            if (!carteiro.hasOrder("fechar garra")) {
+                carteiro.addOrder(garraSuperior.fecharGarra(), delay, "fechar garra", runtime);
+            }
+            if (!carteiro.hasOrder("braco garra superior")) {
+                carteiro.addOrder(braco.goToOuttakeBASKET(), 0.49 + delay,"braco garra superior", runtime);
+            }
+            if (!carteiro.hasOrder("vertical")) {
+                carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0.46 + delay,"vertical", runtime);
+            }
+            if (!carteiro.hasOrder("garra superior")) {
+                carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0.9 + delay,"garra superior", runtime);
+            }
+
+
 
 
         }
@@ -87,8 +108,129 @@ public class SubsistemasSuperiores {
         /*****************************************/
         /************** Actions ******************/
         /*****************************************/
+    public void runStatesSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
 
-        public Action actionGoReadyTransfer() {
+            if(upperSubsystemStates == UpperSubsystemStates.TRANSFER || upperSubsystemStates == UpperSubsystemStates.INITIAL) {
+                Initial_ReadyToTransferSample(carteiro, runtime, robot, gamepad);
+            }
+            if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE) {
+                Outake(carteiro, runtime, robot, gamepad);
+            }
+
+
+        }
+
+    private void Initial_ReadyToTransferSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+        int maxPositionVerticalTransfer = 78;
+        boolean intakeInferiorTaProntoProTransfer   = robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER;
+        boolean intakeProntoProTransferAalgumTempo  = tempoInferiorEmTransfer.time() >= 0.100;
+        boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
+        boolean bracoTaNaPosicaoDeTransfer          = braco.bracoGarraSuperiorState ==  BracoGarraSuperiorStates.TRANSFER;
+        boolean garraTaAberta                       = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN;
+        boolean angulacaoGarraTaPraTransfer         = garraSuperior.garraAngulationState == GarraAngulationStates.ANGULAR_TRANSFER;
+        boolean estaApertandoParaResetar            = gamepad.getButton(GamepadKeys.Button.B);
+
+        /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta*/
+        if(verticalEstaResetado && intakeProntoProTransferAalgumTempo && angulacaoGarraTaPraTransfer && garraTaAberta){
+            if (!carteiro.hasOrder("ir pra modo Outake superior")) {
+                carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
+            }
+        }
+        /*todo: Precisa resetar o Linear?*/
+        if(!verticalEstaResetado || estaApertandoParaResetar || runtime <= 0.1) {
+            if(!carteiro.hasOrder("resetarOvertical")) {
+                carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
+            }
+        }
+        /*todo: precisa por os servos pra transfer?*/
+        if(!garraTaAberta || !angulacaoGarraTaPraTransfer) {
+            Action goToTransfer;
+            if(!garraTaAberta) {
+                goToTransfer = new SequentialAction(
+                        garraSuperior.abrirGarra(),
+                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.1).build(),
+                        garraSuperior.goToTransfer(),
+                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
+                        braco.goToReadyToTransfer()
+                );
+            }
+            else{
+                goToTransfer = new SequentialAction(
+                        garraSuperior.goToTransfer(),
+                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
+                        braco.goToReadyToTransfer()
+                );
+            }
+            if(!carteiro.hasOrder("sistemas Superiores indo pra intake")) {
+            carteiro.addOrder(goToTransfer, 0, "sistemas Superiores indo pra intake", runtime);
+            }
+
+        }
+        /*todo: gerenciar se deve resetar o Timer que conta quanto tempo tem sample pra transfer*/
+        if(!intakeInferiorTaProntoProTransfer){
+            tempoInferiorEmTransfer.reset();
+        }
+
+        /*todo: Adicionar Função pra mover os sistemas de servo manualmente*/
+
+        /*todo: Adicionar Função pra abrir e fechar a garra e rotacionar ela pra posições predefinidas com apenas um botão*/
+
+        /*todo: Adicionar Função de mover o vertical manualmente*/
+
+    }
+    private void Outake(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+        int maxPositionVerticalTransfer = 78;
+        int positionVerticalVerificaSeNaoPegou = 600;
+
+        boolean temSampleIntakeInferiorAinda        = robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+        boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
+        boolean verticalPodeVerificarSeNaoPegou     = linearVertical.motorR.getCurrentPosition() > positionVerticalVerificaSeNaoPegou;
+        boolean verticalJaFoiMandadoProAlto         = LinearVertical.targetPosition > 2000;
+        boolean bracoTaEmOutake                     = braco.bracoGarraSuperiorState ==  BracoGarraSuperiorStates.BASKET;
+        boolean garraTaFechada                      = garraSuperior.garraOpeningState == GarraOpeningStates.CLOSED;
+        boolean garraFoiAbertaEsoltouUmaSample      = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN && linearVertical.motorR.getCurrentPosition() > 2500;
+
+
+        /*todo: Fechar a garra Se necessário*/
+
+        /*todo: Subir o Linear Se necessário*/
+
+        /*todo: Mover os Subsistemas de servo pra Posição De Outake*/
+
+        /*todo: Verificar se pegou errado e a sample continua no intake*/
+
+        /*todo: Voltar pro Intake pra pegar a sample que tentou pegar*/
+
+        /*todo: Adicionar Função pra mover os sistemas de servo manualmente*/
+
+        /*todo: Adicionar Função pra abrir e fechar a garra e rotacionar ela pra posições predefinidas com apenas um botão*/
+
+        /*todo: Adicionar Função de mover o vertical manualmente*/
+        /*
+        //tempoInferiorEmTransfer.reset();
+        if(LinearVertical.targetPosition < 1800 &&  (LinearVertical.targetPosition > -100) && linearVertical.motorR.getCurrentPosition() < 100) {
+            goToOuttakeBASKET(carteiro, 0, runtime);
+        }
+        if(linearVertical.motorR.getCurrentPosition() > 500 && temSampleIntakeInferiorAinda && LinearVertical.targetPosition > 500) {
+            if(!carteiro.hasOrder("descendo o linear e indo pra initial")) {
+                //carteiro.addOrder(actionGoReadyTransfer(), 0, "descendo o linear e indo pra initial", runtime);
+
+            }
+            if(!carteiro.hasOrder("superior pra transfer")) {
+                carteiro.addOrder( new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.INITIAL), 0.3, "superior pra transfer", runtime);
+
+
+            }
+
+        }
+         */
+
+    }
+
+
+
+
+    public Action actionGoReadyTransfer() {
             /*if (upperSubsystemStates == UpperSubsystemStates.OUTTAKE){// todo: criar estado gerais
                 return  new SequentialAction(
                         braco.goToReadyToTransfer(),
@@ -131,7 +273,7 @@ public class SubsistemasSuperiores {
 
 
         }
-        public Action actionGoTransfer() {
+    public Action actionGoTransfer() {
         return  new SequentialAction(
 
                 garraSuperior.goToTransfer(),

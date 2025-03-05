@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class BracoGarraSuperior {
     int ID = 0;
     boolean isBusy = false;
-    public static boolean monitor;
+    public static boolean monitor = false;
     public double servoBracoSuperiorPosition =0.55555;
     public Servo bracoGarraSuperiorServo;
     public BracoGarraSuperiorStates bracoGarraSuperiorState = BracoGarraSuperiorStates.READYTO_TRANSFER;
@@ -35,8 +35,8 @@ public class BracoGarraSuperior {
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.652);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.171);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.075);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.075);///todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.09);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.09);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_EJECTING, 1.0);
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_TO_HANG, bracoReadyToHangPos);
         mapBracoSuperior.put(BracoGarraSuperiorStates.HANG, bracoHangPos);

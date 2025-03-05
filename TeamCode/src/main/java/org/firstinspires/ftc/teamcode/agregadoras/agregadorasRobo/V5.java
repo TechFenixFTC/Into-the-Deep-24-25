@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoController;
@@ -27,11 +28,7 @@ import java.util.List;
 public class V5 {
     // Attributes
     public MecanumDrive md;
-    public  static double
-            eixoX = 0,
-            eixoY = -30;
-
-
+    public  static double eixoX = 0, eixoY = -30;
     public Telemetry telemetry;
     public OrdersManager carteiro;
     public  static  V5Modes v5Mode = V5Modes.SPECIMEN;
@@ -43,7 +40,7 @@ public class V5 {
     HardwareMap hardwaremap;
     //Orientation angles;
     //public BHI260IMU.Parameters parameters = new IMU.Parameters();
-    public static boolean teelop = false, risky = false;
+    public boolean teelop = false, risky = false;
     public static double deposit_y = -44, deposit_x = -42;
     public double heading ;
 
@@ -131,7 +128,12 @@ public class V5 {
     }
 
 
+    public void runStatesSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
 
+        outtakeIntakeSuperior.runStatesSample(carteiro, runtime, robot, gamepad);
+        intakeInferior.runStatesSample(carteiro, runtime, robot, gamepad);
+
+    }
     public Action actionTransfer(){
          return new SequentialAction(
                  outtakeIntakeSuperior.actionGoReadyTransfer(),

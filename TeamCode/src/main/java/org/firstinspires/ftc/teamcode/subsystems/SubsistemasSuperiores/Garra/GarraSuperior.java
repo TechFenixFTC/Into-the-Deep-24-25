@@ -23,7 +23,7 @@ public class GarraSuperior extends Garra {
     public double angulacaoSuperiorPosition;
     public Servo servoRotacaoDaGarra;
     public GarraSuperiorRotetionStates garraRotationSuperiorState = GarraSuperiorRotetionStates.PARALELA;
-    public static double positionTransfer  = 0.6456;
+    public static double positionTransfer  = 0.625;
     double delay = 0.3;
     double cooldownRotacaoGarra;
     public double ServoRotacaoInferiorPosition,ServoAberturaInferiorPoition,ServoAngulacaoPosition;

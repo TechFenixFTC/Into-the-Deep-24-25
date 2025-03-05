@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
 
 
 public class ColorMatcher {
-    public static double distanciaMinima = 0.9, distanciaMaxima = 3.5;
+    public static double distanciaMinima = 0.9, distanciaMaxima = 4.65;
     private final SensorCor sensorCor;
     public ColorMatcher(SensorCor sensorCor) {
         this.sensorCor = sensorCor;

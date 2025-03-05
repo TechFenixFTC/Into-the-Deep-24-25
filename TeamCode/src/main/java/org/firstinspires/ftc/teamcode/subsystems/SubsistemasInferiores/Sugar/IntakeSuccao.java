@@ -28,11 +28,11 @@ public class IntakeSuccao{
                 green,
                 alpha;
     public Servo angulacao;
-    public static boolean monitor, toggle = false;
+    public static boolean monitor = true, toggle = false;
     private double delay = 0.25;
     double cooldown = 0;
     private double cooldownAberturaGarra = 0;
-    public static double power_Sugador = 0.7, pontoAtiv = 0.9;
+    public static double power_Sugador = 0.65, pontoAtiv = 0.9;
     public DcMotorEx sugador;
     public Servo alcapao;
     public static double posicaoReadyIntakeAlcapao = 0.616;
