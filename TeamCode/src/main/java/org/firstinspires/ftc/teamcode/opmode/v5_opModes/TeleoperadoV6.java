@@ -230,6 +230,7 @@ public class TeleoperadoV6 extends OpMode {
             strafe = powerStrafeInt;
         }
 
+
         if(gamepad.getButton(GamepadKeys.Button.Y)){
             Actions.runBlocking(
                     new SequentialAction(
@@ -259,8 +260,7 @@ public class TeleoperadoV6 extends OpMode {
 
 
     }
-    private void testar1servo(V5 robot, GamepadEx gamepad,OrdersManager carteiro) {
-    }
+
     private void hang(GamepadEx gamepad, OrdersManager carteiro) {
         if(gamepad.getButton(GamepadKeys.Button.X)) {
             robot.goReadytoHang(carteiro, getRuntime());
@@ -273,50 +273,58 @@ public class TeleoperadoV6 extends OpMode {
         }
     }
     private void bindsChamber(V5 robot, GamepadEx gamepad, OrdersManager carteiro) {
-
+        robot.runStatesSpecimen(carteiro,getRuntime(),robot,gamepad);
         if(gamepad.getButton(GamepadKeys.Button.A)){
-            robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
+            //robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo INTAKE CHAMBER", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER), 0, "ir pra modo INTAKE CHAMBER", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
-            robot.intakeInferior.gerenciadorIntakSpecimen(carteiro,getRuntime());
-
+            //robot.intakeInferior.gerenciadorIntakSpecimen(carteiro,getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE), 0, "ir pra modo INTAKE", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "ir pra modo INTAKE", getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
-            robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
+            //robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
+            //robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo OUTTAKE", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.OUTTAKE_CHAMBER), 0, "ir pra modo OUTTAKE", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.B)){
             if(LinearVertical.hang) {
                 LinearVertical.p /= 10;
                 LinearVertical.hang = false;
             }
+            //robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
+            //robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo INITIAL", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "ir pra modo INTIAL", getRuntime());
 
 
-          robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
-          robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
         }
 
-    }//todo okey
+    }
     private void bindsSample(V5 robot, GamepadEx gamepad, OrdersManager carteiro){
         if(SubsistemasInferiores.monitorEstadosInferiores) {
             robot.intakeInferior.monitorEstados();
         }
         robot.runStatesSample(robot.carteiro, getRuntime(), robot, gamepad);
 
-
+        /*if(gamepad.getButton(GamepadKeys.Button.A)){
+            //BOTÃO AUTOMTIZADO
+            //robot.outtakeIntakeSuperior.CorreProTransfer(carteiro,getRuntime());
+        }*/
         if(gamepad.getButton(GamepadKeys.Button.B)){
             if(LinearVertical.hang) {
                 LinearVertical.p /= 10;
                 LinearVertical.hang = false;
             }
             //robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
+
             carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo Inicial inferior", getRuntime());
             carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "ir pra modo Inicial superior", getRuntime());
 
-        }
-        if(gamepad.getButton(GamepadKeys.Button.A)){
-            //robot.outtakeIntakeSuperior.CorreProTransfer(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
             //robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
@@ -324,9 +332,8 @@ public class TeleoperadoV6 extends OpMode {
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
 
-           // robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,0.3,getRuntime());
         }
-    }//todo errado
+    }//todo quase certo
 
     private void linearVertical(LinearVertical vertical,GamepadEx gamepad, OrdersManager carteiro)  {
         vertical.PIDF();

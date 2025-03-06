@@ -9,16 +9,13 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperiorRotetionStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
-import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraAngulationStates;
 
 
 @Config
@@ -26,13 +23,13 @@ import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraAngulationSta
 public class AutSample0mais4 extends LinearOpMode {
     V5 robot;
     Action push;
-    public static double sample1y = -25,
-            sample2Ax = 37, sample2Ay = -42, sample2Ah = 85,
-            sample2Bh = -55,
-            sample3Ax = 39, sample3Ay = -40, sample3Ah = 55,
-            sample3Bh = -35,
-            sample4Ax = 50, sample4Ay = -23, sample4Ah = 0,
-            sample4Bx = 45, sample4By = -42, sample4Bh = -35
+    public static double
+            Xdeposit = -51 ,    Ydeposit = -54 ,  Hdeposit = 45,
+            XCollect2 = -47.5 , YCollect2 = -50 , HCollect2 = 90,
+            XCollect3 = -58 ,   YCollect3 = -50 , HCollect3 = 90,
+            XCollect4 = -46 ,   YCollect4 = -48 , HCollect4 = 135,
+            Xpark = 0 , Ypark = 0
+
             ;
 
 
@@ -58,8 +55,6 @@ public class AutSample0mais4 extends LinearOpMode {
                         new InstantAction(() -> {robot.outtakeIntakeSuperior.garraSuperior.fecharGarra();}),
                         new InstantAction(() -> {robot.outtakeIntakeSuperior.garraSuperior.servoAngulacaoGarra.setPosition(0.625);}),
                         new InstantAction(() -> {robot.outtakeIntakeSuperior.garraSuperior.garraChamber();}),
-
-
                         new InstantAction(() -> {robot.intakeInferior.intakeSuccao.angulacao.setPosition(0.033);})
                 )
         );
@@ -69,39 +64,34 @@ public class AutSample0mais4 extends LinearOpMode {
 
         Actions.runBlocking(
                 new ParallelAction(
-
+                        //todo action que fica sempre rodando as ações com base nos estados passados
                         AutomationSample(),
                         new SequentialAction(
-                                goToDeposit(),
+                            //todo : mudar estados do robo para outtake
                             new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL),
-                            new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.OUTTAKE)
+                            new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.OUTTAKE),
+                            //todo ir até a basket para depositar
+                            goToDeposit(),
+
+                            //todo depositar
+                            robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
+                            new InstantAction(() -> {robot.outtakeIntakeSuperior.garraSuperior.abrirGarra();}),
+
+                            //todo depois de largar o sample esperar um pouco para ir para pegar o proximo sample(obs: criar uma action de abrir garra com tempo)
+                            robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
+                            GoCollectSample2(),
+
+                            //todo mudar estados para intake transfer para pegar o proximo sample
+                            new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE),
+                            new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.TRANSFER)
+
                         )
 
                 )
         );
 
     }
-    public Action goToDeposit(){
-        return robot.md.actionBuilder(robot.md.pose)
 
-                // basket
-                .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-51, -54, Math.toRadians(45)), Math.toRadians(-135))
-
-                .build();
-
-    }
-    public Action goToEjectSample(double posex, double posey, double poseh, double sampleh) {
-        return robot.md.actionBuilder(new Pose2d(posex, posey, Math.toRadians(poseh)))
-                .turnTo(Math.toRadians(sampleh))
-                .build();
-    }
-    public Action goToEjetingSample3(double posex, double posey, double poseh) {
-        return robot.md.actionBuilder(new Pose2d(posex, posey, Math.toRadians(poseh)))
-                .setTangent(Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(sample4Bx, sample4By, Math.toRadians(sample4Bh)), Math.toRadians(-90))
-                .build();
-    }
 
     public Action AutomationSample(){
         return new Action() {
@@ -113,29 +103,23 @@ public class AutSample0mais4 extends LinearOpMode {
         };
     }
 
-    public  Action positionIntake() {
-        return new ParallelAction(
-                robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()                                                                                                                                                                                                           ,
-                robot.outtakeIntakeSuperior.braco.goToIntakeCHAMBER(),
-                robot.outtakeIntakeSuperior.garraSuperior.goToIntakeSpecimen(),
-                robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(0)
-        );
+    public Action goToDeposit(){//todo okey
+        return robot.md.actionBuilder(robot.md.pose)
+
+                // basket
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(Xdeposit, Ydeposit, Math.toRadians(Hdeposit)), Math.toRadians(-135))
+                .build();
+
     }
 
-    // todo colocar a rota certa e o comando certo também
-    public Action collect() {
-        return new SequentialAction(
-                robot.outtakeIntakeSuperior.garraSuperior.fecharGarra(),
-                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.8).build()
-        );
-    }
 
-    public Action GoCollectSample2() {
+    public Action GoCollectSample2() {//todo okey
         return robot.md.actionBuilder(robot.md.pose)
 
                 // collect Sample 2
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(-47.5, -50, Math.toRadians(90)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(XCollect2, YCollect2, Math.toRadians(HCollect2)), Math.toRadians(90))
                 .build();
 
     }
@@ -143,18 +127,18 @@ public class AutSample0mais4 extends LinearOpMode {
     public Action GoCollectSample3() {//todo okey
         return robot.md.actionBuilder(robot.md.pose)
 
-                // collect Sample 2
+                // collect Sample 3
                 .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-58, -50, Math.toRadians(90)), Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(XCollect3, YCollect3, Math.toRadians(HCollect3)), Math.toRadians(135))
                 .build();
 
     }
     public Action GoCollectSample4() {//todo okey
         return robot.md.actionBuilder(robot.md.pose)
 
-                // collect Sample 2
+                // collect Sample 4
                 .setTangent(Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(-46, -48, Math.toRadians(135)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(XCollect4, YCollect4, Math.toRadians(HCollect4)), Math.toRadians(0))
                 .build();
     }
 }

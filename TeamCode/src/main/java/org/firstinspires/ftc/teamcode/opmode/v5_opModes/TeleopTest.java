@@ -35,7 +35,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVer
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Deprecated
 @TeleOp(name="TeleopTest F")
 @Config
 public class TeleopTest extends OpMode {
