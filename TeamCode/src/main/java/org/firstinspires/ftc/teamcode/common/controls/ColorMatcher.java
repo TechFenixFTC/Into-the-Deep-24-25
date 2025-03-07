@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.common.controls;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
 
@@ -95,5 +97,22 @@ public class ColorMatcher {
         telemetry.addData("🎨 Hue", hue);
         telemetry.addData("📏 Distância", "%.2f cm", distancia);
         telemetry.addData("🖍️ Cor da Sample Detectada", corDetectada);
+    }
+
+    public void monitorAutonomo(TelemetryPacket telemetry) {
+        int red = sensorCor.getRed();
+        int green = sensorCor.getGreen();
+        int blue = sensorCor.getBlue();
+        float hue = getHueValue();
+        double distancia = sensorCor.getDistance();
+        String corDetectada = getSampleColor();
+
+        telemetry.addLine(String.format("🔴 Red: %d", red));
+        telemetry.addLine(String.format("🟢 Green: %d", green));
+        telemetry.addLine(String.format("🔵 Blue: %d", blue));
+        telemetry.addLine(String.format("🎨 Hue: %.2f", hue));
+        telemetry.addLine(String.format("📏 Distância: %.2f cm", distancia));
+        telemetry.addLine(String.format("🖍️ Cor da Sample Detectada: %s", corDetectada));
+
     }
 }

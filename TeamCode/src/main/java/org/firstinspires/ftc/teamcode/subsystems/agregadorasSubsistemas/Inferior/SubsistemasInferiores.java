@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -513,6 +514,27 @@ public class SubsistemasInferiores {
         telemetry .addData("🚪 Estado Alcapao Intake", "%s (%d)", intakeSuccao.alcapaoStates, estadoAlcapo);
     }
 
+
+    public void monitorEstadosAutonomo(TelemetryPacket telemetry){
+        int estadoGeral = 0;
+        if(underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER) estadoGeral = -1;
+        if(underGrounSubystemStates == UnderGrounSubystemStates.INTAKE) estadoGeral = 1;
+
+        int estadoHorizontal = 0;
+        if(linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.EXTENDED) estadoHorizontal = 1;
+
+        int estadoAngular = 0;
+        if(intakeSuccao.sugarAngulationStates == SugarAngulationStates.INTAKE) estadoAngular = 1;
+
+        int estadoAlcapo  = 0;
+        if(intakeSuccao.alcapaoStates == AlcapaoStates.INTAKE_SAMPLE) estadoAlcapo = 1;
+
+        telemetry.addLine(String.format("🚂 Estado Geral Inferiores: %s (%d)", underGrounSubystemStates, estadoGeral));
+        telemetry.addLine(String.format("🛤️ Estado Horizontal: %s (%d)", linearHorizontalMotor.linearHorizontalInferiorState, estadoHorizontal));
+        telemetry.addLine(String.format("🚇 Estado Angulação Intake: %s (%d)", intakeSuccao.sugarAngulationStates, estadoAngular));
+        telemetry.addLine(String.format("🚪 Estado Alçapão Intake: %s (%d)", intakeSuccao.alcapaoStates, estadoAlcapo));
+
+    }
 
 
   /*****************************************/

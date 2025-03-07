@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
@@ -18,6 +20,7 @@ import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarr
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
+import org.firstinspires.ftc.teamcode.subsystems.common.Garra.Garra;
 import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraAngulationStates;
 import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraOpeningStates;
 
@@ -119,17 +122,7 @@ public class SubsistemasSuperiores {
                         braco.goToReadyToTransfer()
                 );
             }
-            else if(linearVertical.motorR.getCurrentPosition()> 2800){
-                returnedAction = new SequentialAction(
-                        garraSuperior.abrirGarra(),
-                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(1.5).build(),
-                        garraSuperior.goToTransfer(),
-                        new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
-                        linearVertical.ElevadorGoTo(-700),
-                        braco.goToReadyToTransfer()
-                );
-
-            } else {
+            else {
                 returnedAction = new SequentialAction(
                         garraSuperior.goToTransfer(),
                         new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
@@ -374,6 +367,7 @@ public class SubsistemasSuperiores {
             int positionVerticalVerificaSeNaoPegou = 600;
 
             boolean temSampleIntakeInferiorAinda        = robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+            boolean intakeInferiorTaProntoProTransfer   = robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER;
             boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
             boolean verticalPodeVerificarSeNaoPegou     = linearVertical.motorR.getCurrentPosition() > positionVerticalVerificaSeNaoPegou;
             boolean verticalJaFoiMandadoProAlto         = LinearVertical.targetPosition > 2000;
@@ -385,7 +379,7 @@ public class SubsistemasSuperiores {
 
 
             /*todo: Fechar a garra Se necessário*/
-            if(!garraTaFechada && !garraTaFechando && !voltandoPraPegarUmaSample && !verticalPodeVerificarSeNaoPegou){
+            if(!garraTaFechada && !garraTaFechando && !voltandoPraPegarUmaSample && verticalEstaResetado){
                 if(!carteiro.hasOrder("esperar a garra fechar")) {
                     carteiro.addOrder(garraSuperior.fecharGarraTempo(), 0, "esperar a garra fechar", runtime);
                 }
@@ -420,7 +414,8 @@ public class SubsistemasSuperiores {
                 }
             }
 
-
+            /*todo: gerenciar se deve resetar o Timer que conta quanto tempo tem sample pra transfer*/
+            if(!intakeInferiorTaProntoProTransfer){ tempoInferiorEmTransfer.reset(); }
             /*todo: Adicionar Função pra mover os sistemas de servo manualmente*/
 
             /*todo: Adicionar Função pra abrir e fechar a garra e rotacionar ela pra posições predefinidas com apenas um botão*/
@@ -450,12 +445,14 @@ public class SubsistemasSuperiores {
      //todo autonomo
         public void runStatesSampleAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
 
+            if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE) {
+                OutakeHighBasketAutonomo(carteiro, runtime, robot);
+
+            }
             if(upperSubsystemStates == UpperSubsystemStates.TRANSFER || upperSubsystemStates == UpperSubsystemStates.INITIAL) {
                 Initial_ReadyToTransferSampleAutonomo(carteiro, runtime, robot);
             }
-            if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE) {
-                OutakeHighBasketAutonomo(carteiro, runtime, robot);
-            }
+
 
 
         }
@@ -478,7 +475,7 @@ public class SubsistemasSuperiores {
             }
             /*todo: Precisa resetar o Linear?*/
             if(!verticalEstaResetado || runtime <= 0.1) {
-                if(!carteiro.hasOrder("resetarOvertical")) {
+                if(!carteiro.hasOrder("resetarOvertical") && !LinearVertical.isBusy && !verticalEstaResetado) {
                     carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
                 }
             }
@@ -527,7 +524,9 @@ public class SubsistemasSuperiores {
         private void OutakeHighBasketAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
             int maxPositionVerticalTransfer = 78;
             int positionVerticalVerificaSeNaoPegou = 600;
+            int positionVerticalPraAbrirAGarra = 2800;
 
+            boolean verticalTaNaAlturaParaAbrirGarra = linearVertical.motorR.getCurrentPosition() > positionVerticalPraAbrirAGarra;
             boolean temSampleIntakeInferiorAinda        = robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
             boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
             boolean verticalPodeVerificarSeNaoPegou     = linearVertical.motorR.getCurrentPosition() > positionVerticalVerificaSeNaoPegou;
@@ -539,11 +538,10 @@ public class SubsistemasSuperiores {
             boolean angulacaoGarraTaPraTransfer         = garraSuperior.garraAngulationState == GarraAngulationStates.OUTTAKE_SAMPLE;
             boolean garraFoiAbertaEsoltouUmaSample      = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN && linearVertical.motorR.getCurrentPosition() > 2500;
 
-
             /*todo: Fechar a garra Se necessário*/
             //if(!garraTaFechada && !garraTaFechando && !voltandoPraPegarUmaSample && !verticalPodeVerificarSeNaoPegou){
                // if(!carteiro.hasOrder("esperar a garra fechar")) {
-                    carteiro.addOrder(garraSuperior.fecharGarraTempo(), 0, "esperar a garra fechar", runtime);
+                //carteiro.addOrder(garraSuperior.fecharGarraTempo(), 0, "esperar a garra fechar", runtime);
                // }
 
          //   }
@@ -560,12 +558,15 @@ public class SubsistemasSuperiores {
             /*todo: Mover a Garra pra Posição De Outake*/
             if(!angulacaoGarraTaPraTransfer && verticalPodeVerificarSeNaoPegou && !temSampleIntakeInferiorAinda && !voltandoPraPegarUmaSample){
                 if(!carteiro.hasOrder("garra vai pra outake")){
-                    carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0, "garra vai pra outake", runtime);
+                    carteiro.addOrder(garraSuperior.goToOuttakeAngulation(), 0, "garra vai pra outake", runtime);
                 }
             }
 
             if(verticalTaProAlto && garraTaFechada){
-                carteiro.addOrder(garraSuperior.abrirGarra(), 0,"garra abrir", runtime);
+                if(!carteiro.hasOrder("esperar garra abrir")){
+                    carteiro.addOrder(garraSuperior.abrirGarraTempo(), 0,"esperar garra abrir", runtime);
+                }
+
             }
             /*todo: Verificar se pegou errado e a sample continua no intake*/
             if(verticalJaFoiMandadoProAlto && verticalPodeVerificarSeNaoPegou && temSampleIntakeInferiorAinda){
@@ -581,6 +582,17 @@ public class SubsistemasSuperiores {
 
         }
 
+        public void monitorEstadosAutonomo(TelemetryPacket telemetry){
+            telemetry.addLine(String.format("🏗️ Estado Geral Superiores: %s", upperSubsystemStates));
+            telemetry.addLine(String.format("🕰️ Tempo Inferior em Transferência: %s", tempoInferiorEmTransfer.time()));
+            telemetry.addLine(String.format("♻️ Voltando Para Pegar Sample: %s", voltandoPraPegarUmaSample));
+            telemetry.addLine("Linear pos:"+linearVertical.motorR.getCurrentPosition()+" | Linear Alvo"+LinearVertical.targetPosition + " | 👷IsBusy: "+ LinearVertical.isBusy + " | Tempo ElevadorGoTo: "+linearVertical.timeElevadorGoTo);
+            telemetry.addLine("Corrente Linear Vertical: "+ linearVertical.motorR.getCurrent(CurrentUnit.AMPS) + " | " + "Limite Corrente Topo: " + LinearVertical.valorDeSurtoDeCorrenteTopo);
+            telemetry.put("Corrente Linear Vertical", linearVertical.motorR.getCurrent(CurrentUnit.AMPS));
+
+            garraSuperior.monitorAutonomo(telemetry);
+
+        }
 
 
         private double getVoltage() {return hardwaremap.voltageSensor.iterator().next().getVoltage();}

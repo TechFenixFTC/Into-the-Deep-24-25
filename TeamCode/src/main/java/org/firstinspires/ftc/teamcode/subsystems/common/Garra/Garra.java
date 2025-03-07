@@ -6,7 +6,6 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,9 +14,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.BracoGarra.BracoGarraSuperiorStates;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Garra.GarraSuperior;
 
 import java.util.HashMap;
 
@@ -63,6 +60,36 @@ public class Garra {
                 }
                 return true;
             }
+        };
+    }
+
+    public Action abrirGarraTempo(){
+
+
+
+        return new Action(){
+            ElapsedTime temporizador = new ElapsedTime();
+            boolean started = false;
+            double tempoPraAbrir = 0.2;
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket){
+                telemetryPacket.addLine("tempo FECHAR GARRA TEMPO: "+temporizador.time());
+                tempoAtual = temporizador.time();
+                if(!started){
+                    temporizador.reset();
+                    garraOpeningState = GarraOpeningStates.GOING_TO_OPEN;
+                    servoAberturaDaGarra.setPosition(mapOpening.get(GarraOpeningStates.OPEN));
+                    started = true;
+                }
+
+                if(temporizador.time() >= tempoPraAbrir){
+                    garraOpeningState = GarraOpeningStates.OPEN;
+                    return false;
+                }
+                return true;
+            }
+
         };
     }
     public Action fecharGarra() {
@@ -132,6 +159,21 @@ public class Garra {
 
 
         }
+    }
+
+    public void monitorAutonomo(TelemetryPacket telemetry){
+        if(monitor){
+            telemetry.addLine(String.format("🛠️ Garra Abertura Posição: %.2f", servoAberturaDaGarra.getPosition()));
+            telemetry.addLine(String.format("⚙️ Garra Abertura PWM: %s", servoAberturaDaGarra.getController().getPwmStatus()));
+            telemetry.addLine(String.format("🔄 Garra Abertura Estado: %s", garraOpeningState));
+
+            telemetry.addLine(String.format("🛠️ Garra Angulação Posição: %.2f", servoAngulacaoGarra.getPosition()));
+            telemetry.addLine(String.format("⚙️ Garra Angulação PWM: %s", servoAngulacaoGarra.getController().getPwmStatus()));
+            telemetry.addLine(String.format("🔄 Garra Angulação Atual: %s", garraAngulationState));
+            telemetry.addLine(String.format("⏱️ Garra Tempo Atual: %s", tempoAtual));
+        }
+
+
     }
 
 

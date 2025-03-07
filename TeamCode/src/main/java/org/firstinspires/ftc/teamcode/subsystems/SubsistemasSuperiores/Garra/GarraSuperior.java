@@ -42,7 +42,7 @@ public class GarraSuperior extends Garra {
         mapAngulation.put(GarraAngulationStates.OUTTAKE_SAMPLE,0.13277777777777777);//todo okey
 
         mapAngulation.put(GarraAngulationStates.INTAKE_SPECIMEN, 0.22833333333333333);//todo okey
-        mapAngulation.put(GarraAngulationStates.OUTTAKE_SPECIMEN,0.6077777777777777);//todo okey
+        mapAngulation.put(GarraAngulationStates.OUTTAKE_SPECIMEN,  0.5627777777777778);//todo okey
         mapAngulation.put(GarraAngulationStates.OUTTAKE_EJECTING,0.379);
         mapAngulation.put(GarraAngulationStates.READY_TO_HANG,angReadyToHangPos);
         mapAngulation.put(GarraAngulationStates.HANG,angHangPos);
@@ -146,6 +146,16 @@ public class GarraSuperior extends Garra {
             garraRotationSuperiorState = GarraSuperiorRotetionStates.PERPENDICULAR;//CHAMBER
 
             servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+            servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
+            servoRotacaoDaGarra.setPosition(mapRotation.get(garraRotationSuperiorState));
+        });
+    }
+    public Action goToOuttakeAngulation(){
+        return new InstantAction(()->{
+
+            garraAngulationState = GarraAngulationStates.OUTTAKE_SAMPLE;
+            garraRotationSuperiorState = GarraSuperiorRotetionStates.PERPENDICULAR;//CHAMBER
+
             servoAngulacaoGarra.setPosition(mapAngulation.get(garraAngulationState));
             servoRotacaoDaGarra.setPosition(mapRotation.get(garraRotationSuperiorState));
         });

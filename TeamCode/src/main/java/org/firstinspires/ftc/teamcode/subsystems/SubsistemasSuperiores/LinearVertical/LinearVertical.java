@@ -30,6 +30,7 @@ public class LinearVertical {
     public final DcMotorEx motorR;
     public final DcMotorEx motorL;
     LinearVerticalStates linearVerticalstate = LinearVerticalStates.Initial;
+    public double timeElevadorGoTo = 0;
     // controla descer
     public boolean needToChangeTarget = false;
     public double timeToChangeTarget = 0;
@@ -134,7 +135,8 @@ public class LinearVertical {
             int id = target;
             ElapsedTime time = new ElapsedTime();
             boolean started = false;
-            boolean condicaoDeParada, condicaoParadaSurtoEnergia = false, condicaoDeParadaId = false;
+            int topo = 2650;
+            boolean condicaoDeParada, condicaoParadaSurtoEnergia = false, condicaoDeParadaId = false, condicaoParadaTopo = false;
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 if(!started) {
@@ -148,18 +150,19 @@ public class LinearVertical {
 
                 PIDF();
                 telemetryPacket.addLine("Linear pos:"+motorR.getCurrentPosition()+" | Linear Alvo"+targetPosition);
-
+                timeElevadorGoTo = time.time();
 
                 if(target > 0) {
                     condicaoDeParada = chegouNoTargetAut();
                 }
                 else {
                     condicaoDeParada = motorR.getCurrentPosition() >= targetPosition - margemAut  &&  motorR.getCurrentPosition() <= targetPosition + margemAut ;
-                    condicaoParadaSurtoEnergia = (motorR.getCurrent(CurrentUnit.AMPS) >= correnteLimite) && !hang;
+                    condicaoParadaSurtoEnergia = (motorR.getCurrent(CurrentUnit.AMPS) >= correnteLimite);
                 }
 
+                //condicaoParadaSurtoEnergia = (motorR.getCurrent(CurrentUnit.AMPS) >= correnteLimite) && !hang;
                 condicaoDeParadaId = ID != id;
-
+                condicaoParadaTopo = motorR.getCurrentPosition() >= topo;
                 if(condicaoParadaSurtoEnergia && time.time() > 0.1 && motorR.getCurrentPosition() < 230) {
                     motorL.setPower(Math.cos(Math.toRadians(target)) * f);
                     motorR.setPower(Math.cos(Math.toRadians(target)) * f);
@@ -167,7 +170,7 @@ public class LinearVertical {
                     isBusy = false;
                     return false;
                 }
-                if(condicaoDeParada || condicaoDeParadaId) {
+                if(condicaoDeParada || condicaoDeParadaId || condicaoParadaTopo) {
                     motorL.setPower(Math.cos(Math.toRadians(target)) * f);
                     motorR.setPower(Math.cos(Math.toRadians(target)) * f);
                     isBusy = false;

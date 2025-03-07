@@ -34,14 +34,14 @@ public class BracoGarraSuperior {
         bracoGarraSuperiorServo = hardwareMap.get(Servo.class, HardwareNames.bracoGarraSuperiorServo);
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.652);///todo okey
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.171);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.09);//todo rever as posições
-        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.09);///todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.0928);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER, 0.0928);//todo rever as posições
+        mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER, 0.0928);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_EJECTING, 1.0);
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_TO_HANG, bracoReadyToHangPos);
         mapBracoSuperior.put(BracoGarraSuperiorStates.HANG, bracoHangPos);
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.117);//todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.15);//todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_CHAMBER, 0.8438888888888889);//todo okey
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);//todo rever as posições

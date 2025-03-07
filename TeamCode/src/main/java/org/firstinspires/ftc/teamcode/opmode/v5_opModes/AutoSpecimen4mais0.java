@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 public class AutoSpecimen4mais0 extends LinearOpMode {
     V5 robot;
     Action push;
+    public static int target = 0;
     @Override
     public void runOpMode()  {
 
@@ -45,7 +46,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
         Actions.runBlocking(
                 new SequentialAction(
                         robot.intakeInferior.linearHorizontalMotor.turnOnHold(),
-                        new InstantAction(() -> {robot.intakeInferior.linearHorizontalMotor.changeTarget(-100);robot.intakeInferior.linearHorizontalMotor.PID();} ),
+                        new InstantAction(() -> {robot.intakeInferior.linearHorizontalMotor.changeTarget(target);robot.intakeInferior.linearHorizontalMotor.PID();} ),
                         deposit(),
                         new ParallelAction(
                                 new SequentialAction(
@@ -129,7 +130,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action goToDeposit(){
         return robot.md.actionBuilder(robot.md.pose)
                 //todo: colocar primeiro specimen
-                .strafeTo(new Vector2d(-6,-26))
+                .strafeTo(new Vector2d(-6,-22))
                 //.splineToConstantHeading(new Vector2d(-6, -26), Math.toRadians(90))
                 //todo: Go to empurrar sample 1
                 .build();
@@ -168,7 +169,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action goToDeposit2() {
         return robot.md.actionBuilder(new Pose2d(51, -63, Math.toRadians(-90)))
                 //todo: colocar primeiro specimen
-                .strafeTo(new Vector2d(-6,-28))
+                .strafeTo(new Vector2d(-6,-22))
                 .build();
     }
     public Action goToDeposit3() {
@@ -201,7 +202,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
         return new SequentialAction(
                 new ParallelAction(
                         robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(),
-                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(870),
+                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(770),
                         robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeSpecimen(),
                         new SequentialAction(
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
@@ -218,7 +219,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
         return new SequentialAction(
                 new ParallelAction(
                         robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(),
-                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(870),
+                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(770),
                         robot.outtakeIntakeSuperior.garraSuperior.goToOuttakeSpecimen(),
                         new SequentialAction(
                                 //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),

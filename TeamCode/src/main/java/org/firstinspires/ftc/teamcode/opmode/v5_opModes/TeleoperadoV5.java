@@ -166,6 +166,10 @@ public class TeleoperadoV5 extends OpMode {
 
     @Override
     public void stop() {
+        if(LinearVertical.hang) {
+            LinearVertical.p /= 10;
+            LinearVertical.hang = false;
+        }
         robot.carteiro.saveLogsToJson();
     }
 
@@ -217,7 +221,7 @@ public class TeleoperadoV5 extends OpMode {
             strafe = powerStrafeInt;
         }
 
-        if(gamepad.getButton(GamepadKeys.Button.Y)){
+        /*if(gamepad.getButton(GamepadKeys.Button.Y)){
             Actions.runBlocking(
                     new SequentialAction(
                             robot.md.actionBuilder(robot.md.pose)
@@ -227,9 +231,9 @@ public class TeleoperadoV5 extends OpMode {
                                     .build()
                     )
             );
-        }
+        }*/
 
-        if(gamepad.getButton(GamepadKeys.Button.A)){
+        if(gamepad.getButton(GamepadKeys.Button.Y)){
             Actions.runBlocking(
                     new SequentialAction(
                             robot.md.actionBuilder(robot.md.pose)

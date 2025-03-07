@@ -311,10 +311,12 @@ public class TeleoperadoV6 extends OpMode {
         }
         robot.runStatesSample(robot.carteiro, getRuntime(), robot, gamepad);
 
-        /*if(gamepad.getButton(GamepadKeys.Button.A)){
+
+        if(gamepad.getButton(GamepadKeys.Button.A)){
+
             //BOTÃO AUTOMTIZADO
             //robot.outtakeIntakeSuperior.CorreProTransfer(carteiro,getRuntime());
-        }*/
+        }
         if(gamepad.getButton(GamepadKeys.Button.B)){
             if(LinearVertical.hang) {
                 LinearVertical.p /= 10;
@@ -331,7 +333,7 @@ public class TeleoperadoV6 extends OpMode {
             carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE), 0, "ir pra modo INTAKE", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0, "ir pra modo Inicial superior", getRuntime());
         }
     }//todo quase certo
 
