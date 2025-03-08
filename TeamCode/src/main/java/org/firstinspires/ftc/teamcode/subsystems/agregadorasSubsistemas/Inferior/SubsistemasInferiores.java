@@ -26,11 +26,11 @@ import java.security.PublicKey;
 
 public class SubsistemasInferiores {
     public MatchColor matchColor;
-    double cooldown = 0, lastTimeB = 0;
+    double cooldown = 0, lastTimeB = 0, runtTime = 0;
     public Telemetry telemetry;
     public IntakeSuccao intakeSuccao;
     public UnderGrounSubystemStates underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
-    public static boolean monitorEstadosInferiores = true;
+    public static boolean monitorEstadosInferiores = true, mandouRetrairEmAlgumPonto = false, mandouSubirOIntake = false;
 
     public GarraInferior garraInferior;
     public LinearHorizontalMotor linearHorizontalMotor;
@@ -174,7 +174,7 @@ public class SubsistemasInferiores {
   //todo teleop
     public void runStatesSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
 
-        if(underGrounSubystemStates == UnderGrounSubystemStates.INITIAL) {
+        if(underGrounSubystemStates == UnderGrounSubystemStates.INITIAL || underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER) {
             Initial_ReadyToTransferSample(carteiro, runtime, robot, gamepad);
         }
         if(underGrounSubystemStates == UnderGrounSubystemStates.INTAKE) {
@@ -197,7 +197,7 @@ public class SubsistemasInferiores {
 
             carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.TRANSFER), 0, "Mudar modo subsistemas inferiores pra transfer", runtime);
 
-        }else if( underGrounSubystemStates != UnderGrounSubystemStates.INITIAL) {
+        }else if( underGrounSubystemStates != UnderGrounSubystemStates.INITIAL && !temUmaSampleNoIntake) {
             carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "Mudar modo subsistemas inferiores pra transfer", runtime);
 
         }
@@ -337,7 +337,7 @@ public class SubsistemasInferiores {
   //todo auto
     public void runStatesSampleAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
 
-        if(underGrounSubystemStates == UnderGrounSubystemStates.INITIAL) {
+        if(underGrounSubystemStates == UnderGrounSubystemStates.INITIAL || underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER) {
             Initial_ReadyToTransferSampleAutonomo(carteiro, runtime, robot);
         }
         if(underGrounSubystemStates == UnderGrounSubystemStates.INTAKE) {
@@ -354,15 +354,19 @@ public class SubsistemasInferiores {
         boolean temUmaSampleNoIntake       = intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake();
         boolean samplePosicaoPraTransfer   = intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
         double delay = 0;
+
+        this.runtTime = runtime;
         // AÇÕES DE TRANSIÇÃO Automática
         /* todo: ir para Transfer quando> 1- tiver uma sample na posição 2- alçapão pra transfer 3- horizontal retraido*/
         if(samplePosicaoPraTransfer && alcapaoPosicaoProTransfer && linearEstaRetraido && underGrounSubystemStates != UnderGrounSubystemStates.TRANSFER) {
-
+            mandouSubirOIntake = false;
+            mandouRetrairEmAlgumPonto = false;
             carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.TRANSFER), 0, "Mudar modo subsistemas inferiores pra transfer", runtime);
 
-        }else if( underGrounSubystemStates != UnderGrounSubystemStates.INITIAL) {
-            carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "Mudar modo subsistemas inferiores pra transfer", runtime);
 
+        }else if( underGrounSubystemStates != UnderGrounSubystemStates.INITIAL && !temUmaSampleNoIntake) {
+            carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "Mudar modo subsistemas inferiores pra initial", runtime);
+            //underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
         }
 
 
@@ -371,6 +375,7 @@ public class SubsistemasInferiores {
         if(!linearEstaRetraido && intakeSuccaoTaNoModoIntake && !linearHorizontalMotor.isBusy) {
             delay = 0.1;
             if (!carteiro.hasOrder("Intake Sucção Pra ReadyToIntake")) {
+                mandouSubirOIntake = true;
                 carteiro.addOrder(
                         intakeSuccao.GotoReadyToIntakeSample(),
                         0.07,
@@ -386,7 +391,11 @@ public class SubsistemasInferiores {
         /* todo: retrai o horizontal*/
         linearHorizontalMotor.PID();
         if(!linearEstaRetraido && !linearHorizontalMotor.isBusy) {
-            carteiro.addOrder(linearHorizontalMotor.goToRetracted(), delay, "retrairLinear", runtime);
+            if(!carteiro.hasOrder("retrairLinear")){
+                mandouRetrairEmAlgumPonto = true;
+                carteiro.addOrder(linearHorizontalMotor.goToRetracted(), delay, "retrairLinear", runtime);
+            }
+
         }
 
         /* todo: Manter pressionando o horiontal enquanto tiver uma sample no intake e o horizontal estiver retraido */
@@ -435,6 +444,7 @@ public class SubsistemasInferiores {
         int posicaoQueDaPraAbaixarOIntake = 1000;
         boolean linearTaNaPosicaoQueDaPraAbaixarOIntake = linearHorizontalMotor.motorHorizontal.getCurrentPosition() >= posicaoQueDaPraAbaixarOIntake;
         boolean linearEstaExtendendo             = LinearHorizontalMotor.targetPosition > 1200;
+        boolean subsistemasEstaInicial           = underGrounSubystemStates == UnderGrounSubystemStates.INITIAL;
         boolean linearEstaRetraido               = linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED;
         boolean linearEstaEstendido              = linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.EXTENDED;
         boolean intakeSuccaoTaNoModoIntake       = intakeSuccao.sugarAngulationStates == SugarAngulationStates.INTAKE;
@@ -453,15 +463,18 @@ public class SubsistemasInferiores {
 
         /*todo: estica o horizontal*/
         if(linearEstaRetraido){
-            carteiro.addOrder(linearHorizontalMotor.goToExtended(), delay, "ExtenderLinear", runtime);
-           /* if (!carteiro.hasOrder("Intake Sucção Pra ReadyToIntake")) {
-                carteiro.addOrder(
-                        intakeSuccao.GotoReadyToIntakeSample(),
-                        0.17,
-                        "Intake Sucção Pra ReadyToIntake",
-                        runtime
-                );
-            }*/
+            if(!carteiro.hasOrder("ExtenderLinear")){
+                carteiro.addOrder(linearHorizontalMotor.goToExtended(), delay, "ExtenderLinear", runtime);
+                if (!carteiro.hasOrder("Intake Sucção Pra ReadyToIntake")) {
+                    carteiro.addOrder(
+                            intakeSuccao.GotoReadyToIntakeSample(),
+                            0.17,
+                            "Intake Sucção Pra ReadyToIntake",
+                            runtime
+                    );
+                }
+            }
+
 
         }
         /* todo: alçapão para a posição de intake sample(abaixado) */
@@ -469,7 +482,7 @@ public class SubsistemasInferiores {
             carteiro.addOrder(intakeSuccao.IntakeSamplePositionAlcapao(), 0, "alcapao intake sample", runtime);
         }
         /*todo: Angulação do intake*/
-            if(linearEstaExtendendo && linearTaNaPosicaoQueDaPraAbaixarOIntake) {
+            if(/*linearEstaExtendendo && linearTaNaPosicaoQueDaPraAbaixarOIntake*/linearEstaEstendido) {
                 carteiro.addOrder(intakeSuccao.GotoIntakeSample(), 0, "Intake Sample", runtime);
             }
 
@@ -486,7 +499,10 @@ public class SubsistemasInferiores {
         }
         /*todo: Sugou certo, retraiu*/
         if(samplePosicaoPraTransfer && linearEstaEstendido && !linearHorizontalMotor.isBusy) {
-            carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo Inicial", runtime);
+            if(!carteiro.hasOrder("ir pra modo Inicial")){
+                carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo Inicial", runtime);
+            }
+
         }
 
 
@@ -529,11 +545,12 @@ public class SubsistemasInferiores {
         int estadoAlcapo  = 0;
         if(intakeSuccao.alcapaoStates == AlcapaoStates.INTAKE_SAMPLE) estadoAlcapo = 1;
 
-        telemetry.addLine(String.format("🚂 Estado Geral Inferiores: %s (%d)", underGrounSubystemStates, estadoGeral));
+        telemetry.addLine(String.format("🚂 Estado Geral Inferiores: %s (%d) | RUNTIME: %s", underGrounSubystemStates, estadoGeral, this.runtTime));
         telemetry.addLine(String.format("🛤️ Estado Horizontal: %s (%d)", linearHorizontalMotor.linearHorizontalInferiorState, estadoHorizontal));
         telemetry.addLine(String.format("🚇 Estado Angulação Intake: %s (%d)", intakeSuccao.sugarAngulationStates, estadoAngular));
         telemetry.addLine(String.format("🚪 Estado Alçapão Intake: %s (%d)", intakeSuccao.alcapaoStates, estadoAlcapo));
-
+        telemetry.addLine(String.format("Horizontal IsBusy: %s | Esta retraido: %s", linearHorizontalMotor.isBusy, linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED && linearHorizontalMotor.sensorIsDetectingHorintontal()));
+        telemetry.addLine(String.format("Ordens ja feitas: SUBIR O INTAKE: %s | RETRAIR O HORIZONTAL: %s", mandouSubirOIntake, mandouRetrairEmAlgumPonto));
     }
 
 

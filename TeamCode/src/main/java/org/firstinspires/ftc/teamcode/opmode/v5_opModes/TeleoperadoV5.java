@@ -166,10 +166,7 @@ public class TeleoperadoV5 extends OpMode {
 
     @Override
     public void stop() {
-        if(LinearVertical.hang) {
-            LinearVertical.p /= 10;
-            LinearVertical.hang = false;
-        }
+        LinearVertical.hang = false;
         robot.carteiro.saveLogsToJson();
     }
 
@@ -233,6 +230,10 @@ public class TeleoperadoV5 extends OpMode {
             );
         }*/
 
+        /*todo rota automatica intake specime
+            |
+            \/
+
         if(gamepad.getButton(GamepadKeys.Button.Y)){
             Actions.runBlocking(
                     new SequentialAction(
@@ -242,7 +243,7 @@ public class TeleoperadoV5 extends OpMode {
                                     .build()
                     )
             );
-        }
+        }*/
         turn = Range.clip(turn / 1.3, -0.7, 0.7);
 
         robot.md.setDrivePowers(new PoseVelocity2d(new Vector2d(drive, strafe), turn));
@@ -254,33 +255,37 @@ public class TeleoperadoV5 extends OpMode {
     }
     private void hang(GamepadEx gamepad, OrdersManager carteiro) {
         if(gamepad.getButton(GamepadKeys.Button.X)) {
+            LinearVertical.hang =false;
             robot.goReadytoHang(carteiro, getRuntime());
         }
+        if(gamepad.getButton(GamepadKeys.Button.Y)){
+            LinearVertical.hang =false;
+            robot.goReadytoHang2(carteiro, getRuntime());
+        }
         if(gamepad.getButton(GamepadKeys.Button.B)) {
+            LinearVertical.hang =true;
             robot.goToHang(carteiro, getRuntime());
         }
     }
     private void bindsChamber(V5 robot, GamepadEx gamepad, OrdersManager carteiro) {
 
         if(gamepad.getButton(GamepadKeys.Button.A)){
+            LinearVertical.hang  = false;
             robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
+            LinearVertical.hang  = false;
             robot.intakeInferior.gerenciadorIntakSpecimen(carteiro,getRuntime());
 
 
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
+            LinearVertical.hang  = false;
             robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
             robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.B)){
-            if(LinearVertical.hang) {
-                LinearVertical.p /= 8;
-                LinearVertical.hang = false;
-            }
-
-
+            LinearVertical.hang  = false;
           robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
           robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
         }
@@ -288,23 +293,23 @@ public class TeleoperadoV5 extends OpMode {
     }//todo okey
     private void bindsSample(V5 robot, GamepadEx gamepad, OrdersManager carteiro){
         if(gamepad.getButton(GamepadKeys.Button.B)){
-            if(LinearVertical.hang) {
-                LinearVertical.p /= 8;
-                LinearVertical.hang = false;
-            }
+            LinearVertical.hang  = false;
             robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
             robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro, getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.A)){
+            LinearVertical.hang  = false;
             robot.outtakeIntakeSuperior.CorreProTransfer(carteiro,getRuntime()
             );
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
+            LinearVertical.hang  = false;
             robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
             robot.intakeInferior.gerenciadorIntakeSample(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
+            LinearVertical.hang  = false;
             robot.outtakeIntakeSuperior.goToOuttakeBASKET(carteiro,0.3,getRuntime());
         }
     }//todo errado

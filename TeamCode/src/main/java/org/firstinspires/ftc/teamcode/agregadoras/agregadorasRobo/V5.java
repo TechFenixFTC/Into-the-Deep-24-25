@@ -54,7 +54,7 @@ public class V5 {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        LinearVertical.hang = false;
+
         //imu = hardwareMap.get(BNO055IMU.class, "imu");
         //angles =  imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         //heading = angles.firstAngle;
@@ -183,7 +183,7 @@ public class V5 {
                 outtakeIntakeSuperior.braco.goToReadyHang(),
                 outtakeIntakeSuperior.garraSuperior.goToReadyHang(),
                 intakeInferior.actionIntakeIrPraInitial(),
-                outtakeIntakeSuperior.linearVertical.goToReadyHang()
+                outtakeIntakeSuperior.linearVertical.goToReadyHang2()
 
         );
         return readyToHangAction;
@@ -193,8 +193,8 @@ public class V5 {
         Action readyToHangAction = new SequentialAction(
                 outtakeIntakeSuperior.braco.goToHang(),
                 outtakeIntakeSuperior.garraSuperior.goToHang(),
-                intakeInferior.actionIntakeIrPraInitial(),
-                outtakeIntakeSuperior.linearVertical.goToHang()
+                intakeInferior.actionIntakeIrPraInitial()
+                //outtakeIntakeSuperior.linearVertical.goToHang()
         );
         return readyToHangAction;
     }

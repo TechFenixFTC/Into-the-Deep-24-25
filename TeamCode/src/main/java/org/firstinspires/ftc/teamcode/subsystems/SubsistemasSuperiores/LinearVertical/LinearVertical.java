@@ -35,9 +35,9 @@ public class LinearVertical {
     public boolean needToChangeTarget = false;
     public double timeToChangeTarget = 0;
     public int wantedTarget = 0;
-    public static boolean monitor= false, isBusy = false, hang = false;
+    public static boolean monitor= false, isBusy = false,hang = false;
     HashMap<LinearVerticalStates, Integer> mapLinearVertical = new HashMap<>();
-    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 150 , sense = 40, ID = 0, readyHangPos = 1950, hangPos = -100;
+    public static int portaLinearVerticalDireita, portaLinearVerticalEsquerdo, margem = 30, margemAut = 150 , sense = 40, ID = 0,readyHangPos2 =3100  ,readyHangPos = 1950, hangPos = -100000;
     public static double tempoParaEstabilizacao = 0.2, correnteLimite = 2.4;
     public PIDTargetChecker pidTargetChecker = new PIDTargetChecker(margem, tempoParaEstabilizacao);
     public PIDTargetChecker pidTargetCheckerAut = new PIDTargetChecker(margemAut, tempoParaEstabilizacao);
@@ -99,7 +99,7 @@ public class LinearVertical {
         if(motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrenteTopo && targetPosition > 2700 && motorR.getCurrentPosition() > 2600) {
             targetPosition -= 20;
         }
-        if ((motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrente && targetPosition < 1800 && targetPosition > 0) && !hang) {
+        if ((motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrente && targetPosition < 1800 && targetPosition > 0) ) {
             targetPosition = (targetPosition + motorR.getCurrentPosition()) / 2; // Aproxima suavemente do valor atual
         }
         if(this.motorR.getCurrentPosition() < 0 && targetPosition < 10 && targetPosition > -180) {
@@ -111,9 +111,14 @@ public class LinearVertical {
         controller.setPID(kp, i,d);
         double pid = controller.calculate(linearpos, targetPosition);
         double ff = Math.cos(Math.toRadians(targetPosition)) * f;
-
+        if(hang){
+            motorR.setPower(-1);
+            motorL.setPower(-1);
+            return pid + ff;
+        }
         motorL.setPower(pid+ff);
         motorR.setPower(pid+ff);
+
 
         return pid + ff;
     }
@@ -145,7 +150,7 @@ public class LinearVertical {
                     started = true;
                     ID = id;
                     isBusy = true;
-                    if(hang) { p *= 10; }
+
                 }
 
                 PIDF();
@@ -187,6 +192,9 @@ public class LinearVertical {
 
     public Action goToReadyHang() {
         return ElevadorGoTo(readyHangPos);
+    }
+    public Action goToReadyHang2() {
+        return ElevadorGoTo(readyHangPos2);
     }
 
     public Action goToHang() {

@@ -279,10 +279,7 @@ public class TeleopTest extends OpMode {
             robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.B)){
-            if(LinearVertical.hang) {
-                LinearVertical.p /= 8;
-                LinearVertical.hang = false;
-            }
+
 
 
             robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
@@ -292,10 +289,7 @@ public class TeleopTest extends OpMode {
     }//todo okey
     private void bindsSample(V5 robot, GamepadEx gamepad, OrdersManager carteiro){
         if(gamepad.getButton(GamepadKeys.Button.B)){
-            if(LinearVertical.hang) {
-                LinearVertical.p /= 8;
-                LinearVertical.hang = false;
-            }
+
 
             robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
             robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro, getRuntime());

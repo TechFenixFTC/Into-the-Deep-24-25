@@ -8,7 +8,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.outoftheboxrobotics.photoncore.Photon;
+//import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.HardwareNames;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorToque;
 
-@Photon
+//@Photon
 @Config
 public class LinearHorizontalMotor {
     public ElapsedTime tempoIndoAteOsetPoint = new ElapsedTime();
@@ -125,6 +125,12 @@ public class LinearHorizontalMotor {
                     timeInReset.reset();
                 }
 
+                // condicao para stop por conta do id
+                if(ID != alvo){
+                    isBusy = false;
+
+                    return false;
+                }
 
                 if(condicaoDeParadaEsticou){
                     isBusy = false;

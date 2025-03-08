@@ -460,7 +460,7 @@ public class SubsistemasSuperiores {
         private void Initial_ReadyToTransferSampleAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
             int maxPositionVerticalTransfer = 78;
             boolean intakeInferiorTaProntoProTransfer   = robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER;
-            boolean intakeProntoProTransferAalgumTempo  = tempoInferiorEmTransfer.time() >= 0.500;
+            boolean intakeProntoProTransferAalgumTempo  = tempoInferiorEmTransfer.time() >= 0.200;
             boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
             boolean bracoTaNaPosicaoDeTransfer          = braco.bracoGarraSuperiorState ==  BracoGarraSuperiorStates.TRANSFER;
             boolean garraTaAberta                       = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN;
@@ -523,7 +523,7 @@ public class SubsistemasSuperiores {
         }
         private void OutakeHighBasketAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
             int maxPositionVerticalTransfer = 78;
-            int positionVerticalVerificaSeNaoPegou = 600;
+            int positionVerticalVerificaSeNaoPegou = 200;
             int positionVerticalPraAbrirAGarra = 2800;
 
             boolean verticalTaNaAlturaParaAbrirGarra = linearVertical.motorR.getCurrentPosition() > positionVerticalPraAbrirAGarra;
@@ -545,6 +545,13 @@ public class SubsistemasSuperiores {
                // }
 
          //   }
+            linearVertical.PIDF();
+            if(!garraTaFechada && !garraTaFechando && !voltandoPraPegarUmaSample && verticalEstaResetado){
+                if(!carteiro.hasOrder("esperar a garra fechar")) {
+                    carteiro.addOrder(garraSuperior.fecharGarraTempo(), 0, "esperar a garra fechar", runtime);
+                }
+
+            }
             /*todo: Mandar Subir o Linear quando a garra pegar o sample*/
             if(!verticalJaFoiMandadoProAlto && garraTaFechada && !voltandoPraPegarUmaSample){
                 carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0, "Sobe o LinearVertical", runtime);
