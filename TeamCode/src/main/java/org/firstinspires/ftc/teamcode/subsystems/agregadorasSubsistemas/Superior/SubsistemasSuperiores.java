@@ -300,7 +300,7 @@ public class SubsistemasSuperiores {
         private void Initial_ReadyToTransferSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
             int maxPositionVerticalTransfer = 78;
             boolean intakeInferiorTaProntoProTransfer   = robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER;
-            boolean intakeProntoProTransferAalgumTempo  = tempoInferiorEmTransfer.time() >= 0.200;
+            boolean intakeProntoProTransferAalgumTempo  = tempoInferiorEmTransfer.time() >= 0.500;
             boolean verticalEstaResetado                = linearVertical.motorR.getCurrentPosition() < maxPositionVerticalTransfer;
             boolean bracoTaNaPosicaoDeTransfer          = braco.bracoGarraSuperiorState ==  BracoGarraSuperiorStates.TRANSFER;
             boolean garraTaAberta                       = garraSuperior.garraOpeningState == GarraOpeningStates.OPEN;
@@ -308,12 +308,7 @@ public class SubsistemasSuperiores {
             boolean estaApertandoParaResetar            = gamepad.getButton(GamepadKeys.Button.B);
             boolean precisaTirarOSistemaDaBasket        = linearVertical.motorR.getCurrentPosition() > 2500;
 
-           /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta 4:NãoTaVoltandoPraPegarSample*/
-            if(verticalEstaResetado && intakeProntoProTransferAalgumTempo && angulacaoGarraTaPraTransfer && garraTaAberta && !voltandoPraPegarUmaSample && runtime > 1.6){
-                if (!carteiro.hasOrder("ir pra modo Outake superior")) {
-                    carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
-                }
-            }
+
            /*todo: Precisa resetar o Linear?*/
             if((!verticalEstaResetado || estaApertandoParaResetar)|| runtime <= 0.1) {
                 if(!carteiro.hasOrder("resetarOvertical")) {
@@ -359,6 +354,13 @@ public class SubsistemasSuperiores {
            /*todo: nessa função ele vê se o  robo esta voltando pra pegar uma sample, dai verifica se o vertical ta resetado a uns 200ms e ai ele desliga a condição pro transfer acontecer*/
             if(voltandoPraPegarUmaSample && tempoVerticalResetado.time() >= 0.200){
                 voltandoPraPegarUmaSample = false;
+            }
+
+            /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta 4:NãoTaVoltandoPraPegarSample*/
+            if(verticalEstaResetado && intakeProntoProTransferAalgumTempo && angulacaoGarraTaPraTransfer && garraTaAberta && !voltandoPraPegarUmaSample && runtime > 1.6){
+                if (!carteiro.hasOrder("ir pra modo Outake superior")) {
+                    carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
+                }
             }
 
         }
@@ -467,12 +469,7 @@ public class SubsistemasSuperiores {
             boolean angulacaoGarraTaPraTransfer         = garraSuperior.garraAngulationState == GarraAngulationStates.TRANSFER;
             boolean precisaTirarOSistemaDaBasket        = linearVertical.motorR.getCurrentPosition() > 2500;
 
-            /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta 4:NãoTaVoltandoPraPegarSample*/
-            if(verticalEstaResetado && intakeProntoProTransferAalgumTempo && angulacaoGarraTaPraTransfer && garraTaAberta && !voltandoPraPegarUmaSample && runtime > 1.6){
-                if (!carteiro.hasOrder("ir pra modo Outake superior")) {
-                    carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
-                }
-            }
+
             /*todo: Precisa resetar o Linear?*/
             if(!verticalEstaResetado || runtime <= 0.1) {
                 if(!carteiro.hasOrder("resetarOvertical") && !LinearVertical.isBusy && !verticalEstaResetado) {
@@ -500,6 +497,13 @@ public class SubsistemasSuperiores {
                 }
                 if(!carteiro.hasOrder("sistemas Superiores indo pra intake")) {
                     carteiro.addOrder(goToTransfer, 0, "sistemas Superiores indo pra intake", runtime);
+                }
+
+                /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta 4:NãoTaVoltandoPraPegarSample*/
+                if(verticalEstaResetado && intakeProntoProTransferAalgumTempo && angulacaoGarraTaPraTransfer && garraTaAberta && !voltandoPraPegarUmaSample && runtime > 1.6){
+                    if (!carteiro.hasOrder("ir pra modo Outake superior")) {
+                        carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
+                    }
                 }
 
             }
