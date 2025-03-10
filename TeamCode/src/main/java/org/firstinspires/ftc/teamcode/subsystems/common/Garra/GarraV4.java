@@ -32,7 +32,12 @@ public class GarraV4 {
     public GarraRotationStates garraRotationState = GarraRotationStates.PARALELA;
 
       public GarraV4(HardwareMap hardwareMap) {
-       
+        this.rotacaoDaGarra = hardwareMap.get(Servo.class, HardwareNames.servoRotacaoGarra);
+        this.fechamentoDaGarra = hardwareMap.get(Servo.class, HardwareNames.servoAberturaGarrra);
+        this.colorSensor = hardwareMap.get(ColorSensor.class, HardwareNames.colorSensor1);
+        portaAbrirGarra = fechamentoDaGarra.getPortNumber();
+        portaRotacaoGarra = rotacaoDaGarra.getPortNumber();
+
     }
 
     public Action fecharGarra() {

@@ -26,7 +26,7 @@ public class LinearHorizontalInferior extends LinearHorizontalV4 {
         super(hardwareMap, HardwareNames.horizontalInferiorServo);
         mapStateHorizontal.put(LinearHorizontalStates.EXTENDED, 1.0);
         mapStateHorizontal.put(LinearHorizontalStates.INTERMEDIATE,0.785);
-        mapStateHorizontal.put(LinearHorizontalStates.RETRACTED,0.0);
+        mapStateHorizontal.put(LinearHorizontalStates.RETRACTED,0.5);
 
     }
 

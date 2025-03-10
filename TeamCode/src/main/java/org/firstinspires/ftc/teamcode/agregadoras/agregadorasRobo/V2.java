@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
 import java.util.ArrayList;
 import java.util.List;
-@Deprecated
 public class V2 {
    /*
     // Attributes

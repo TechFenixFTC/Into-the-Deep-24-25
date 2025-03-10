@@ -7,12 +7,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 @TeleOp(name="Teste Servo")
+
 public class TesteServos extends OpMode {
 
     List<Servo> servos = new ArrayList<>(4);
     String[] nomesServosTestados  = {"porta0c", "porta1c", "porta2c", "porta3c","porta4c"};
 
-    double[] angulosServosTestado = {0, 0, 0, 0,0};
+    double[] angulosServosTestado = {0.5, 0.5, 0.5, 0.5,0.5};
     int portaServoSendoTestado = 0;
     double cooldownChangePortaServo = 0;
 

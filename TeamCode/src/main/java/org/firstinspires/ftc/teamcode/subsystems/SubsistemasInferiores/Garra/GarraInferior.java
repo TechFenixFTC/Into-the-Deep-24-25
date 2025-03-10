@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.BracoGarra.BracoGarraInferiorStates;
 import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraOpeningStates;
 import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraRotationStates;
 import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraV4;
@@ -20,10 +21,10 @@ public class GarraInferior extends GarraV4 {
     boolean continous = false;
     GarraRotationStates garraRotationState = GarraRotationStates.PARALELA;
     GarraOpeningStates garraOpeningState = GarraOpeningStates.OPEN;
-    GarraAngulationInferiorStates garraAngulationState = GarraAngulationInferiorStates.TRANSFER;
+    GarraAngulationStates garraAngulationState = GarraAngulationStates.TRANSFER;
     HashMap<GarraRotationStates, Double> mapRotation = new HashMap<>();
     HashMap< GarraOpeningStates, Double> mapOpening = new HashMap<>();
-    HashMap<GarraAngulationInferiorStates, Double> mapAngulation = new HashMap<>();
+    HashMap<GarraAngulationStates, Double> mapAngulation = new HashMap<>();
     public GarraInferior(HardwareMap hardwareMap) {
 
         super(hardwareMap);
@@ -31,37 +32,31 @@ public class GarraInferior extends GarraV4 {
         angulacaoGarraInferiorServo = hardwareMap.get(Servo.class, HardwareNames.angulacaoGarraInferiorServo);
         aberturaGarraInferiorServo = hardwareMap.get(Servo.class, HardwareNames.aberturaGarraInferiorServo);
 
-        mapRotation.put(GarraRotationStates.PARALELA, 0.47);
-        mapRotation.put(GarraRotationStates.PERPENDICULAR, 0.832);
+        mapRotation.put(GarraRotationStates.PARALELA, 0.665);
+        mapRotation.put(GarraRotationStates.PERPENDICULAR, 0.34);
 
 
         mapOpening.put(GarraOpeningStates.OPEN, 0.548);
         mapOpening.put(GarraOpeningStates.CLOSED, 1.0);
 
-        mapAngulation.put(GarraAngulationInferiorStates.INTAKE, 0.893);
-        mapAngulation.put(GarraAngulationInferiorStates.TRANSFER,0.838);
-        mapAngulation.put(GarraAngulationInferiorStates.READYTO_INTAKE, 1.0);
+        mapAngulation.put(GarraAngulationStates.INTAKE, 0.717);
+        mapAngulation.put(GarraAngulationStates.TRANSFER,0.717);
+        mapAngulation.put(GarraAngulationStates.READYTO_INTAKE, 0.836);
     }
     public Action goToReadytoIntake(){
         garraRotationState = GarraRotationStates.PARALELA;
         garraOpeningState = GarraOpeningStates.OPEN;
-        garraAngulationState = GarraAngulationInferiorStates.READYTO_INTAKE;
+        garraAngulationState = GarraAngulationStates.READYTO_INTAKE;
         return new InstantAction(() -> {
             aberturaGarraInferiorServo.setPosition(mapOpening.get(garraOpeningState));
             angulacaoGarraInferiorServo.setPosition(mapAngulation.get(garraAngulationState));
             rotacaoGarraInferiorServo.setPosition(mapRotation.get(garraRotationState));
         });
     }
-    public Action goToAbrirGarra(){
-        garraOpeningState = GarraOpeningStates.OPEN;
-        return new InstantAction(()-> {
-            aberturaGarraInferiorServo.setPosition(mapOpening.get(garraOpeningState));
-        });
-    }
     public Action goToIntake(){
         garraRotationState = GarraRotationStates.PARALELA;
         garraOpeningState = GarraOpeningStates.CLOSED;
-        garraAngulationState = GarraAngulationInferiorStates.INTAKE;
+        garraAngulationState = GarraAngulationStates.INTAKE;
         return new InstantAction(() -> {
             aberturaGarraInferiorServo.setPosition(mapOpening.get(garraOpeningState));
             angulacaoGarraInferiorServo.setPosition(mapAngulation.get(garraAngulationState));
@@ -71,7 +66,7 @@ public class GarraInferior extends GarraV4 {
     public Action goToTransfer(){
         garraRotationState = GarraRotationStates.PARALELA;
         garraOpeningState = GarraOpeningStates.CLOSED;
-        garraAngulationState = GarraAngulationInferiorStates.TRANSFER;
+        garraAngulationState = GarraAngulationStates.TRANSFER;
 
         return new InstantAction(() -> {
             aberturaGarraInferiorServo.setPosition(mapOpening.get(garraOpeningState));

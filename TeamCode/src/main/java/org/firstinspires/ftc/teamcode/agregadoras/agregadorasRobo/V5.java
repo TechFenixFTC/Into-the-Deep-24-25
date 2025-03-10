@@ -13,7 +13,6 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-import org.firstinspires.ftc.teamcode.subsystems.OrdersManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ public class V5 {
     public MecanumDrive md;
 
     public Telemetry telemetry;
-    public OrdersManager carteiro;
     List<Encoder> leftEncs =  new ArrayList<>(), rightEncs = new ArrayList<>();
     public SubsistemasInferiores intakeInferior;
     public SubsistemasSuperiores outtakeIntakeSuperior;
@@ -46,7 +44,7 @@ public class V5 {
         this.telemetry = telemetry;
         this.intakeInferior = new SubsistemasInferiores(hardwareMap, telemetry);
         this.outtakeIntakeSuperior = new SubsistemasSuperiores(hardwareMap, telemetry);
-        carteiro = new OrdersManager(telemetry);
+
     }
 
     /*

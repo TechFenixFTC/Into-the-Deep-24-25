@@ -17,10 +17,10 @@ public class BracoGarraInferior {
     public BracoGarraInferior(HardwareMap hardwareMap){
 
         bracoGarraInferior = hardwareMap.get(Servo.class, HardwareNames.bracoGarraInferiorServo);
-        mapBraco.put(BracoGarraInferiorStates.READY_TOINTAKE, 0.145);
-        mapBraco.put(BracoGarraInferiorStates.INITIAL, 0.314);
-        mapBraco.put(BracoGarraInferiorStates.TRASNFER, 0.314);
-        mapBraco.put(BracoGarraInferiorStates.INTAKE,0.074);
+        mapBraco.put(BracoGarraInferiorStates.READY_TOINTAKE, 0.122);
+        mapBraco.put(BracoGarraInferiorStates.INITIAL, 0.290);
+        mapBraco.put(BracoGarraInferiorStates.TRASNFER, 0.743);
+        mapBraco.put(BracoGarraInferiorStates.INTAKE,0.053);
 
     }
     public Action goToReadytoIntake(){

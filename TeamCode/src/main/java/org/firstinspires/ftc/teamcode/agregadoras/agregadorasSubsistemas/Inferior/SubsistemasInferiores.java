@@ -23,6 +23,8 @@ public class SubsistemasInferiores {
     public GarraInferior garraInferior;
     public BracoGarraInferior bracoGarraInferior;
     public LinearHorizontalInferior horizontalInferior;
+    public List<Action> runningActions = new ArrayList<>();
+    public OrdersManager carteiro =new OrdersManager(telemetry);
     HardwareMap hardwaremap;
     public SubsistemasInferiores(HardwareMap hardwareMap, Telemetry telemetry) {
 
@@ -31,10 +33,11 @@ public class SubsistemasInferiores {
         this.horizontalInferior = new LinearHorizontalInferior(hardwareMap);
         this.bracoGarraInferior = new BracoGarraInferior(hardwareMap);
         this.garraInferior = new GarraInferior(hardwareMap);
-
+        this.runningActions = new ArrayList<>();
     }
     private double getVoltage() { return hardwaremap.voltageSensor.iterator().next().getVoltage(); }
-    public Action goToIntake(OrdersManager carteiro){
+
+    public Action goToIntake(){
         return new InstantAction(() -> {
             carteiro.addOrder(horizontalInferior.goToExtended(),0, "horizontal inferior");
             carteiro.addOrder(bracoGarraInferior.goToIntake(), 0.1, "braco garra inferior");
@@ -42,15 +45,16 @@ public class SubsistemasInferiores {
         });
     }
 
-    public Action goToTransfer(OrdersManager carteiro){
+    public Action goToTransfer(){
         return new InstantAction(()->{
+                    carteiro.addOrder(bracoGarraInferior.goToInitial(), 0,"braco garra inferior");
                     carteiro.addOrder(garraInferior.goToTransfer(), 0, "garra Inferior");
                     carteiro.addOrder(horizontalInferior.goToRetracted(),0.12, "horizontal inferior");
                     carteiro.addOrder(bracoGarraInferior.goToTransfer(), 1.0, "braco garra inferior");
         });
     }
 
-    public Action goToReadyToIntake(OrdersManager carteiro){
+    public Action goToReadyToIntake(){
         return new InstantAction(() -> {
             carteiro.addOrder(horizontalInferior.goToExtended(),0,"horizontal inferior");
             carteiro.addOrder(bracoGarraInferior.goToReadytoIntake(), 0.1, "braco garra inferior");
@@ -58,6 +62,6 @@ public class SubsistemasInferiores {
         });
     }
 
-    public Action goToReadytoIntakeNoHorizontal(OrdersManager carteiro){return new InstantAction(() -> {carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior");});}
+    public Action goToReadytoIntakeNoHorizontal(){return new InstantAction(() -> {carteiro.addOrder(garraInferior.goToReadytoIntake(), 0, "garra inferior");});}
 
 }
