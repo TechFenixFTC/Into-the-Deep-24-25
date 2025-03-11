@@ -5,14 +5,24 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.ServoController;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
+import org.firstinspires.ftc.teamcode.subsystems.Sensors.Vision.Limelight;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +30,22 @@ import java.util.List;
 public class V5 {
     // Attributes
     public MecanumDrive md;
-
+    public  static double eixoX = 0, eixoY = -30;
     public Telemetry telemetry;
+    public OrdersManager carteiro;
+    public  static  V5Modes v5Mode = V5Modes.SPECIMEN;
     List<Encoder> leftEncs =  new ArrayList<>(), rightEncs = new ArrayList<>();
+
     public SubsistemasInferiores intakeInferior;
     public SubsistemasSuperiores outtakeIntakeSuperior;
+    private Limelight limelight;
+    //public BHI260IMU imu;
     HardwareMap hardwaremap;
-    public static boolean teelop = false, risky = false;
+    //Orientation angles;
+    //public BHI260IMU.Parameters parameters = new IMU.Parameters();
+    public boolean teelop = false, risky = false;
     public static double deposit_y = -44, deposit_x = -42;
-
+    public double heading ;
 
     public V5(HardwareMap hardwareMap, Telemetry telemetry) {
 
@@ -40,11 +57,22 @@ public class V5 {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
+
+        //imu = hardwareMap.get(BNO055IMU.class, "imu");
+        //angles =  imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        //heading = angles.firstAngle;
+        //parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+
+        //
+       //
+
+
         this.hardwaremap = hardwareMap;
         this.telemetry = telemetry;
         this.intakeInferior = new SubsistemasInferiores(hardwareMap, telemetry);
         this.outtakeIntakeSuperior = new SubsistemasSuperiores(hardwareMap, telemetry);
-
+        carteiro = new OrdersManager(telemetry);
+        this.limelight = new Limelight(hardwareMap);
     }
 
     /*
@@ -80,4 +108,111 @@ public class V5 {
             }
         };
     }
+    public Action MoveOuttake(V5 robot){
+        return new SequentialAction(
+                robot.md.actionBuilder(robot.md.pose)
+                        .strafeToConstantHeading(new Vector2d(eixoX, eixoY))
+                        .build()
+        );
+    }
+    public Action MoveSpline(V5 robot){
+        return new SequentialAction(
+                robot.md.actionBuilder(robot.md.pose)
+                        .splineTo(new Vector2d(eixoX, eixoY),Math.toRadians(-90))
+                        .build()
+        );
+    }
+
+    public Action MoveIntake(V5 robot){
+        return new SequentialAction(
+                robot.md.actionBuilder(robot.md.pose)
+                        .strafeToConstantHeading(new Vector2d(38, -60))
+                        .build()
+        );
+    }
+    public void runStatesSpecimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+        outtakeIntakeSuperior.runStatesSpecimen(carteiro, runtime, robot, gamepad);
+        intakeInferior.runStatesSpecimen(carteiro, runtime, robot, gamepad);
+    }
+
+    public void runStatesSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+
+        outtakeIntakeSuperior.runStatesSample(carteiro, runtime, robot, gamepad);
+        intakeInferior.runStatesSample(carteiro, runtime, robot, gamepad);
+
+    }
+    public void runStatesSampleAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
+        outtakeIntakeSuperior.runStatesSampleAutonomo(carteiro, runtime, robot);
+        intakeInferior.runStatesSampleAutonomo(carteiro, runtime, robot);
+        carteiro.checkIfCanRun(runtime);
+        carteiro.runTeleopActions(runtime);
+    }
+
+    public void runStatesSampleV5eMEIO(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+
+        outtakeIntakeSuperior.runStatesSample(carteiro, runtime, robot, gamepad);
+        intakeInferior.runStatesSampleV5eMEIO(carteiro, runtime, robot, gamepad);
+
+    }
+
+
+
+    /*****************************************/
+    /*********** Funções Antigas  ************/
+    /*****************************************/
+    public Action actionTransfer(){
+         return new SequentialAction(
+                 outtakeIntakeSuperior.actionGoReadyTransfer(),
+                 intakeInferior.intakeSuccao.TransferPositionAlcapao(),
+                 intakeInferior.actionIntakeIrPraInitial(),
+                 outtakeIntakeSuperior.actionGoTransfer()
+         );
+    }
+    public void transfer(OrdersManager carteiro, double runtime) {
+        carteiro.addOrder(actionTransfer(), 0, "transfer", runtime);
+    }
+    public void goReadytoHang(OrdersManager carteiro, double runtime) {
+        carteiro.addOrder(actionGoReadytoHang(), 0, "goReadyHang", runtime);
+    }
+    public void goReadytoHang2(OrdersManager carteiro, double runtime) {
+        carteiro.addOrder(actionGoReadytoHang(), 0, "goReadyHang", runtime);
+    }
+    public void goToHang(OrdersManager carteiro, double runtime) {
+        carteiro.addOrder(actionGotoHang(), 0, "goToHang", runtime);
+    }
+    public Action actionGoReadytoHang() {
+        Action readyToHangAction = new SequentialAction(
+
+                outtakeIntakeSuperior.braco.goToReadyHang(),
+                outtakeIntakeSuperior.garraSuperior.goToReadyHang(),
+                intakeInferior.actionIntakeIrPraInitial(),
+                outtakeIntakeSuperior.linearVertical.goToReadyHang()
+
+        );
+        return readyToHangAction;
+    }
+    public Action actionGoReadytoHang2() {
+        Action readyToHangAction = new SequentialAction(
+
+                outtakeIntakeSuperior.braco.goToReadyHang(),
+                outtakeIntakeSuperior.garraSuperior.goToReadyHang(),
+                intakeInferior.actionIntakeIrPraInitial(),
+                outtakeIntakeSuperior.linearVertical.goToReadyHang2()
+
+        );
+        return readyToHangAction;
+    }
+    public Action actionGotoHang() {
+        LinearVertical.hang = true;
+        Action readyToHangAction = new SequentialAction(
+                outtakeIntakeSuperior.braco.goToHang(),
+                outtakeIntakeSuperior.garraSuperior.goToHang(),
+                intakeInferior.actionIntakeIrPraInitial()
+                //outtakeIntakeSuperior.linearVertical.goToHang()
+        );
+        return readyToHangAction;
+    }
+
+
+
 }

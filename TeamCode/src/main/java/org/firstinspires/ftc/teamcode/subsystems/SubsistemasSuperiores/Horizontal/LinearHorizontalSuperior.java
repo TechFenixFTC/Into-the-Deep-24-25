@@ -1,18 +1,17 @@
 package org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.Horizontal;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
-import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontalV4;
+import org.firstinspires.ftc.teamcode.subsystems.common.Horizontal.LinearHorizontal;
 
-public class LinearHorizontalSuperior extends LinearHorizontalV4 {
+public class LinearHorizontalSuperior extends LinearHorizontal {
 
     public LinearHorizontalSuperior(HardwareMap hardwareMap) {
         super(hardwareMap, HardwareNames.horizontalSuperiorServo);
+
+
     }
-    public void monitor(Telemetry telemetry){
-        this.monitor(telemetry,"Superior");
-    }
+
+
 }

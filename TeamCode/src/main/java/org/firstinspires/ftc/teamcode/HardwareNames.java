@@ -7,11 +7,16 @@ public final class HardwareNames {
     public static String
 
     /**************************************************
+    *                  TeleopAliances                   *
+    **************************************************/
+
+
+    /**************************************************
     *                  Rodas Mortas                   *
     **************************************************/
-        par0 = "",
-        par1 = "",
-        perp = "",
+        par0 = "rightBack",
+        par1 = "rightFront",
+        perp = "leftFront",
     /**************************************************
      *                  Motores Chassi                *
      **************************************************/
@@ -24,8 +29,9 @@ public final class HardwareNames {
     **************************************************/
         distanceSensorL      = "sensorporta3",
         distanceSensorR      = "sensorPorta2",
-        colorSensor1         = "color1",
-        colorSensor2         = "sensorPortaE2",
+        colorSensor1         = "I2Cporta1",
+        colorSensor2         = "I2Cporta2",
+        touchSensor          = "sensorToque",
 
     /**************************************************
     *         Visão Computacional / Cameras          *
@@ -38,30 +44,42 @@ public final class HardwareNames {
         verticalR            = "verticalr",
         verticalL            = "verticall",
         bracoGarraSuperior   = "b",
+        SugadorMotorInferior = "porta3e",
     /**************************************************
-     *              Servo Subsistemas               *
+     *              Servo Subsistemas Pinça           *
      **************************************************/   /* Motores Vertex */
 
     horizontalSuperiorServo = "porta2c",
-    horizontalInferiorServo = "porta4",
-    bracoGarraSuperiorServo   = "porta3c",
+    horizontalInferiorMotor = "porta2e",
+     horizontalInferiorServo = "porta5",
+    bracoGarraSuperiorServo   = "porta3c",//todo esse
 
-    bracoGarraInferiorServo = "porta3",
+    bracoGarraInferiorServo = "porta0",
     rotacaoGarraInferiorServo = "porta2",
-    angulacaoGarraInferiorServo = "porta0",
-    aberturaGarraInferiorServo = "porta1",
+
+    rotacaoGarraSuperiorServo = "porta1",//todo esse
+
+    angulacaoGarraInferiorServo = "porta5",
+
+    angulacaoGarraSuperiorServo = "porta1c",//todo esse
+
+    aberturaGarraInferiorServo = "porta3",
+
+    aberturaGarraSuperiorServo = "porta4c", //to]do esse
+
+    /**************************************************
+     *              Servo Subsistemas Sugar               *
+     **************************************************/
+
+    angulacaoSugarServo = "porta5",//todo esse
+    alcapaoSugarServo = "porta2",//todo esse
 
     /**************************************************
      *                 Servo-motores                  *
      **************************************************/
-        servoRotacaoGarra    = "porta0c",
-        servoAberturaGarrra  = "porta1c",
     /**************************************************
      *                 TroughBore                  *
      **************************************************/
     horizontalSuperior    = "braco",
-    getHorizontalInferior  = "braco"
-        ;
-
-        public static String[] servoNames = {servoRotacaoGarra, servoAberturaGarrra};
+    getHorizontalInferior  = "braco";
 }

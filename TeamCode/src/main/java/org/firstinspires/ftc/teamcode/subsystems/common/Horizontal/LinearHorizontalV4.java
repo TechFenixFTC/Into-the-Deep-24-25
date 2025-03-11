@@ -1,55 +1,48 @@
 package org.firstinspires.ftc.teamcode.subsystems.common.Horizontal;
 
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.teamcode.HardwareNames;
+import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
 
-@Config
+import java.util.HashMap;
+
+@Deprecated
 public class LinearHorizontalV4 {
     public Servo servoLinearHorizontal;
     public static boolean monitor = false;
-    public double targetPosition = 0;
+    private double targetPosition = 0;
+    public double servoLinearHorizontalPosition;
+    public HashMap<LinearHorizontalStates, Double> mapStateHorizontal = new HashMap<>();
+    public LinearHorizontalStates linearHorizontalV4States = LinearHorizontalStates.RETRACTED;
     public LinearHorizontalV4(HardwareMap hardwareMap, String hardwareName) {
         this.servoLinearHorizontal = hardwareMap.get(Servo.class, hardwareName);
 
     }
+    public Action goToExtended(){
 
-    /**************************************************
-     *                  Controllers                   *
-     **************************************************/
 
-    /**************************************************
-     *                   Actions                      *
-     **************************************************/
-    /*REFAZER A FUNÇÕES PARA FUNCIONAREM COM SERVOS(SÃO FUNÇÕES BASEADAS NOS MOTORES)*/
+        return new InstantAction(() -> {
+            linearHorizontalV4States = LinearHorizontalStates.EXTENDED;
+            servoLinearHorizontalPosition = mapStateHorizontal.get(linearHorizontalV4States);
 
-    /**************************************************
-     *              Controllers Tools                 *
-     **************************************************/
-    public void setTarget(double target) {
-        targetPosition =  Range.clip(target, 0, 1);
-
+        });
     }
+    public Action goToRetracted(){
 
 
-    /**************************************************
-     *                   Monitoring                   *
-     **************************************************/
+        return new InstantAction(() -> {
+            linearHorizontalV4States = LinearHorizontalStates.RETRACTED;
+            servoLinearHorizontalPosition = mapStateHorizontal.get(linearHorizontalV4States);
 
+
+        });
+    }
     public void monitor(Telemetry telemetry,String hozizontal) {
         if (monitor) {
             telemetry.addLine("*********************************");

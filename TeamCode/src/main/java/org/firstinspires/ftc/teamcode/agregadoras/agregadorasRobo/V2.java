@@ -1,21 +1,6 @@
 package org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ftc.Encoder;
-import com.qualcomm.hardware.lynx.LynxModule;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasSubsistemas.Subsistemas;
-import org.firstinspires.ftc.teamcode.common.Globals;
-import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
-
-import java.util.ArrayList;
-import java.util.List;
+@Deprecated
 public class V2 {
    /*
     // Attributes

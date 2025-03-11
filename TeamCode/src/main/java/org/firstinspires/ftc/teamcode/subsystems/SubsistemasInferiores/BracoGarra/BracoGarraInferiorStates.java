@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.BracoGar
 
 public enum BracoGarraInferiorStates {
     READY_TOINTAKE,
+    READY_TOTRANSFER,
     INTAKE,
     TRASNFER,
     INITIAL,
+
 }

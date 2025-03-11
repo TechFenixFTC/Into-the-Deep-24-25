@@ -5,80 +5,137 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.HardwareNames;
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.BracoGarra.BracoGarraInferiorStates;
+import org.firstinspires.ftc.teamcode.subsystems.common.Garra.Garra;
+import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraAngulationStates;
 import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraOpeningStates;
-import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraRotationStates;
-import org.firstinspires.ftc.teamcode.subsystems.common.Garra.GarraV4;
 
 import java.util.HashMap;
 
-public class GarraInferior extends GarraV4 {
-    public Servo rotacaoGarraInferiorServo;
-    public Servo angulacaoGarraInferiorServo;
-    public Servo aberturaGarraInferiorServo;
-    boolean continous = false;
-    GarraRotationStates garraRotationState = GarraRotationStates.PARALELA;
-    GarraOpeningStates garraOpeningState = GarraOpeningStates.OPEN;
-    GarraAngulationStates garraAngulationState = GarraAngulationStates.TRANSFER;
-    HashMap<GarraRotationStates, Double> mapRotation = new HashMap<>();
-    HashMap< GarraOpeningStates, Double> mapOpening = new HashMap<>();
-    HashMap<GarraAngulationStates, Double> mapAngulation = new HashMap<>();
+public class GarraInferior extends Garra {
+    public  Servo servoRotacaoDaGarra;
+    public GarraRotationInferiorStates garraRotationInferiorState = GarraRotationInferiorStates.PARALELA;
+    public double ServoRotacaoInferiorPosition,ServoAberturaInferiorPoition,ServoAngulacaoPosition;
+    public HashMap<GarraRotationInferiorStates, Double> mapRotation = new HashMap<>();
     public GarraInferior(HardwareMap hardwareMap) {
 
-        super(hardwareMap);
-        rotacaoGarraInferiorServo = hardwareMap.get(Servo.class, HardwareNames.rotacaoGarraInferiorServo);
-        angulacaoGarraInferiorServo = hardwareMap.get(Servo.class, HardwareNames.angulacaoGarraInferiorServo);
-        aberturaGarraInferiorServo = hardwareMap.get(Servo.class, HardwareNames.aberturaGarraInferiorServo);
+        super(hardwareMap, HardwareNames.aberturaGarraInferiorServo, HardwareNames.angulacaoGarraInferiorServo);
 
-        mapRotation.put(GarraRotationStates.PARALELA, 0.665);
-        mapRotation.put(GarraRotationStates.PERPENDICULAR, 0.34);
+        servoRotacaoDaGarra = hardwareMap.get(Servo.class, HardwareNames.rotacaoGarraInferiorServo);
+        mapRotation.put(GarraRotationInferiorStates.PARALELA, 0.316);
+        mapRotation.put(GarraRotationInferiorStates.PERPENDICULAR, 0.647);
 
 
-        mapOpening.put(GarraOpeningStates.OPEN, 0.548);
+        mapOpening.put(GarraOpeningStates.OPEN, 0.0);
         mapOpening.put(GarraOpeningStates.CLOSED, 1.0);
 
-        mapAngulation.put(GarraAngulationStates.INTAKE, 0.717);
-        mapAngulation.put(GarraAngulationStates.TRANSFER,0.717);
-        mapAngulation.put(GarraAngulationStates.READYTO_INTAKE, 0.836);
+
+
+        mapAngulation.put(GarraAngulationStates.INTAKE_SPECIMEN, 0.517);
+        mapAngulation.put(GarraAngulationStates.TRANSFER,0.529);
+
+        mapAngulation.put(GarraAngulationStates.READYTO_INTAKE, 0.676);
     }
-    public Action goToReadytoIntake(){
-        garraRotationState = GarraRotationStates.PARALELA;
-        garraOpeningState = GarraOpeningStates.OPEN;
-        garraAngulationState = GarraAngulationStates.READYTO_INTAKE;
-        return new InstantAction(() -> {
-            aberturaGarraInferiorServo.setPosition(mapOpening.get(garraOpeningState));
-            angulacaoGarraInferiorServo.setPosition(mapAngulation.get(garraAngulationState));
-            rotacaoGarraInferiorServo.setPosition(mapRotation.get(garraRotationState));
-        });
-    }
-    public Action goToIntake(){
-        garraRotationState = GarraRotationStates.PARALELA;
-        garraOpeningState = GarraOpeningStates.CLOSED;
-        garraAngulationState = GarraAngulationStates.INTAKE;
-        return new InstantAction(() -> {
-            aberturaGarraInferiorServo.setPosition(mapOpening.get(garraOpeningState));
-            angulacaoGarraInferiorServo.setPosition(mapAngulation.get(garraAngulationState));
-            rotacaoGarraInferiorServo.setPosition(mapRotation.get(garraRotationState));
-        });
-    }
-    public Action goToTransfer(){
-        garraRotationState = GarraRotationStates.PARALELA;
-        garraOpeningState = GarraOpeningStates.CLOSED;
-        garraAngulationState = GarraAngulationStates.TRANSFER;
+
+    public Action goToReadytoIntake(){//todo okey
 
         return new InstantAction(() -> {
-            aberturaGarraInferiorServo.setPosition(mapOpening.get(garraOpeningState));
-            angulacaoGarraInferiorServo.setPosition(mapAngulation.get(garraAngulationState));
-            rotacaoGarraInferiorServo.setPosition(mapRotation.get(garraRotationState));
+            garraRotationInferiorState = GarraRotationInferiorStates.PARALELA;
+            garraOpeningState = GarraOpeningStates.OPEN;
+            garraAngulationState = GarraAngulationStates.READYTO_INTAKE;
+
+            servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+
+            ServoAngulacaoPosition = mapAngulation.get(garraAngulationState);
+            ServoRotacaoInferiorPosition = mapRotation.get(garraRotationInferiorState);
+        });
+    }
+    public Action goToReadyToIntake(){//todo okey
+
+        return new InstantAction(() -> {
+            garraRotationInferiorState = GarraRotationInferiorStates.PARALELA;
+            garraOpeningState = GarraOpeningStates.OPEN;
+            garraAngulationState = GarraAngulationStates.READYTO_INTAKE;
+
+            servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+
+            ServoAngulacaoPosition = mapAngulation.get(garraAngulationState);
+            ServoRotacaoInferiorPosition = mapRotation.get(garraRotationInferiorState);
+        });
+    }
+    public Action goToAbrirGarra(){
+        return  super.abrirGarra();
+    }
+    public Action goToFecharGarra(){
+        return super.fecharGarra();
+    }
+    public Action rotacionarGarraParaPosicaoParalela() {//todo okey
+
+        return new InstantAction(() -> {
+                garraRotationInferiorState = GarraRotationInferiorStates.PARALELA;
+
+                ServoRotacaoInferiorPosition= mapRotation.get(this.mapRotation);
+
+        });
+    }
+
+    public Action rotacionarGarraParaPosicaoPerpendicular() {//todo okey
+
+        return new InstantAction(() -> {
+            garraRotationInferiorState = GarraRotationInferiorStates.PERPENDICULAR;
+            ServoRotacaoInferiorPosition = mapRotation.get(this.mapRotation);
+        });
+    }
+
+    public Action goToIntake(){//todo okey
+
+        return new InstantAction(() -> {
+            //garraRotationInferiorState = GarraRotationInferiorStates.PARALELA;
+            garraOpeningState = GarraOpeningStates.CLOSED;
+            garraAngulationState = GarraAngulationStates.INTAKE_SPECIMEN;
+
+            //servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+            ServoAngulacaoPosition = mapAngulation.get(garraAngulationState);
+            ServoRotacaoInferiorPosition = mapRotation.get(garraRotationInferiorState);
+        });
+    }
+    public Action goToTransfer(){//todo okey
+
+
+        return new InstantAction(() -> {
+            garraRotationInferiorState = GarraRotationInferiorStates.PARALELA;
+            garraOpeningState = GarraOpeningStates.CLOSED;
+            garraAngulationState = GarraAngulationStates.TRANSFER;
+
+            servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+            ServoAngulacaoPosition = mapAngulation.get(garraAngulationState);
+            ServoRotacaoInferiorPosition = mapRotation.get(garraRotationInferiorState);
 
         });
 
+    }
+    public Action goToReadyTransfer(){//todo okey
 
+        return new InstantAction(() -> {
+            garraRotationInferiorState = GarraRotationInferiorStates.PARALELA;
+            garraOpeningState = GarraOpeningStates.CLOSED;
+            garraAngulationState = GarraAngulationStates.READY_TOTRANSFER;
+
+            servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+            ServoAngulacaoPosition = mapAngulation.get(garraAngulationState);
+            ServoRotacaoInferiorPosition = mapRotation.get(garraRotationInferiorState);
+
+        });
 
     }
-    public void monitor(Telemetry telemetry) {
-        this.monitor(telemetry,"Inferior");
+    public Action goToOuttake2(){
+        return new InstantAction(() -> {
+           // garraOpeningState = GarraOpeningStates.OPEN;
+            //servoAberturaDaGarra.setPosition(mapOpening.get(garraOpeningState));
+            // angulacaoGarraSuperiorServo.setPosition(mapAngulation.get(garraAngulationState));
+            servoAberturaDaGarra.getController().pwmDisable();
+        });
     }
+
+
 }
