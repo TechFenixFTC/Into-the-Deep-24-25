@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.ServoController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Controller.Controladora;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.Vision.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
@@ -38,17 +39,16 @@ public class V5 {
 
     public SubsistemasInferiores intakeInferior;
     public SubsistemasSuperiores outtakeIntakeSuperior;
-    private Limelight limelight;
+    public Limelight limelight;
     //public BHI260IMU imu;
     HardwareMap hardwaremap;
     //Orientation angles;
     //public BHI260IMU.Parameters parameters = new IMU.Parameters();
     public boolean teelop = false, risky = false;
     public static double deposit_y = -44, deposit_x = -42;
-    public double heading ;
-
+    public double heading;
+    public Controladora controladora;
     public V5(HardwareMap hardwareMap, Telemetry telemetry) {
-
         md = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
         // -Controle de leituras- \\
@@ -73,6 +73,7 @@ public class V5 {
         this.outtakeIntakeSuperior = new SubsistemasSuperiores(hardwareMap, telemetry);
         carteiro = new OrdersManager(telemetry);
         this.limelight = new Limelight(hardwareMap);
+        this.controladora = new Controladora();
     }
 
     /*

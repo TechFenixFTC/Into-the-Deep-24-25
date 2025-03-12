@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-@Disabled
+
 @TeleOp(name="Teste Servo")
 public class TesteServos extends OpMode {
 

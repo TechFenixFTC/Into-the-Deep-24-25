@@ -35,13 +35,13 @@ public class IntakeSuccao{
     private double delay = 0.25;
     double cooldown = 0;
     private double cooldownAberturaGarra = 0;
-    public static double power_Sugador = 0.55, pontoAtiv = 0.9, powerMesmo = 0.55;
+    public static double power_Sugador = 0.58, pontoAtiv = 0.9, powerMesmo = 0.55;
     public DcMotorEx sugador;
     public Servo alcapao;
     public static double posicaoReadyIntakeAlcapao = 0.55;
     public static double posicaoIntakeAlcapao = 0.625;
 
-    public static double posicaoTransferAngulacao = 0.466, posicaoIntakeAgulacao = 0.319, posicaoEjetarAngulacao = 0.533;
+    public static double posicaoTransferAngulacao = 0.528, posicaoIntakeAgulacao = 0.362, posicaoEjetarAngulacao = 0.528;
 
     private HashMap<SugarAngulationStates , Double> mapAngulation = new HashMap<>();
     public  SugarAngulationStates sugarAngulationStates  = SugarAngulationStates.INITIAL;

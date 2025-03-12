@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmode.v5_opModes;
 
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -15,6 +16,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Controller.Controladora;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
@@ -32,19 +34,21 @@ public class AutSample0mais5 extends LinearOpMode {
     public boolean encerrar = false;
     private double limeligtCorrection = 0;
     public static boolean girarAoContrario = false;
+    Action proximaAction;
+
     public static double
             Xdeposit1 = -49 ,    Ydeposit1 = -57 ,  Hdeposit1 = 35,
-            Xdeposit2 = -53 ,    Ydeposit2 = -55 ,  Hdeposit2 = 45,
+            Xdeposit2 = -52 ,    Ydeposit2 = -53,  Hdeposit2 = 45,
             Xdeposit5 = -46 ,    Ydeposit5 = -62 ,  Hdeposit5 = 30,
 
             XCollect2 = -42 , YCollect2 = -42, HCollect2 = 89,
             LimelightXsample2 = 0.81,// distância entre o robo e a apriltag
-            XCollect3 = -54 ,   YCollect3 = -42 , HCollect3 = 87,
-            XCollect4 = -57 ,   YCollect4 = -39 , HCollect4 = 150,
+            XCollect3 = -52 ,   YCollect3 = -42 , HCollect3 = 87,
+            XCollect4 = -51 ,   YCollect4 = -39 , HCollect4 = 140,
             XCollect5 = -13 ,   YCollect5 = -5 , HCollect5 = 0, TangentCollect5 = 130, TangentCollect5part2 = 0,
             XCollect5part2 = -3,
-            delaySoltarSample1 = 0.1, delaySoltarSample2 = 0.280, delaySoltarSample4 = 0.350, tangentCollect4 = 145, tangentDeposit4 = 145,
-            LimelightDelayToRead = 0.400
+            delaySoltarSample1 = 0.1, delaySoltarSample2 = 0.280, delaySoltarSample4 = 0.380, tangentCollect4 = 145, tangentDeposit4 = 145,
+            LimelightDelayToRead = 0.400, currMax = 2.50
             ;
 
 
@@ -57,13 +61,8 @@ public class AutSample0mais5 extends LinearOpMode {
     @Override
     public void runOpMode()  {
 
-        Pose2d initialPose = new Pose2d(-35,  -62, Math.toRadians(0));
+        robot = Controladora.create0mai5Robot(hardwareMap, telemetry);
 
-        robot = new V5(hardwareMap,telemetry);
-        robot.md.pose = initialPose;
-        MecanumDrive.PARAMS.maxProfileAccel = 60;
-        MecanumDrive.PARAMS.minProfileAccel = -60;
-        MecanumDrive.PARAMS.maxWheelVel  = 70;
         Actions.runBlocking(
                 new SequentialAction(
                         robot.outtakeIntakeSuperior.garraSuperior.fecharGarra(),
@@ -82,115 +81,25 @@ public class AutSample0mais5 extends LinearOpMode {
 
 
         waitForStart();
+        while (robot.controladora.sampleID <= 4) {
 
-        Actions.runBlocking(
-                new ParallelAction(
-                        //todo action que fica sempre rodando as ações com base nos estados passados
-                        AutomationSample(),
-                        new SequentialAction(
-                                goToDeposit(new Pose2d(-35,  -62, Math.toRadians(0))),
-                                esperarPraSoltarSample(delaySoltarSample1),
-                                new ParallelAction(
-                                        new SequentialAction(
-                                                new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE),
-                                                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
-                                                new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
-                                        ),
-                                        //GoCollectPartido()
-                                        GoCollectSample2()
-                                ),
-
-                                //robot.md.actionBuilder(robot.md.pose).waitSeconds(delayEsperarParaIrParaFrenteSample2).build(),
-                                //GoCollectSample2(),
-                                esperarPeloInicioDoOutake(9),
-                            //todo ir até a basket para depositar o segundo sample
-                            new SequentialAction(
-                                    goToDeposit2(new Pose2d(XCollect2, YCollect2, HCollect2)),
-                                    LimelightCalculateCorrection(LimelightXsample2),
-                                    CollectS2part2()
-                            ),
-
-                            //todo abrir garra
-                             new ParallelAction(
-                                     esperarPraSoltarSample(delaySoltarSample2),
-                                     new SequentialAction(
-                                             esperarPeloOutakeTerSubido(0)
-                                     )
-                             ),
-                            new ParallelAction(
+            encerrar = false;
+            proximaAction = robot.controladora.decideProximaAcao(robot);
+            if(proximaAction != null){
+                Actions.runBlocking(
+                        new ParallelAction(
+                                //todo Roda a próxima ação retornada pela controladora em paralelo com nossas automatizações
+                                AutomationSample(),
                                 new SequentialAction(
-                                    robot.md.actionBuilder(robot.md.pose).waitSeconds(0.5).build(),
-                                    new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
-                                ),
-                                GoCollectSample3()
-                            ),
-                            esperarPeloInicioDoOutake(9),
-                            //todo ir até a basket para depositar o terceiro sample
-                            goToDeposit2(new Pose2d(XCollect3, YCollect3, HCollect3)),
-                            //todo abrir garra
-                            new ParallelAction(
-                                            esperarPraSoltarSample(delaySoltarSample2),
-                                            new SequentialAction(
-                                                    esperarPeloOutakeTerSubido(0)
-                                            )
-                                    ),
-                                    new ParallelAction(
-                                            new SequentialAction(
-                                                    robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
-                                                    new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
-                                            ),
-                                            GoCollectSample4()// collect sample 3
-                                    ),
-                                esperarPeloInicioDoOutake(12),
-                                //todo ir até a basket para depositar o terceiro sample
-                                goToDeposit4(new Pose2d(XCollect4, YCollect4, HCollect4)),
-                                //todo abrir garra
-                                new ParallelAction(
-                                        esperarPraSoltarSample(delaySoltarSample4),
-                                        new SequentialAction(
-                                               esperarPeloOutakeTerSubido(0),
-                                                new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.READY_TOINTAKE)
-                                        )
-                                ),
-                                new ParallelAction(
-                                        new SequentialAction(
-                                                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
-                                                new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
-                                        ),
-                                        new SequentialAction(
-                                                GoCollectSample5(),
-                                                new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE),
-                                                new InstantAction(() -> girarAoContrario = true),
-                                                //esperarPeloIntakeTerDescido(),
-                                                //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.100).build(),
-                                                GoCollectSample5Part2()
-                                        )
-
-                                ),
-
-
-                                esperarPeloInicioDoOutake(9),
-                                //todo ir até a basket para depositar o terceiro sample
-                                goToDeposit2(new Pose2d(XCollect5part2, YCollect5, Math.toRadians(HCollect5))),
-                                //todo abrir garra
-                                 new ParallelAction(
-                                    esperarPraSoltarSample(delaySoltarSample2)
-                                 ),
-                                 new ParallelAction(
-                                         new SequentialAction(
-                                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
-                                                 new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
-                                         ),
-                                         GoCollectSample5()
-                                 )
-
-                                        // collect sample
-
+                                        proximaAction,
+                                        new InstantAction(() -> encerrar = true)
+                                )
 
                         )
+                );
+            }
 
-                )
-        );
+        }
 
     }
 
@@ -209,7 +118,9 @@ public class AutSample0mais5 extends LinearOpMode {
                 robot.intakeInferior.monitorEstadosAutonomo(telemetryPacket);
                 robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.monitorAutonomo(telemetryPacket);
                 robot.runStatesSampleAutonomo(robot.carteiro, getRuntime(),robot);
-
+                telemetryPacket.addLine("sampleID: "+ robot.controladora.sampleID);
+                telemetryPacket.addLine("estadoAutonomo: "+ robot.controladora.estadoSample);
+                telemetryPacket.addLine("quantas vezes mandou a próxima ação: " + robot.controladora.quantasVezesFoiExecutado);
                 if(encerrar){
                     return false;
                 }
@@ -219,34 +130,7 @@ public class AutSample0mais5 extends LinearOpMode {
         };
     }
 
-    public Action esperarPeloInicioDoOutake(double tempoLimite){
-        // verificar se um action já terminou para passar o estado para outra
-        // por enquanto só para intake
-        return new Action() {
-            boolean OuttakeSuperiorFuncionou                  = false;
-            boolean EstadoDosInferioresEstaInicial            = false;
-            double tempoLimiteParaTerminarAAction = tempoLimite;
 
-            boolean podeTerminar = false;
-            ElapsedTime tempoAtual = new ElapsedTime();
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-                OuttakeSuperiorFuncionou       = robot.outtakeIntakeSuperior.upperSubsystemStates == UpperSubsystemStates.OUTTAKE; // garra já abriu
-                EstadoDosInferioresEstaInicial = robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.INITIAL; // se ele realmente funcionou, ele transiciona para initial pq o já pegou o sample
-
-                if(OuttakeSuperiorFuncionou && EstadoDosInferioresEstaInicial){
-                    return  false;
-                }
-                podeTerminar = tempoAtual.time() > tempoLimiteParaTerminarAAction;
-                if(podeTerminar){
-                    return false;
-                }
-                return true ;
-            }
-        };
-    }
     public Action esperarPeloIntakeTerDescido(){
         // verificar se um action já terminou para passar o estado para outra
         // por enquanto só para intake
@@ -265,53 +149,7 @@ public class AutSample0mais5 extends LinearOpMode {
             }
         };
     }
-    public Action esperarPraSoltarSample(double delay){
-        return new Action() {
-            boolean podeAbrirAGarra = false, jaChegouNoTarget = false, podeTerminarAaction = false, started = false;
 
-            double tempoPraAbrirAgarra = delay;
-            double tempoPraTerminarAAction = tempoPraAbrirAgarra + 0.22;
-            // aumeentar um pouquinho
-
-            final ElapsedTime tempoQueChegou = new ElapsedTime();
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                telemetryPacket.addLine("COMEÇANDO A ESPERAR");
-                if(!started) {
-                    tempoQueChegou.reset();
-                    started = true;
-                }
-
-
-                    jaChegouNoTarget = robot.outtakeIntakeSuperior.linearVertical.motorR.getCurrentPosition() > 2500;
-
-                if(!jaChegouNoTarget) tempoQueChegou.reset();
-
-                telemetryPacket.addLine("Vertical Chegou no target: "+ jaChegouNoTarget);
-                telemetryPacket.addLine("TempoQueChegou: "+ tempoQueChegou.time());
-
-                podeAbrirAGarra = tempoQueChegou.time() >= tempoPraAbrirAgarra;
-                podeTerminarAaction = tempoQueChegou.time() >= tempoPraTerminarAAction;
-
-                if(podeAbrirAGarra){
-                    telemetryPacket.addLine("Garra ja abriu");
-                    robot.outtakeIntakeSuperior.garraSuperior.garraOpeningState = GarraOpeningStates.OPEN;
-                    robot.outtakeIntakeSuperior.garraSuperior.servoAberturaDaGarra.setPosition(robot.outtakeIntakeSuperior.garraSuperior.mapOpening.get(robot.outtakeIntakeSuperior.garraSuperior.garraOpeningState));
-                }
-                else{
-                    telemetryPacket.addLine("Garra esperando para Abrir");
-                }
-                if(podeTerminarAaction){
-                    telemetryPacket.addLine("Garra ja abriu");
-                    return false;
-                }
-
-
-
-                return true;
-            }
-        };
-    }
 
     public Action esperarPeloOutakeTerSubido(double delay){
         return new Action() {
