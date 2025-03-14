@@ -44,7 +44,8 @@ public class V5 {
     HardwareMap hardwaremap;
     //Orientation angles;
     //public BHI260IMU.Parameters parameters = new IMU.Parameters();
-    public boolean teelop = false, risky = false;
+    public boolean teelop = false, risky = false,
+            lastSample = false;
     public static double deposit_y = -44, deposit_x = -42;
     public double heading;
     public Controladora controladora;
@@ -131,7 +132,7 @@ public class V5 {
                         .build()
         );
     }
-    public void runStatesSpecimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+    public void  runStatesSpecimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
         outtakeIntakeSuperior.runStatesSpecimen(carteiro, runtime, robot, gamepad);
         intakeInferior.runStatesSpecimen(carteiro, runtime, robot, gamepad);
     }
@@ -215,5 +216,10 @@ public class V5 {
     }
 
 
-
+    public void runStatesSpecimenAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
+        outtakeIntakeSuperior.runStatesSpecimenAutonomo(carteiro, runtime, robot);
+        intakeInferior.runStatesSpecimenAutonomo(carteiro, runtime, robot);
+        carteiro.checkIfCanRun(runtime);
+        carteiro.runTeleopActions(runtime);
+    }
 }

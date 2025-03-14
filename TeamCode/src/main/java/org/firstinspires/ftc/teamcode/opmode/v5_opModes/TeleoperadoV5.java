@@ -281,7 +281,9 @@ public class TeleoperadoV5 extends OpMode {
         }
     }
     private void bindsChamber(V5 robot, GamepadEx gamepad, OrdersManager carteiro) {
-
+        if(gamepad.getButton(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
+            robot.intakeInferior.AbrirAlcapao(carteiro,getRuntime());
+        }
         if(gamepad.getButton(GamepadKeys.Button.A)){
             LinearVertical.hang  = false;
             robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
@@ -300,7 +302,7 @@ public class TeleoperadoV5 extends OpMode {
         if(gamepad.getButton(GamepadKeys.Button.B) || getRuntime() < 0.1){
             LinearVertical.hang  = false;
           robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
-          robot.outtakeIntakeSuperior.goToInitial(robot.carteiro, getRuntime());
+          robot.outtakeIntakeSuperior.goToIntakeCHAMBER(robot.carteiro, getRuntime());
         }
 
     }//todo okey

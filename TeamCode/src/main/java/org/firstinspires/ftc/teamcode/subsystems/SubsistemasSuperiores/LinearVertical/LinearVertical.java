@@ -45,7 +45,7 @@ public class LinearVertical {
     public int position;
     public double power;
     public static int targetPosition = 0;
-    public static  int alturaOuttakeChamber = 1300;
+    public static  int alturaOuttakeChamber = 1150;
     public static double p = 0.0002, i = 0, d = 0.000,f = 0, ll = 0, kll = 0,valorDeSurtoDeCorrente = 3.8, valorDeSurtoDeCorrenteTopo = 0.9;
     PIDController controller = new PIDController(p, i, d);
 

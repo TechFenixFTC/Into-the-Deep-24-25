@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.HardwareNames;
 
 import java.util.List;
 
-@Disabled
+
 @TeleOp (name = "Limelight Teste")
 public class LimelightTest2 extends OpMode {
     Limelight3A limelight;

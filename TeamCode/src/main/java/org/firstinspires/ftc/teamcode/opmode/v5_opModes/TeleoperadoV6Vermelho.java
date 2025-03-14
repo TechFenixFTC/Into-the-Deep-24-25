@@ -100,6 +100,7 @@ public class TeleoperadoV6Vermelho extends OpMode {
     }
 
 
+
     @Override
     public void  start() {
         robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
@@ -128,6 +129,10 @@ public class TeleoperadoV6Vermelho extends OpMode {
     public void loop() {
 
         calculaTempoDeLoop();
+
+        telemetry.addData(" MODO DE PONTUAÇÃO", robot.v5Mode);
+        //telemetry.addData(" TEMPO DE EXECUÇÃO", getRuntime());
+
         this.gerenciarModo(robot,gamepadEx2);
 
         this.robotCentricDrive(robot,gamepadEx1);
@@ -145,24 +150,6 @@ public class TeleoperadoV6Vermelho extends OpMode {
         this.hang(gamepadEx1, robot.carteiro);
 
         this.runActions(robot.carteiro);
-
-        //telemetry.addData(" MODO DE PONTUAÇÃO", robot.v5Mode);
-        //telemetry.addData(" TEMPO DE EXECUÇÃO", getRuntime());
-
-        //telemetry.addData("estadoManual",SubsistemasSuperiores.bracoModoManual);
-        //telemetry.addData("motor frontal direito",robot.md.rightFront.getCurrent(CurrentUnit.AMPS));
-       //telemetry.addData("motor traseiro direito",robot.md.rightBack.getCurrent(CurrentUnit.AMPS));
-       //telemetry.addData("motor frontal esquerdo",robot.md.leftFront.getCurrent(CurrentUnit.AMPS));
-       //telemetry.addData("motor traseiro esquerdo",robot.md.leftBack.getCurrent(CurrentUnit.AMPS));
-
-        //robot.intakeInferior.linearHorizontalMotor.monitor(telemetry,"horizontal inferior");
-        //telemetry.addData("🏗️ Estado Geral Superiores", robot.outtakeIntakeSuperior.upperSubsystemStates);
-        //telemetry.addData("🕰️ ", robot.outtakeIntakeSuperior.tempoInferiorEmTransfer.time());
-        //telemetry.addData("♻️Voltando Pra pegar Sample", robot.outtakeIntakeSuperior.voltandoPraPegarUmaSample);
-        //telemetry.addData("Estado boleana de estados Inferiores nos SubSistemas Superiores",robot.outtakeIntakeSuperior.estadoSistemasInferioresNaFuncao);
-        //telemetry.addLine("================================");
-        //telemetry.addData("Etados Geral Inferiore", robot.intakeInferior.underGrounSubystemStates);
-        //telemetry.addData("timer novo",robot.outtakeIntakeSuperior.ultimoTempo);
 
 
         // todo: colocar a transição de estados
@@ -278,33 +265,29 @@ public class TeleoperadoV6Vermelho extends OpMode {
     private void bindsChamber(V5 robot, GamepadEx gamepad, OrdersManager carteiro) {
         robot.runStatesSpecimen(carteiro,getRuntime(),robot,gamepad);
         if(gamepad.getButton(GamepadKeys.Button.A)){
-            robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
+            //robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
             LinearVertical.hang = false;
-            //carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo INTAKE CHAMBER", getRuntime());
-            //carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER), 0, "ir pra modo INTAKE CHAMBER", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo INTAKE CHAMBER", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER), 0, "ir pra modo INTAKE CHAMBER", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
-            robot.intakeInferior.gerenciadorIntakSpecimen(carteiro,getRuntime());
+            //robot.intakeInferior.gerenciadorIntakSpecimen(carteiro,getRuntime());
             LinearVertical.hang = false;
-            //carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE), 0, "ir pra modo INTAKE", getRuntime());
-            //carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "ir pra modo INTAKE", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE), 0, "intake ir pra modo INTAKE", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER), 0, "ir pra modo INTAKE", getRuntime());
 
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
-            robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
-            robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
+            //robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
+            //robot.outtakeIntakeSuperior.goToOuttakeCHAMBER(carteiro,getRuntime());
             LinearVertical.hang = false;
-            //carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo OUTTAKE", getRuntime());
-            //carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.OUTTAKE_CHAMBER), 0, "ir pra modo OUTTAKE", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "intake ir pra modo OUTTAKE", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.OUTTAKE_CHAMBER), 0, "outake ir pra modo OUTTAKE", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.B)){
             LinearVertical.hang = false;
-            robot.intakeInferior.goToInitial_goToReadyTransfer(carteiro,getRuntime());
-            robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
-            //carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo INITIAL", getRuntime());
-            //carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "ir pra modo INTIAL", getRuntime());
-
-
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, " intake ir pra modo INITIAL", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER), 0, "outake ir pra modo INTIAL", getRuntime());
         }
 
     }
@@ -351,7 +334,6 @@ public class TeleoperadoV6Vermelho extends OpMode {
             vertical.downSetPoint();
         }
         if(gamepad.getButton(GamepadKeys.Button.BACK)){
-
            vertical.reset();
         }
 
@@ -454,6 +436,7 @@ public class TeleoperadoV6Vermelho extends OpMode {
         if(gamepadEx.getButton(GamepadKeys.Button.START)) {
             if (getRuntime() >= cooldownMode) {
                 cooldownMode = getRuntime() + delayMode;
+
 
                 if (this.robot.v5Mode == V5Modes.SPECIMEN) {
                     robot.v5Mode = V5Modes.SAMPLE;

@@ -159,10 +159,10 @@ public class SubsistemasSuperiores {
         public void runStatesSpecimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
 
             if(upperSubsystemStates == UpperSubsystemStates.TRANSFER || upperSubsystemStates == UpperSubsystemStates.INITIAL) {
-                Initial_Specimen(carteiro, runtime, robot, gamepad);
+                Intake_Specimen(carteiro, runtime, robot, gamepad);
             }
 
-            if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE) {
+            if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE || upperSubsystemStates == UpperSubsystemStates.OUTTAKE_CHAMBER) {
                 Outtake_Specimen(carteiro, runtime, robot, gamepad);
             }
             if(upperSubsystemStates == UpperSubsystemStates.INTAKE_CHAMBER){
@@ -173,8 +173,7 @@ public class SubsistemasSuperiores {
         public  void  Initial_Specimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
         //todo okey
         //Posição Vertical
-        boolean verticalEstaRetraido  = linearVertical.position <50;
-        boolean verticalEstaExtendido = linearVertical.position >900;
+        boolean verticalEstaRetraido  = linearVertical.position < 80;
         //Estados braço
         boolean bracoEstaNaPosicaoOuttakeSpecimen = braco.bracoGarraSuperiorState == BracoGarraSuperiorStates.OUTTAKE_CHAMBER;
         boolean bracoEstaNaPosicaoInitial = braco.bracoGarraSuperiorState == BracoGarraSuperiorStates.INITIAL;
@@ -186,7 +185,7 @@ public class SubsistemasSuperiores {
         // AÇÕES DE TRANSIÇÃO Automática
         /* todo: ir para Initial quando> 1- Vertical Retraido 2- Braco no estado initial 3- Angulação no estado inicial*/
         if(verticalEstaRetraido && bracoEstaNaPosicaoInitial && angulacaoEstaNaPosicaoInitialSpecimen){
-            carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "Mudar modo subsistemas superiores para initial", runtime);
+          //  carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "Mudar modo subsistemas superiores para initial", runtime);
         }
         // AÇÕES DO ESTADO
 
@@ -214,8 +213,8 @@ public class SubsistemasSuperiores {
         public void Outtake_Specimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad){
         //todo okey
         //Posições Vertical
-        boolean verticalEstaRetraido  = linearVertical.position <50;
-        boolean verticalEstaNaPosicaoOuttakeSpecimen = linearVertical.position >900;
+        boolean verticalEstaRetraido  = linearVertical.position <  80;
+        boolean verticalEstaNaPosicaoOuttakeSpecimen = linearVertical.position > 900;
         //Estado braço
         boolean bracoEstaNaPosicaoOuttakeSpecimen = braco.bracoGarraSuperiorState == BracoGarraSuperiorStates.OUTTAKE_CHAMBER;
         //Estado angulação
@@ -223,22 +222,16 @@ public class SubsistemasSuperiores {
 
 
         double delay = 0;
-        // AÇÕES DE TRANSIÇÃO Automática
-        /* todo: ir para Initial quando> 1- Vertical na posição adequada 2- Braco no estado outtake 3- Garra Superior no estado outtake*/
-        if(verticalEstaNaPosicaoOuttakeSpecimen && bracoEstaNaPosicaoOuttakeSpecimen && angulacaoEstaNaPosicaoOuttakeSpecimen){
-            carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE_CHAMBER), 0, "Mudar modo subsistemas superiores para outtake Specimen", runtime);
-        }
+
         // AÇÕES DO ESTADO
-            //todo: Braco para posição de Outtake/
+            // todo: Braco para posição de Outtake/
         if(!bracoEstaNaPosicaoOuttakeSpecimen){
             carteiro.addOrder(braco.goToOuttakeCHAMBER(), 0,"bracoSuperior",runtime);
-        }
-            //todo: Angulção,Abertura e Rotação para a posição de Outtake/
-        if(!angulacaoEstaNaPosicaoOuttakeSpecimen){
             carteiro.addOrder(garraSuperior.goToOuttakeSpecimen(),0,"garraSuperior",runtime);
         }
+
             //todo: vertical para a posição de Outtake/
-        if(!verticalEstaNaPosicaoOuttakeSpecimen){
+        if(!verticalEstaNaPosicaoOuttakeSpecimen && LinearVertical.targetPosition < LinearVertical.alturaOuttakeChamber/2){
             carteiro.addOrder(linearVertical.ElevadorGoTo(LinearVertical.alturaOuttakeChamber),0,"linearVertical",runtime);
         }
 
@@ -247,38 +240,35 @@ public class SubsistemasSuperiores {
         public void Intake_Specimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad){
             //todo okey
             //Posições Vertical
-            boolean verticalEstaRetraido  = linearVertical.position <50;
-            boolean verticalEstaNaPosicaoOuttakeSpecimen = linearVertical.position >900;
+            boolean verticalEstaRetraido  = linearVertical.position < 80;
+            boolean verticalEstaNaPosicaoOuttakeSpecimen = linearVertical.position > 900;
             //Estado braço
-            boolean bracoEstaNaPosicaoIntakeSpecimen = braco.bracoGarraSuperiorState == BracoGarraSuperiorStates.INTAKE;
+            boolean bracoEstaNaPosicaoIntakeSpecimen     = braco.bracoGarraSuperiorState == BracoGarraSuperiorStates.INTAKE;
             //Estados Angulação
             boolean angulacaoEstaNaPosicaoIntakeSpecimen = garraSuperior.garraAngulationState == GarraAngulationStates.INTAKE_SPECIMEN;
             //Estado Abertura da garra
-            boolean garraEstaHalf = garraSuperior.garraOpeningState == GarraOpeningStates.HALF;
-
+            boolean garraEstaHalf                        = garraSuperior.garraOpeningState == GarraOpeningStates.HALF;
+            boolean estaApertandoParaResetar             = gamepad.getButton(GamepadKeys.Button.B);
 
             double delay = 0;
-            // AÇÕES DE TRANSIÇÃO Automática
-            /* todo: ir para Initial quando> 1- Vertical Retraido 2- Braco no estado intake 3- Garra Superior no estado intakeSpecimen*/
-            if(verticalEstaRetraido && bracoEstaNaPosicaoIntakeSpecimen && angulacaoEstaNaPosicaoIntakeSpecimen){
-                carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER), 0, "Mudar modo subsistemas superiores para intakeSpecimen", runtime);
-            }
+
             // AÇÕES DO ESTADO
-                //todo: Braco para a posição de intake/
+            //todo: Braco para a posição de intake/
             if(!bracoEstaNaPosicaoIntakeSpecimen){
                 carteiro.addOrder(braco.goToIntakeCHAMBER(),0,"braco",runtime);
             }
                 //todo: Angulação, Rotação da garra para a posição de intake/
             if(!angulacaoEstaNaPosicaoIntakeSpecimen){
                 carteiro.addOrder(garraSuperior.goToIntakeSpecimen(),0,"garraSuperior",runtime);
+                carteiro.addOrder(garraSuperior.abrirGarraHalf(),0,"garraSuperior abrir",runtime);
             }
-                //todo: abertura da Garra para half/
-            if(!garraEstaHalf){
-                carteiro.addOrder(garraSuperior.abrirGarraHalf(),0,"AbrirGarra",runtime);
-            }
+
                 //todo: Retrai o vertical/
-            if(verticalEstaRetraido){
-                carteiro.addOrder(linearVertical.ElevadorGoTo(-700),0,"linearVertical",runtime);
+            /*todo: Precisa resetar o Linear?*/
+            if((!verticalEstaRetraido || estaApertandoParaResetar)|| runtime <= 0.1) {
+                if(!carteiro.hasOrder("resetarOvertical")) {
+                    carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
+                }
             }
         }
 
@@ -291,10 +281,10 @@ public class SubsistemasSuperiores {
      //todo teleop
         public void runStatesSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
 
-                if(upperSubsystemStates == UpperSubsystemStates.TRANSFER || upperSubsystemStates == UpperSubsystemStates.INITIAL) {
+                if(upperSubsystemStates == UpperSubsystemStates.TRANSFER || upperSubsystemStates == UpperSubsystemStates.INITIAL || upperSubsystemStates == UpperSubsystemStates.INTAKE_CHAMBER) {
                     Initial_ReadyToTransferSample(carteiro, runtime, robot, gamepad);
                 }
-                if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE) {
+                if(upperSubsystemStates == UpperSubsystemStates.OUTTAKE || upperSubsystemStates == UpperSubsystemStates.OUTTAKE_CHAMBER) {
                     OutakeHighBasket(carteiro, runtime, robot, gamepad);
                 }
 
@@ -372,7 +362,7 @@ public class SubsistemasSuperiores {
             /*todo: Transicionar pro estado "outake" SE 1:Vertical ta resetado 2: tem sample pronta a algum tempo 3: servos estão na posição correta 4:NãoTaVoltandoPraPegarSample*/
             if(verticalEstaResetado  && temUmaSamplePraTransfer && intakeProntoProTransferAalgumTempo && bracoTaNaPosicaoDeReadToTransfer && angulacaoGarraTaPraTransfer && garraTaAberta && !voltandoPraPegarUmaSample && runtime > 1.6/*jaPassouOTempoNecessarioPraTransfer*/){
                 if (!carteiro.hasOrder("ir pra modo Outake superior")) {
-                    carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
+                  //  carteiro.addOrder(new InstantAction(() -> upperSubsystemStates = UpperSubsystemStates.OUTTAKE), 0.0, "ir pra modo Outake superior", runtime);
                 }
             }
 
@@ -508,9 +498,20 @@ public class SubsistemasSuperiores {
                 }
             }
             /*todo: precisa por os servos pra transfer?*/
+
             if(!garraTaAberta || !angulacaoGarraTaPraTransfer) {
                 Action goToTransfer;
-                if(!garraTaAberta) {
+                if(robot.lastSample){
+                    goToTransfer = new SequentialAction(
+                            garraSuperior.abrirGarra(),
+                            braco.goToReadyToTransfer(),
+                            new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.1).build(),
+                            garraSuperior.goToTransfer(),
+                            new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build()
+
+                    );
+                }
+                else if(!garraTaAberta) {
                     goToTransfer = new SequentialAction(
                             garraSuperior.abrirGarra(),
                             new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.1).build(),
@@ -647,7 +648,10 @@ public class SubsistemasSuperiores {
 
 
         private double getVoltage() {return hardwaremap.voltageSensor.iterator().next().getVoltage();}
-        // todo: mudar função para o v5
+
+    public void runStatesSpecimenAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
+    }
+    // todo: mudar função para o v5
     }
 
 

@@ -33,6 +33,6 @@ public class Limelight {
             return robotPoseTargetSpace.getPosition().z;
 
         }
-        return 404;
+        return 0;
     }
 }

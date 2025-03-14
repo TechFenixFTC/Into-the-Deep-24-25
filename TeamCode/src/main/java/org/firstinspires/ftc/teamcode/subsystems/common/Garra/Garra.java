@@ -41,7 +41,7 @@ public class Garra {
 
         return new Action() {
             boolean started = false;
-            double tempoPraFechar = 0.3;
+            double tempoPraFechar = 0.4;
             ElapsedTime temporizador = new ElapsedTime();
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {

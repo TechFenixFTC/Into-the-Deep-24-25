@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.opmode.v5_opModes;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -15,15 +17,20 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
+import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
 
 
 @Config
-@Autonomous(name = "AutonomoSpecimen4+0 estavel ", group = "Autonomous")
-public class AutoSpecimen4mais0 extends LinearOpMode {
+@Autonomous(name = "AutonomoSpecimen4+0 beta ", group = "Autonomous")
+public class AutoSpecimen5mais0Sugando extends LinearOpMode {
     V5 robot;
     Action push;
-    public static int target = 0,
-            EIXOX = -12;
+    public static int target = 0;
+    private boolean encerrar;
+    private Action proximaAction;
+
+
     @Override
     public void runOpMode()  {
 
@@ -47,93 +54,63 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
 
                 )
         );
-        push = pushSamples();
+        //push = pushSamples();
         waitForStart();
-
-        Actions.runBlocking(
-                new SequentialAction(
-                        robot.intakeInferior.linearHorizontalMotor.turnOnHold(),
-                        new InstantAction(() -> {robot.intakeInferior.linearHorizontalMotor.changeTarget(target);robot.intakeInferior.linearHorizontalMotor.PID();} ),
-                        deposit(),
+        while (robot.controladora.sampleID <= 4) {
+            encerrar = false;
+            proximaAction = robot.controladora.decideProximaAcao(robot, getRuntime());
+            if(proximaAction != null){
+                Actions.runBlocking(
                         new ParallelAction(
+                                //todo Roda a próxima ação retornada pela controladora em paralelo com nossas automatizações
+                                AutomationSpecimen(),
                                 new SequentialAction(
-                                        robot.outtakeIntakeSuperior.garraSuperior.abrirGarra(),
-                                        robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
-                                        positionIntake()
-                                ),
-                                push
-                        ),
-                        //firstIntake(),
-                        collect(),
-                        deposit2(),
-                        intake(-6,-30),
-                        deposit2(),
-                        intake(-6,-30),
-                        deposit2(),
-                        irParaCasa()
+                                        proximaAction,
+                                        new InstantAction(() -> encerrar = true)
+                                )
 
-                )
+                        )
+                );
+            }
+
+        }
+
+        // todo: reseta no final
+        encerrar = false;
+        robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
+        robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
+        Actions.runBlocking(
+                AutomationSpecimen()
         );
 
     }
-    public Action Movecomplept(){
-        return new SequentialAction(
-                robot.md.actionBuilder(robot.md.pose)
-                        //todo move deposito
-                        .setTangent(Math.toRadians(90))
-                        .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(-90)), Math.toRadians(90))
-                        //chegar no sample 2 e empurrar
-                        .setTangent(Math.toRadians(-90))
-                        .splineToLinearHeading(new Pose2d(38, -35, Math.toRadians(90)), Math.toRadians(90))
+    public Action AutomationSpecimen(){
+        return new Action() {
+            boolean started = false;
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if(!started){
+                    started = true;
+                }
 
-                        .splineToLinearHeading(new Pose2d(38, -5, Math.toRadians(90)), Math.toRadians(90))
-                        .setTangent(Math.toRadians(0))
-                        .splineToLinearHeading(new Pose2d(48, -5, Math.toRadians(90)), Math.toRadians(-90))
-                        .setTangent(Math.toRadians(-90))
-                        .waitSeconds(0.5)
-                        .splineToLinearHeading(new Pose2d(48, -50, Math.toRadians(90)), Math.toRadians(-90))
+                robot.outtakeIntakeSuperior.monitorEstadosAutonomo(telemetryPacket);
+                robot.intakeInferior.monitorEstadosAutonomo(telemetryPacket);
+                robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.monitorAutonomo(telemetryPacket);
+                robot.runStatesSpecimenAutonomo(robot.carteiro, getRuntime(),robot);
+                telemetryPacket.addLine("Power Sugador: "+ robot.intakeInferior.intakeSuccao.sugador.getPower());
+                telemetryPacket.addLine("tempo de execução: "+ getRuntime());
+                telemetryPacket.addLine("sampleID: "+ robot.controladora.sampleID);
+                telemetryPacket.addLine("estadoAutonomo: "+ robot.controladora.estadoSample);
+                telemetryPacket.addLine("quantas vezes mandou a próxima ação: " + robot.controladora.quantasVezesFoiExecutado);
+                if(encerrar){
+                    return false;
+                }
+                return true;
 
-                        .splineToLinearHeading(new Pose2d(48, -10, Math.toRadians(90)), Math.toRadians(90))
-                        .setTangent(Math.toRadians(0))
-                        .splineToLinearHeading(new Pose2d(56, -10, Math.toRadians(90)), Math.toRadians(-90))
-                        .setTangent(Math.toRadians(-90))
-                        .waitSeconds(0.5)
-                        .splineToLinearHeading(new Pose2d(56, -50, Math.toRadians(90)), Math.toRadians(-90))
-
-                        .splineToLinearHeading(new Pose2d(52, -10, Math.toRadians(90)), Math.toRadians(90))
-                        .setTangent(Math.toRadians(0))
-                        .splineToLinearHeading(new Pose2d(62, -10, Math.toRadians(90)), Math.toRadians(-90))
-                        .setTangent(Math.toRadians(-90))
-                        .waitSeconds(0.5)
-                        .splineToLinearHeading(new Pose2d(62, -50, Math.toRadians(90)), Math.toRadians(-90))
-                        .setTangent(-135)
-                        .splineToLinearHeading(new Pose2d(58, -60, Math.toRadians(-90)), Math.toRadians(-90))
-
-                        //todo deposito
-                        .setTangent(Math.toRadians(135))
-                        .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(-90)), Math.toRadians(90))
-
-                        //todo intake
-                        .setTangent(Math.toRadians(-45))
-                        .splineToLinearHeading(new Pose2d(38, -60, Math.toRadians(-90)), Math.toRadians(-90))
-
-                        //todo deposito
-                        .setTangent(Math.toRadians(135))
-                        .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(-90)), Math.toRadians(90))
-
-                        //todo intake
-                        .setTangent(Math.toRadians(-45))
-                        .splineToLinearHeading(new Pose2d(38, -60, Math.toRadians(-90)), Math.toRadians(-90))
-
-                        //todo deposito
-                        .setTangent(Math.toRadians(135))
-                        .splineToLinearHeading(new Pose2d(0, -40, Math.toRadians(-90)), Math.toRadians(90))
-
-                        .setTangent(Math.toRadians(-45))
-                        .splineToLinearHeading(new Pose2d(38, -50, Math.toRadians(-35)), Math.toRadians(-45))
-                        .build()
-        );
+            }
+        };
     }
+
     public Action goToDeposit(){
         return robot.md.actionBuilder(robot.md.pose)
                 //todo: colocar primeiro specimen
@@ -157,7 +134,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
                         //todo empurrar sample 2
 
                         .setTangent(Math.toRadians(90))
-                        .splineToLinearHeading(new Pose2d(56, -5, Math.toRadians(-90)), Math.toRadians(-90))
+                        .splineToLinearHeading(new Pose2d(56, -5, Math.toRadians(-95)), Math.toRadians(-90))
 
 
 
@@ -177,7 +154,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
         return robot.md.actionBuilder(new Pose2d(51, -63, Math.toRadians(-90)))
                 //todo: colocar primeiro specimen
                 //.strafeTo(new Vector2d(-6,-22))
-                .strafeTo(new Vector2d(EIXOX,-17))
+                .strafeTo(new Vector2d(-12,-17))
                 //.splineToSplineHeading(new Pose2d(EIXOX,-27,Math.toRadians(-90)
                 .build();
     }

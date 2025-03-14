@@ -35,14 +35,14 @@ public class IntakeSuccao{
     private double delay = 0.25;
     double cooldown = 0;
     private double cooldownAberturaGarra = 0;
-    public static double power_Sugador = 0.58, pontoAtiv = 0.9, powerMesmo = 0.55;
+    public static double power_Sugador = 0.9, pontoAtiv = 0.9, powerMesmo = 0.55;
     public DcMotorEx sugador;
     public Servo alcapao;
     public static double posicaoReadyIntakeAlcapao = 0.55;
     public static double posicaoIntakeAlcapao = 0.625;
 
-    public static double posicaoTransferAngulacao = 0.528, posicaoIntakeAgulacao = 0.362, posicaoEjetarAngulacao = 0.528;
-
+    public static double posicaoTransferAngulacao = 0.528, posicaoIntakeAgulacao = 0.370, posicaoEjetarAngulacao = 0.528;
+    // pos antiga do sugar ang 0.362
     private HashMap<SugarAngulationStates , Double> mapAngulation = new HashMap<>();
     public  SugarAngulationStates sugarAngulationStates  = SugarAngulationStates.INITIAL;
 
@@ -67,8 +67,10 @@ public class IntakeSuccao{
         mapAlcapao.put(AlcapaoStates.TOTALOPEN, 0.0);
         mapAlcapao.put(AlcapaoStates.INTAKE_SAMPLE, posicaoIntakeAlcapao);
         mapAlcapao.put(AlcapaoStates.READY_TOINTAKE, posicaoReadyIntakeAlcapao);
+
         mapAlcapao.put(AlcapaoStates.INITIAL,0.834);
-        mapAlcapao.put(AlcapaoStates.INTAKE_SPECIMEN,1.0);
+        mapAlcapao.put(AlcapaoStates.INTAKE_SPECIMEN,0.632);
+        mapAlcapao.put(AlcapaoStates.READY_TOINTAKE_SPECIMEN,0.632);
         mapAlcapao.put(AlcapaoStates.TRASNFER, 1.0);
     }
     public Action verifyColorSensor(){
@@ -174,7 +176,7 @@ public class IntakeSuccao{
     }
     public Action ReadytoIntakePositionAlcapao(){
         return new InstantAction(()->{
-            alcapaoStates = AlcapaoStates.READY_TOINTAKE;
+            alcapaoStates = AlcapaoStates.READY_TOINTAKE_SPECIMEN;
             alcapao.setPosition(mapAlcapao.get(alcapaoStates));
         });
     }
@@ -260,10 +262,10 @@ public class IntakeSuccao{
 
     public void gerenciadorDoSugadorManual(GamepadEx gamepad, double runTime){
         if(gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)>0){
-            sugador.setPower(-power_Sugador * gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER));
+            sugador.setPower(-power_Sugador * gamepad.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)* 1.2);
         }
         else if(gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER)>0){
-            sugador.setPower(-power_Sugador *-gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER));
+            sugador.setPower(-power_Sugador *-gamepad.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) );
         }
         else if(sugarAngulationStates  != SugarAngulationStates.INTAKE ){
             sugador.setPower(0);
