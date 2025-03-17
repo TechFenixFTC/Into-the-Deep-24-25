@@ -248,7 +248,7 @@ public class SubsistemasSuperiores {
             boolean angulacaoEstaNaPosicaoIntakeSpecimen = garraSuperior.garraAngulationState == GarraAngulationStates.INTAKE_SPECIMEN;
             //Estado Abertura da garra
             boolean garraEstaHalf                        = garraSuperior.garraOpeningState == GarraOpeningStates.HALF;
-            boolean estaApertandoParaResetar             = gamepad.getButton(GamepadKeys.Button.B);
+            boolean estaApertandoParaResetar             = gamepad.getButton(GamepadKeys.Button.B) || gamepad.getButton(GamepadKeys.Button.A);
 
             double delay = 0;
 
@@ -493,7 +493,7 @@ public class SubsistemasSuperiores {
 
             /*todo: Precisa resetar o Linear?*/
             if(!verticalEstaResetado || runtime <= 0.1) {
-                if(!carteiro.hasOrder("resetarOvertical") && !LinearVertical.isBusy && !verticalEstaResetado) {
+                if(!carteiro.hasOrder("resetarOvertical") && !LinearVertical.isBusy && !verticalEstaResetado && !linearVertical.hang) {
                     carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
                 }
             }
@@ -591,7 +591,7 @@ public class SubsistemasSuperiores {
 
             }
             /*todo: Mandar Subir o Linear quando a garra pegar o sample*/
-            if(!verticalJaFoiMandadoProAlto && garraTaFechada && !voltandoPraPegarUmaSample){
+            if(!verticalJaFoiMandadoProAlto && garraTaFechada && !voltandoPraPegarUmaSample &&!linearVertical.hang){
                 carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0, "Sobe o LinearVertical", runtime);
             }
             /*todo: Mover o Braço pra Posição De Outake*/

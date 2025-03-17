@@ -4,5 +4,6 @@ public enum AutonomoStates {
     Initial,
     Deposit,
     Collect,
-    ReadyToCollect
+    ReadyToCollect,
+    Ejetar
 }

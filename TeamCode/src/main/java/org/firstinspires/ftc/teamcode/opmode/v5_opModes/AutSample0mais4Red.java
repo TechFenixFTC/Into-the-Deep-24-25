@@ -32,22 +32,22 @@ public class AutSample0mais4Red extends LinearOpMode {
     ElapsedTime tempoDecorridoAutonomo = new ElapsedTime();
 
     public static double
-            Xdeposit1 = -49 ,    Ydeposit1 = -57 ,  Hdeposit1 = 35,
-            Xdeposit2 = -55 ,    Ydeposit2 = -53.3,  Hdeposit2 = 45,
+            Xdeposit1 = -51,    Ydeposit1 = -57 ,  Hdeposit1 = 35,
+            Xdeposit2 = -51 ,    Ydeposit2 = -56,  Hdeposit2 = 45,
 
-            Xdeposit4 = -60 ,    Ydeposit4 = -55.3,  Hdeposit4 = 45,
+            Xdeposit4 = -55.5 ,    Ydeposit4 = -53.3,  Hdeposit4 = 45,
 
 
             Xdeposit5 = -120 ,    Ydeposit5 = -124 ,  Hdeposit5 = 60,
 
-            XCollect2 = -43.7 , YCollect2 = -43, HCollect2 = 89,
+            XCollect2 = -42 , YCollect2 = -43, HCollect2 = 89,
             LimelightXsample2 = 0.81,// distância entre o robo e a apriltag
-            XCollect3 = -53.2 ,   YCollect3 = -43 , HCollect3 = 87,
-            XCollect4 = -51 ,   YCollect4 = -39 , HCollect4 = 140,
+            XCollect3 = -52 ,   YCollect3 = -43 , HCollect3 = 87,
+            XCollect4 = -51 ,   YCollect4 = -38 , HCollect4 = 140,
             XCollect5 = -18,   YCollect5 = -5 , HCollect5 = 0, TangentCollect5 = 130, TangentCollect5part2 = 0,
             XCollect5part2 = -3,
-            delaySoltarSample1 = 0.1, delaySoltarSample2 = 0.310, delaySoltarSample4 = 0.450, tangentCollect4 = 140, tangentDeposit4 = 145,
-            LimelightDelayToRead = 0.400, currMax = 3.60, LimeLightKp = 15
+            delaySoltarSample1 = 0.1, delaySoltarSample2 = 0.5, delaySoltarSample4 = 0.5, tangentCollect4 = 140, tangentDeposit4 = 145,
+            LimelightDelayToRead = 0.400, currMax = 3.60, LimeLightKp = -15
             ;
 
 
@@ -83,9 +83,9 @@ public class AutSample0mais4Red extends LinearOpMode {
         resetRuntime();
         //tempoDecorridoAutonomo.reset();
 
-        while (robot.controladora.sampleID <= 4) {
+        while (robot.controladoraBASKET.sampleID <= 4) {
             encerrar = false;
-            proximaAction = robot.controladora.decideProximaAcao(robot, getRuntime());
+            proximaAction = robot.controladoraBASKET.decideProximaAcao(robot, getRuntime());
             if(proximaAction != null){
                 Actions.runBlocking(
                         new ParallelAction(
@@ -128,9 +128,9 @@ public class AutSample0mais4Red extends LinearOpMode {
                 robot.runStatesSampleAutonomo(robot.carteiro, getRuntime(),robot);
                 telemetryPacket.addLine("Power Sugador: "+ robot.intakeInferior.intakeSuccao.sugador.getPower());
                 telemetryPacket.addLine("tempo de execução: "+ getRuntime());
-                telemetryPacket.addLine("sampleID: "+ robot.controladora.sampleID);
-                telemetryPacket.addLine("estadoAutonomo: "+ robot.controladora.estadoSample);
-                telemetryPacket.addLine("quantas vezes mandou a próxima ação: " + robot.controladora.quantasVezesFoiExecutado);
+                telemetryPacket.addLine("sampleID: "+ robot.controladoraBASKET.sampleID);
+                telemetryPacket.addLine("estadoAutonomo: "+ robot.controladoraBASKET.estadoSample);
+                telemetryPacket.addLine("quantas vezes mandou a próxima ação: " + robot.controladoraBASKET.quantasVezesFoiExecutado);
                 if(encerrar){
                     return false;
                 }

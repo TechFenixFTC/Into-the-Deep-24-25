@@ -10,9 +10,12 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.Controller.AutonomoStates;
+import org.firstinspires.ftc.teamcode.Controller.Controladora5mais0_sugando;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
 import org.firstinspires.ftc.teamcode.opmode.v5_opModes.AutSample0mais4Red;
+import org.firstinspires.ftc.teamcode.opmode.v5_opModes.AutoSpecimen5mais0Sugando;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Garra.GarraInferior;
@@ -27,13 +30,14 @@ public class SubsistemasInferiores {
     public boolean teleopAllianceAzul = false, expulsandoSampleDoSubersivel = false;
     public MatchColor matchColor;
     double cooldown = 0, lastTimeB = 0, runtTime = 0;
+    double cooldownAutoIntake = 0;
     public Telemetry telemetry;
     public IntakeSuccao intakeSuccao;
     public UnderGrounSubystemStates underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
     public static boolean monitorEstadosInferiores = true, mandouRetrairEmAlgumPonto = false, mandouSubirOIntake = false,alcapaoManual =false;
 
     public GarraInferior garraInferior;
-    boolean estaEjetando = false;
+    public boolean estaEjetando = false;
     public LinearHorizontalMotor linearHorizontalMotor;
     HardwareMap hardwaremap;
     public SubsistemasInferiores(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -283,67 +287,105 @@ public class SubsistemasInferiores {
         }
     }
 
-    public void IntakeSpecimenAut(OrdersManager carteiro,double runtime, V5 robot){
-        // todo: caso alguém olhe essa função, aqui é miguel avisando que comecei a fazer isso e ainda não terminei
+    public void IntakeSpecimenAut(OrdersManager carteiro,double runtime, V5 robot) {
+        int posicaoQueDaPraAbaixarOIntake = 1000;
+        boolean sugouSampleErrado = false;
+        boolean linearTaNaPosicaoQueDaPraAbaixarOIntake = linearHorizontalMotor.motorHorizontal.getCurrentPosition() >= posicaoQueDaPraAbaixarOIntake;
+        boolean linearEstaExtendendo = LinearHorizontalMotor.targetPosition > 1200;
+        boolean subsistemasEstaInicial = underGrounSubystemStates == UnderGrounSubystemStates.INITIAL;
+        boolean linearEstaRetraido = linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED;
+        boolean linearEstaEstendido = linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.EXTENDED;
+        boolean intakeSuccaoTaNoModoIntake = intakeSuccao.sugarAngulationStates == SugarAngulationStates.INTAKE;
+        boolean intakeSuccaoTaNoModoInitial = intakeSuccao.sugarAngulationStates == SugarAngulationStates.INITIAL;
+        boolean intakeSuccaoTaNoModoReadyIntake = intakeSuccao.sugarAngulationStates == SugarAngulationStates.READY_TOINTAKE;
 
-        boolean linearEstaRetraido               = linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.RETRACTED;
-        boolean SugouSampleErrado                = false;
-        boolean linearEstaEstendido              = linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.EXTENDED;
-        boolean intakeSuccaoTaNoModoIntake       = intakeSuccao.sugarAngulationStates == SugarAngulationStates.INTAKE;
-        boolean intakeSuccaoTaNoModoInitial      = intakeSuccao.sugarAngulationStates == SugarAngulationStates.INITIAL;
-        boolean intakeSuccaoTaNoModoReadyIntake  = intakeSuccao.sugarAngulationStates == SugarAngulationStates.READY_TOINTAKE;
-        boolean alcapaoPosicaoPraIntakeSpecimen    = intakeSuccao.alcapaoStates == AlcapaoStates.TRASNFER;
-        boolean temUmaSampleNoIntake             = intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake();
-        boolean samplePosicaoPraTransfer         = intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+        boolean alcapaoPosicaoProTransfer = intakeSuccao.alcapaoStates == AlcapaoStates.TRASNFER;
+        boolean alcapaoPosicaoPraIntakeSample = intakeSuccao.alcapaoStates == AlcapaoStates.INTAKE_SAMPLE;
+        boolean temUmaSampleNoIntake = intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake();
+        boolean samplePosicaoPraTransfer = intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
         double delay = 0;
 
+        linearHorizontalMotor.PID();
+
+        /* todo: ir para o estado inicial se tiver uma sample*/
+
         /*todo: ver qual cor vai descartar*/
-        if(teleopAllianceAzul){
-            SugouSampleErrado = intakeSuccao.colorSensorSugar.colorMatcher.getSampleColor().equals("Vermelho");
-        }
-        else {
-            SugouSampleErrado = intakeSuccao.colorSensorSugar.colorMatcher.getSampleColor().equals("Azul");
+        if (robot.controladoraBASKET.sampleID > 4) {
+            if (teleopAllianceAzul) {
+                sugouSampleErrado = intakeSuccao.colorSensorSugar.colorMatcher.getSampleColor().equals("Vermelho");
+            }
+            if (!teleopAllianceAzul) {
+                sugouSampleErrado = intakeSuccao.colorSensorSugar.colorMatcher.getSampleColor().equals("Azul");
+            }
         }
 
-        linearHorizontalMotor.PID();
+
+
         /*todo: estica o horizontal*/
-        if(linearEstaRetraido){
-            carteiro.addOrder(linearHorizontalMotor.goToExtended(), delay, "ExtenderLinear", runtime);
-            if (!carteiro.hasOrder("Intake Sucção Pra ReadyToIntake")) {
-                carteiro.addOrder(
-                        intakeSuccao.GotoReadyToIntakeSample(),
-                        0.17,
-                        "Intake Sucção Pra ReadyToIntake",
-                        runtime
-                );
+        if (linearEstaRetraido) {
+            if (!carteiro.hasOrder("ExtenderLinear")) {
+                carteiro.addOrder(linearHorizontalMotor.goToExtended(), delay, "ExtenderLinear", runtime);
+                if (!carteiro.hasOrder("Intake Sucção Pra ReadyToIntake")) {
+                    carteiro.addOrder(
+                            intakeSuccao.GotoReadyToIntakeSample(),
+                            0.17,
+                            "Intake Sucção Pra ReadyToIntake",
+                            runtime
+                    );
+                }
             }
 
-        }
 
-        /* todo: alçapão para a posição de intake specimen(levantado) */
-        if(alcapaoPosicaoPraIntakeSpecimen && !estaEjetando){
-            carteiro.addOrder(intakeSuccao.TransferPositionAlcapao(), 0, "alcapao intake sample", runtime);
+        }
+        /* todo: alçapão para a posição totalmente levantado*/
+        if (!alcapaoPosicaoPraIntakeSample) {
+            carteiro.addOrder(intakeSuccao.IntakeSamplePositionAlcapao(), 0, "alcapao intake sample", runtime);
         }
         /*todo: Angulação do intake*/
-        if(!linearEstaEstendido) {
-           intakeSuccao.GotoReadyToIntakeSample();
+        if (/*linearEstaExtendendo && linearTaNaPosicaoQueDaPraAbaixarOIntake*/linearEstaEstendido && !expulsandoSampleDoSubersivel) {
+            carteiro.addOrder(intakeSuccao.GotoIntakeSample(), 0, "Intake Sample", runtime);
         }
 
+
+        if (sugouSampleErrado) {
+            if (!carteiro.hasOrder("ejetar")) {
+                estaEjetando = true;
+                carteiro.addOrder(intakeSuccao.TotalOpenPositionAlcapao(), 0, "ejetar", runtime);
+
+                if (!carteiro.hasOrder("nao esta ejetando")) {
+                    carteiro.addOrder(new InstantAction(() -> estaEjetando = false), 0.3, "nao esta ejetando", runtime);
+                    carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INTAKE), 0.4, "ir para modo Intake", runtime);
+                }
+            }
+        }
         /*todo: Sugador*/
-        if(!estaEjetando){
-            if(intakeSuccao.sugador.getPower() < IntakeSuccao.power_Sugador){
-                intakeSuccao.sugador.setPower(IntakeSuccao.power_Sugador);
-            }
-        }else{
-            if(intakeSuccao.sugador.getPower() > -IntakeSuccao.power_Sugador){
+        if ((intakeSuccaoTaNoModoIntake || samplePosicaoPraTransfer) && !expulsandoSampleDoSubersivel) {
+            carteiro.addOrder(intakeSuccao.IntakeSugar(), 0, "sugador", runtime);
+
+
+        } else if (!expulsandoSampleDoSubersivel) {
+            carteiro.addOrder(intakeSuccao.IntakeParar(), 0, "sugador", runtime);
+        }
+        /*todo: Sugou certo, retraiu*/
+        /*if(samplePosicaoPraTransfer && linearEstaEstendido && !linearHorizontalMotor.isBusy) {
+            if(robot.controladoraBASKET.sampleID > 4 ){
+                expulsandoSampleDoSubersivel = true;
                 intakeSuccao.sugador.setPower(-IntakeSuccao.power_Sugador);
+                carteiro.addOrder(intakeSuccao.GotoIntakeSample(), 0, "intake pra rtismp", runtime);
+                if(!carteiro.hasOrder("ir pra modo Inicial")){
+                    carteiro.addOrder(new InstantAction(() -> expulsandoSampleDoSubersivel = false), 0.12, "desligando o expulsa", runtime);
+                    carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0.13, "ir pra modo Inicial", runtime);
+                }
+
+
             }
-        }
+            else if(!carteiro.hasOrder("ir pra modo Inicial")){
+                carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo Inicial", runtime);
+            }*/
 
-        /*todo: Pegou */
-        if(temUmaSampleNoIntake) {
 
-        }
+
+
 
     }
     public void InitiaSpecimenAut(OrdersManager carteiro, double runtime, V5 robot){
@@ -371,6 +413,7 @@ public class SubsistemasInferiores {
         }
 
 
+
         linearHorizontalMotor.PID();
         if(!linearEstaRetraido && !linearHorizontalMotor.isBusy) {
             if(!carteiro.hasOrder("retrairLinear")){
@@ -393,7 +436,7 @@ public class SubsistemasInferiores {
         if(underGrounSubystemStates == UnderGrounSubystemStates.INITIAL || underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER ) {
             Initial_ReadyToTransferSample(carteiro, runtime, robot, gamepad);
         }
-        if(underGrounSubystemStates == UnderGrounSubystemStates.INTAKE) {
+        else if(underGrounSubystemStates == UnderGrounSubystemStates.INTAKE) {
             IntakeSample2(carteiro, runtime, robot, gamepad);
         }
 
@@ -414,7 +457,6 @@ public class SubsistemasInferiores {
 
         /* todo: ir para Transfer quando> 1- tiver uma sample na posição 2- alçapão pra transfer 3- horizontal retraido*/
         if(samplePosicaoPraTransfer && alcapaoPosicaoProTransfer && linearEstaRetraido && underGrounSubystemStates != UnderGrounSubystemStates.TRANSFER) {
-
             carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.TRANSFER), 0, "Mudar modo subsistemas inferiores pra transfer", runtime);
 
         }else if( underGrounSubystemStates != UnderGrounSubystemStates.INITIAL && !temUmaSampleNoIntake) {
@@ -441,6 +483,7 @@ public class SubsistemasInferiores {
         }
         /* todo: retrai o horizontal*/
         linearHorizontalMotor.PID();
+
         if(!linearEstaRetraido && !linearHorizontalMotor.isBusy) {
             if(!carteiro.hasOrder("retrairLinear")){
                 carteiro.addOrder(linearHorizontalMotor.goToRetracted(), delay, "retrairLinear", runtime);
@@ -608,14 +651,15 @@ public class SubsistemasInferiores {
             carteiro.addOrder(intakeSuccao.IntakeSamplePositionAlcapao(), 0, "alcapao intake sample", runtime);
         }
         /*todo: Angulação do intake*/
-        if(robot.teelop) {
-            if(!linearEstaEstendido) {
+            if(usandoInputAngulacao){
+                gerenciadorIntakeSample(carteiro, runtime);
+
+            }
+            else if(!linearEstaEstendido && runtime >= cooldown) {
                 intakeSuccao.GotoReadyToIntakeSample();
             }
-            else if(usandoInputAngulacao) {
-                gerenciadorIntakeSample(carteiro, runtime);
-            }
-        }
+
+
 
         /*todo: Sugador*/
         if(usandoInputSugador){
@@ -633,7 +677,9 @@ public class SubsistemasInferiores {
         }
         /*todo: sugou sample errado */
         if(temUmaSampleNoIntake) {
-            carteiro.addOrder(intakeSuccao.GotoReadyToIntakeSpecimen(), 0, "ir pra modo ready", runtime);
+            if(!usandoInputAngulacao || !(runtime >= cooldown)) {
+                carteiro.addOrder(intakeSuccao.GotoReadyToIntakeSpecimen(), 0, "ir pra modo ready", runtime);
+            }
             if(SugouSampleErrado) {
                // carteiro.addOrder(intakeSuccao.GotoReadyToIntakeSpecimen(), 0, "ir pra modo ready", runtime);
                 if(!carteiro.hasOrder("ejetar")){
@@ -647,7 +693,7 @@ public class SubsistemasInferiores {
                 }
             }
 
-            if(samplePosicaoPraTransfer && linearEstaEstendido && !linearHorizontalMotor.isBusy && !SugouSampleErrado && intakeSuccao.colorSensorSugar.getDistance() <= 0.66) {
+            if(samplePosicaoPraTransfer && linearEstaEstendido && !linearHorizontalMotor.isBusy && !SugouSampleErrado /*&& intakeSuccao.colorSensorSugar.getDistance() <= 0.66*/) {
                 carteiro.addOrder(new InstantAction(() -> underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo Inicial", runtime);
             }
         }
@@ -676,6 +722,7 @@ public class SubsistemasInferiores {
         boolean alcapaoPosicaoPraIntake    = intakeSuccao.alcapaoStates == AlcapaoStates.INTAKE_SAMPLE;
         boolean temUmaSampleNoIntake       = intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake();
         boolean samplePosicaoPraTransfer   = intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+        boolean intakeDeSuccaoAngulaca0    = intakeSuccao.sugarAngulationStates == SugarAngulationStates.TRANSFER;
         double delay = 0;
 
         this.runtTime = runtime;
@@ -693,13 +740,24 @@ public class SubsistemasInferiores {
         }
 
 
+        if(!linearEstaRetraido && intakeSuccaoTaNoModoIntake) {
+            delay = 0.1;
+            if (!carteiro.hasOrder("Intake Sucção Pra ReadyToIntake")) {
+                carteiro.addOrder(
+                        intakeSuccao.GotoReadyToIntakeSample(),
+                        0.07,
+                        "Intake Sucção Pra ReadyToIntake",
+                        runtime
+                );
+            }
 
+        }
         else {
             intakeSuccao.GoToTransfer();
         }
         /* todo: retrai o horizontal*/
         linearHorizontalMotor.PID();
-        if(!linearEstaRetraido && !linearHorizontalMotor.isBusy) {
+        if(!linearEstaRetraido && !linearHorizontalMotor.isBusy)  {
             if(!carteiro.hasOrder("retrairLinear")){
                 mandouRetrairEmAlgumPonto = true;
                 carteiro.addOrder(linearHorizontalMotor.goToRetracted(), delay, "retrairLinear", runtime);
@@ -751,11 +809,6 @@ public class SubsistemasInferiores {
 
 
         }
-
-
-
-
-
     }
     public void ReadyToIntakeSampleAutonomo(OrdersManager carteiro, double runtime, V5 robot){
         int posicaoQueDaPraAbaixarOIntake = 1000;
@@ -831,7 +884,7 @@ public class SubsistemasInferiores {
         /* todo: ir para o estado inicial se tiver uma sample*/
 
         /*todo: ver qual cor vai descartar*/
-        if(robot.controladora.sampleID > 4){
+        if(robot.controladoraBASKET.sampleID > 4){
             if(teleopAllianceAzul){
                 sugouSampleErrado = intakeSuccao.colorSensorSugar.colorMatcher.getSampleColor().equals("Vermelho");
             }
@@ -889,7 +942,7 @@ public class SubsistemasInferiores {
         }
         /*todo: Sugou certo, retraiu*/
         if(samplePosicaoPraTransfer && linearEstaEstendido && !linearHorizontalMotor.isBusy) {
-            if(robot.controladora.sampleID > 4 ){
+            if(robot.controladoraBASKET.sampleID > 4 ){
                 expulsandoSampleDoSubersivel = true;
                 intakeSuccao.sugador.setPower(-IntakeSuccao.power_Sugador);
                 carteiro.addOrder(intakeSuccao.GotoIntakeSample(), 0, "intake pra rtismp", runtime);

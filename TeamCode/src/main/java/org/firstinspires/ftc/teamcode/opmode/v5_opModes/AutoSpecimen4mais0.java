@@ -23,11 +23,32 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     V5 robot;
     Action push;
     public static int target = 0,
-            EIXOX = -12;
+            XGoToPush1 = 36, YGoToPush1 = -30, HGoToPush1 = -90,
+
+    XGoToPush2 = 47, YGoToPush2 = -5, HGoToPush2 = -90,
+
+    XPush1 = 0, YPush1 = 0, HPush1 = 0 ,
+            XPush2 = 0, YPush2 = -58, HPush2 = 0 ,
+
+    XPush3 = 54, YPush3 = -5, HPush3 = -90,
+
+    XReadyToCollect = 43 , YReadyToCollect= -40, HReadyToCollect = 0 ,
+
+    XCollect1 = 43 , YCollect1 = -67 , HCollect1,
+
+    YPush3FINAL = -57,
+
+    Xdeposit2 = -14,Ydeposit2 =-50,
+            XdepositFINAL =0,YdepositFINAL =50
+
+    ;
+    public static double delayFecharGarraIntake = 1.65, velIntake = 35, posIntake = -65;
+
     @Override
     public void runOpMode()  {
 
-        Pose2d initialPose = new Pose2d(8.5, -61, Math.toRadians(-90));
+        //todo antiga: Pose2d initialPose = new Pose2d(8.5, -61, Math.toRadians(-90));
+        Pose2d initialPose = new Pose2d(8, -61, Math.toRadians(-90));
 
         robot = new V5(hardwareMap,telemetry);
         MecanumDrive.PARAMS.maxProfileAccel = 80;
@@ -40,6 +61,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
                         robot.outtakeIntakeSuperior.garraSuperior.fecharGarra(),
                         robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
                         robot.outtakeIntakeSuperior.braco.goToInital(),
+                        new InstantAction(() -> robot.outtakeIntakeSuperior.braco.bracoGarraSuperiorServo.setPosition(0.209)),
                         robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
                         robot.outtakeIntakeSuperior.garraSuperior.goToInitialSpecimen()
                         //robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()
@@ -146,26 +168,36 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action pushSamples() {
         return
                 robot.md.actionBuilder(robot.md.pose)
-
+                        //todo ir para empurrar o segundo sample
                         .setTangent(Math.toRadians(-45))
-                        .splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(-85)), Math.toRadians(90))
-                        .splineToSplineHeading(new Pose2d(44, -5, Math.toRadians(-90)), Math.toRadians(0))
-
-                        .setTangent(Math.toRadians(-90))
-                        .lineToY(-58)
+                        //.splineToLinearHeading(new Pose2d(36, -30, Math.toRadians(-90)), Math.toRadians(90))
+                        //.splineToSplineHeading(new Pose2d(44, -5, Math.toRadians(-90)), Math.toRadians(0))
+                        .splineToLinearHeading(new Pose2d(XGoToPush1, YGoToPush1, Math.toRadians(HGoToPush1)), Math.toRadians(90))
+                        .splineToSplineHeading(new Pose2d(XGoToPush2, YGoToPush2, Math.toRadians(HGoToPush2)), Math.toRadians(0))
 
                         //todo empurrar sample 2
+                        .setTangent(Math.toRadians(-90))
+                        //.lineToY(-58)
+                        .lineToY(YPush2)
 
+                        //todo empurrar sample 3
                         .setTangent(Math.toRadians(90))
-                        .splineToLinearHeading(new Pose2d(56, -5, Math.toRadians(-90)), Math.toRadians(-90))
+                        //.splineToLinearHeading(new Pose2d(56, -5, Math.toRadians(-90)), Math.toRadians(-90))
+                        .splineToLinearHeading(new Pose2d(XPush3, YPush3, Math.toRadians(HPush3)), Math.toRadians(-90))
+                        .lineToY(YPush3FINAL)
 
-
-
-                        .lineToY(-57)
+                        //todo coletar sample 1
                         .setTangent(Math.toRadians(90))
                         //.strafeToConstantHeading(new Vector2d(47, -63))
-                        .splineToLinearHeading(new Pose2d(43, -65, Math.toRadians(-90)), Math.toRadians(-90))
-                        //.splineToLinearHeading(new Pose2d(55, -45, Math.toRadians(-90)), Math.toRadians(-85))
+                        //.splineToSplineHeading(new Pose2d(43, -54, Math.toRadians(-90)), Math.toRadians(-90))
+
+                        //.splineToConstantHeading(new Vector2d(43, -40), Math.toRadians(-90))
+                        //.splineToSplineHeading(new Pose2d(43, -65, Math.toRadians(-90)), Math.toRadians(-90))
+
+                        .splineToConstantHeading(new Vector2d(XReadyToCollect, YReadyToCollect), Math.toRadians(-90))
+                        .splineToSplineHeading(new Pose2d(XCollect1, YCollect1, Math.toRadians(-90)), Math.toRadians(-90))
+
+                        //todo antiga: .splineToLinearHeading(new Pose2d(55, -45, Math.toRadians(-90)), Math.toRadians(-85))
                         .waitSeconds(0.5)
                         //.lineToY(-66)
 
@@ -177,7 +209,10 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
         return robot.md.actionBuilder(new Pose2d(51, -63, Math.toRadians(-90)))
                 //todo: colocar primeiro specimen
                 //.strafeTo(new Vector2d(-6,-22))
-                .strafeTo(new Vector2d(EIXOX,-17))
+                .strafeTo(new Vector2d(Xdeposit2,-17))//(-12)
+                //.setTangent(Math.toRadians(90))
+                //.splineToLinearHeading(new Pose2d(Xdeposit2,-35,Math.toRadians(-90)),Math.toRadians(180))
+                //.splineToSplineHeading(new Pose2d(XdepositFINAL,-17,Math.toRadians(-90)),Math.toRadians(-90))
                 //.splineToSplineHeading(new Pose2d(EIXOX,-27,Math.toRadians(-90)
                 .build();
     }
@@ -202,7 +237,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
     public Action goToPark() {
         return new SequentialAction(
                 robot.md.actionBuilder(robot.md.pose)
-                        .strafeTo(new Vector2d(-5,-40))
+                        .strafeTo(new Vector2d(-5,-40)/* ,null, new ProfileAccelConstraint(-200, 200)*/)
                         .build()
         );
 
@@ -250,15 +285,15 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
                         new SequentialAction(
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.4).build(),
                                 positionIntake(),
-                                robot.md.actionBuilder(robot.md.pose).waitSeconds(2.60).build(),
+                                robot.md.actionBuilder(robot.md.pose).waitSeconds(delayFecharGarraIntake).build(),
                                 collect()
                         ),
                         robot.md.actionBuilder(new Pose2d(x, y, Math.toRadians(-90)))
                                 //.strafeTo(new Vector2d(38 ,-35))
                                 .setTangent(Math.toRadians(-90))
                                 .splineToLinearHeading(new Pose2d(51, -55, Math.toRadians(-90)), Math.toRadians(-90))
-                                .waitSeconds(0.4)
-                                .lineToY(-66)
+                                //.waitSeconds(0.4)
+                                .lineToY(posIntake,null, new ProfileAccelConstraint(-velIntake, velIntake))
                                 .build()
                 ),
                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.30).build()
@@ -336,9 +371,9 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
                 new ParallelAction(
                         goToPark(),
                         new SequentialAction(
-                        robot.md.actionBuilder(robot.md.pose).waitSeconds(0.45).build(),
-                        robot.outtakeIntakeSuperior.braco.goToInital(),
-                        robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(0)
+                                robot.md.actionBuilder(robot.md.pose).waitSeconds(0.25).build(),
+                                robot.outtakeIntakeSuperior.braco.goToInital(),
+                                robot.outtakeIntakeSuperior.linearVertical.ElevadorGoTo(0)
                         )
 
                 )

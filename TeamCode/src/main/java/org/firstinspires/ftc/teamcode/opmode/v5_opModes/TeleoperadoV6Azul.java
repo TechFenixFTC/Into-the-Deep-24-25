@@ -145,7 +145,7 @@ public class TeleoperadoV6Azul extends OpMode {
         this.linearVertical(robot.outtakeIntakeSuperior.linearVertical,gamepadEx2, robot.carteiro);
         //this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
         //this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
-        this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
+        //this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
         //fullAutoOuttakeChamber(robot.carteiro);
         this.hang(gamepadEx1, robot.carteiro);
 
@@ -268,7 +268,7 @@ public class TeleoperadoV6Azul extends OpMode {
         if(gamepad.getButton(GamepadKeys.Button.A)){
             //robot.outtakeIntakeSuperior.goToIntakeCHAMBER(carteiro, getRuntime());
             LinearVertical.hang = false;
-            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "ir pra modo INTAKE CHAMBER", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL), 0, "intake ir pra modo INTAKE CHAMBER", getRuntime());
             carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER), 0, "ir pra modo INTAKE CHAMBER", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.X)){
@@ -318,6 +318,7 @@ public class TeleoperadoV6Azul extends OpMode {
             //robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
             LinearVertical.hang = false;
             carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE), 0, "ir pra modo INTAKE", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "ir pra modo Inicial ", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
             LinearVertical.hang = false;

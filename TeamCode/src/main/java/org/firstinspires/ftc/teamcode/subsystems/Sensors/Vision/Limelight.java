@@ -35,4 +35,8 @@ public class Limelight {
         }
         return 0;
     }
+
+    public void desativar() {
+        limelight.shutdown();
+    }
 }

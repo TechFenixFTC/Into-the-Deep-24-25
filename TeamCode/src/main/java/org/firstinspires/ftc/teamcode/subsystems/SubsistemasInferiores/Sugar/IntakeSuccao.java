@@ -35,7 +35,7 @@ public class IntakeSuccao{
     private double delay = 0.25;
     double cooldown = 0;
     private double cooldownAberturaGarra = 0;
-    public static double power_Sugador = 0.9, pontoAtiv = 0.9, powerMesmo = 0.55;
+    public static double power_Sugador = 1.0, pontoAtiv = 0.9, powerMesmo = 0.55;
     public DcMotorEx sugador;
     public Servo alcapao;
     public static double posicaoReadyIntakeAlcapao = 0.55;

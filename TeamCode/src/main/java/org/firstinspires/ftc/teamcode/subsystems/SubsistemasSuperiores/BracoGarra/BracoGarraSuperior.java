@@ -22,7 +22,7 @@ public class BracoGarraSuperior {
     boolean isBusy = false;
     public static boolean monitor = false;
     public double servoBracoSuperiorPosition =0.55555;
-    public static double posicaoBracoTranser =  0.11277777777777781;
+    public static double posicaoBracoTranser =  0.14111111111111113;
     public Servo bracoGarraSuperiorServo;
     public BracoGarraSuperiorStates bracoGarraSuperiorState = BracoGarraSuperiorStates.READYTO_TRANSFER;
     public BracoGarraSuperiorStates lastStateBracoSuperior;
@@ -34,7 +34,7 @@ public class BracoGarraSuperior {
     public BracoGarraSuperior(HardwareMap hardwareMap, Telemetry telemetry) {
         bracoGarraSuperiorServo = hardwareMap.get(Servo.class, HardwareNames.bracoGarraSuperiorServo);
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.6961111111111111);///todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.BASKET, 0.72);///todo okey
         mapBracoSuperior.put(BracoGarraSuperiorStates.INITIAL,0.0928);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.READYTO_TRANSFER,  posicaoBracoTranser);//todo rever as posições
         mapBracoSuperior.put(BracoGarraSuperiorStates.TRANSFER,  posicaoBracoTranser);///todo okey
@@ -42,8 +42,8 @@ public class BracoGarraSuperior {
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_TO_HANG, bracoReadyToHangPos);
         mapBracoSuperior.put(BracoGarraSuperiorStates.HANG, bracoHangPos);
 
-        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.15);//todo okey
-        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_CHAMBER, 0.9500000000000002);//todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.INTAKE,0.16777777777777775);//todo okey
+        mapBracoSuperior.put(BracoGarraSuperiorStates.OUTTAKE_CHAMBER, 1.0);//todo okey
 
         mapBracoSuperior.put(BracoGarraSuperiorStates.READY_OUTTAKE,0.78);//todo rever as posições
 

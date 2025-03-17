@@ -20,6 +20,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
 import org.firstinspires.ftc.teamcode.common.ControlHubServer;
@@ -53,6 +54,7 @@ import java.util.List;
 public class TeleoperadoV5 extends OpMode {
     List<Servo> servos = new ArrayList<>(4);
     private V5 robot;
+    public static boolean monitorCorrente;
     private ControlHubServer server;
     boolean sugadorEstado= false ;
 
@@ -111,6 +113,7 @@ public class TeleoperadoV5 extends OpMode {
 
     @Override
     public void  start() {
+
         robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.TRANSFER;
         robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL;
         robot.intakeInferior.goToInitial_goToReadyTransfer(robot.carteiro, getRuntime());
@@ -127,7 +130,6 @@ public class TeleoperadoV5 extends OpMode {
             telemetry.addData("Erro", "Não foi possível iniciar o servidor!");
         }
 
-
         resetRuntime();
 
     }
@@ -143,11 +145,21 @@ public class TeleoperadoV5 extends OpMode {
         } else if (robot.v5Mode == V5Modes.SAMPLE) {
             this.bindsSample(robot,gamepadEx2,robot.carteiro);
         }
+        if(monitorCorrente){
+            telemetry.addData("Corrente Vertical",robot.outtakeIntakeSuperior.linearVertical.motorR.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("Corrente Vertical",robot.outtakeIntakeSuperior.linearVertical.motorL.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("Corrente MotorLF Chassi", robot.md.leftFront.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("Corrente MotorRF Chassi", robot.md.rightFront.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("Corrente MotorLB Chassi", robot.md.leftBack.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("Corrente MotorRB Chassi", robot.md.rightBack.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("Linear Horizontal",  robot.intakeInferior.linearHorizontalMotor.motorHorizontal.getCurrent(CurrentUnit.AMPS));
+
+        }
         this.linearHorizontal(robot.carteiro,robot.intakeInferior.linearHorizontalMotor,gamepadEx2);
         this.linearVertical(robot.outtakeIntakeSuperior.linearVertical,gamepadEx2, robot.carteiro);
-        this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
+        //this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
         this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
-        this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
+        //this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
         //fullAutoOuttakeChamber(robot.carteiro);
         this.hang(gamepadEx1, robot.carteiro);
         //this.verificarsample(robot,robot.carteiro, "Azul");

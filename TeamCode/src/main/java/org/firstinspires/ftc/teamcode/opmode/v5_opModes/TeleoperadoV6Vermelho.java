@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5Modes;
@@ -45,6 +46,7 @@ public class TeleoperadoV6Vermelho extends OpMode {
     List<Servo> servos = new ArrayList<>(4);
     private V5 robot;
     private ControlHubServer server;
+    public static boolean monitorCorrente =  false;
     boolean sugadorEstado= false ;
 
     GamepadEx gamepadEx1,gamepadEx2;
@@ -135,6 +137,7 @@ public class TeleoperadoV6Vermelho extends OpMode {
 
         this.gerenciarModo(robot,gamepadEx2);
 
+
         this.robotCentricDrive(robot,gamepadEx1);
         if(robot.v5Mode == V5Modes.SPECIMEN){
             this.bindsChamber(robot,gamepadEx2, robot.carteiro);
@@ -145,7 +148,7 @@ public class TeleoperadoV6Vermelho extends OpMode {
         this.linearVertical(robot.outtakeIntakeSuperior.linearVertical,gamepadEx2, robot.carteiro);
         //this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
         //this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
-        this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
+        //this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
         //fullAutoOuttakeChamber(robot.carteiro);
         this.hang(gamepadEx1, robot.carteiro);
 
@@ -317,6 +320,7 @@ public class TeleoperadoV6Vermelho extends OpMode {
             //robot.outtakeIntakeSuperior.goToReadyTransfer(carteiro, 0, getRuntime());
             LinearVertical.hang = false;
             carteiro.addOrder(new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE), 0, "ir pra modo INTAKE", getRuntime());
+            carteiro.addOrder(new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL), 0, "ir pra modo Inicial ", getRuntime());
         }
         if(gamepad.getButton(GamepadKeys.Button.Y)){
             LinearVertical.hang = false;

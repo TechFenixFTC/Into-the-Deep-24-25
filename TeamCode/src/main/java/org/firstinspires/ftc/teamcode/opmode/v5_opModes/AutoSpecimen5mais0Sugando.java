@@ -13,42 +13,67 @@ import com.acmerobotics.roadrunner.TranslationalVelConstraint;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.Controller.AutonomoStates;
+import org.firstinspires.ftc.teamcode.Controller.Controladora5mais0_sugando;
 import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V5;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.UpperSubsystemStates;
 
-
+@Disabled
 @Config
-@Autonomous(name = "AutonomoSpecimen4+0 beta ", group = "Autonomous")
+@Autonomous(name = "AutonomoSpecimen5+0 beta ", group = "Autonomous")
 public class AutoSpecimen5mais0Sugando extends LinearOpMode {
     V5 robot;
     Action push;
     public static int target = 0;
     private boolean encerrar;
     private Action proximaAction;
+    public static double
+            //todo depositos
+            Xdeposit1 = -49 ,    Ydeposit1 = -57 ,  Hdeposit1 = 35,
+            Xdeposit2 = -55 ,    Ydeposit2 = -53.3,  Hdeposit2 = 45,
+            //todo colects
+            XCollect2 = 35 , YCollect2 = -40, HCollect2 = 60, //todo cansado okey
+            XCollect3 = 45 ,   YCollect3 = -40 , HCollect3 = 60, //todo cansado okey
+            XCollect4 = 50 ,   YCollect4 = -35 , HCollect4 = 60, //todo okey
+            //todo ReadyCollect
+            XReadCollect2 = 35 , YReadCollect2 = -40, HReadCollect2 = 60, //todo cansado okey
+            XReadCollect3 = 45 ,   YReadCollect3 = -40 , HReadCollect3 = 60, //todo cansado okey
+            XReadCollect4 = 50 ,   YReadCollect4 = -35 , HReadCollect4 = 50, //todo cansedo okey
+
+            //todo ejetar
+            XEntregarSample2 = 35 , YEntregarSample2 = -45 , HEntregarSample2 = -60, //todo cansado okey
+
+            XEntregarSampl3 = 45 , YEntregarSample3 = -45 , HEntregarSample3 = -60, // todo cansado okey
+
+            XEntregarSample4 = 40 , YEntregarSample4 = -45 , HEntregarSample4 = -70 //todo cansado okey
+
+
+    ;
+
+
+
+                                ;
 
 
     @Override
     public void runOpMode()  {
 
-        Pose2d initialPose = new Pose2d(8.5, -61, Math.toRadians(-90));
 
-        robot = new V5(hardwareMap,telemetry);
-        MecanumDrive.PARAMS.maxProfileAccel = 80;
-        MecanumDrive.PARAMS.minProfileAccel = -80;
-        MecanumDrive.PARAMS.maxWheelVel  = 80;
 
-        robot.md.pose = initialPose;
+        robot = Controladora5mais0_sugando.create5mais0Robot(hardwareMap,telemetry);
         Actions.runBlocking(
                 new SequentialAction(
                         robot.outtakeIntakeSuperior.garraSuperior.fecharGarra(),
                         robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
                         robot.outtakeIntakeSuperior.braco.goToInital(),
                         robot.md.actionBuilder(robot.md.pose).waitSeconds(1).build(),
-                        robot.outtakeIntakeSuperior.garraSuperior.goToInitialSpecimen()
+                        robot.outtakeIntakeSuperior.garraSuperior.goToInitialSpecimen(),
+                        robot.intakeInferior.intakeSuccao.GoToInitial()
                         //robot.outtakeIntakeSuperior.garraSuperior.abrirGarra()
                         //robot.intakeInferior.horizontalInferior.goToRetracted()
 
@@ -56,9 +81,10 @@ public class AutoSpecimen5mais0Sugando extends LinearOpMode {
         );
         //push = pushSamples();
         waitForStart();
-        while (robot.controladora.sampleID <= 4) {
+        resetRuntime();
+        while (robot.controladoraSPECIMEN.sampleID <= 2) {
             encerrar = false;
-            proximaAction = robot.controladora.decideProximaAcao(robot, getRuntime());
+            proximaAction = robot.controladoraSPECIMEN.decideProximaAcao(robot, getRuntime());
             if(proximaAction != null){
                 Actions.runBlocking(
                         new ParallelAction(
@@ -99,9 +125,9 @@ public class AutoSpecimen5mais0Sugando extends LinearOpMode {
                 robot.runStatesSpecimenAutonomo(robot.carteiro, getRuntime(),robot);
                 telemetryPacket.addLine("Power Sugador: "+ robot.intakeInferior.intakeSuccao.sugador.getPower());
                 telemetryPacket.addLine("tempo de execução: "+ getRuntime());
-                telemetryPacket.addLine("sampleID: "+ robot.controladora.sampleID);
-                telemetryPacket.addLine("estadoAutonomo: "+ robot.controladora.estadoSample);
-                telemetryPacket.addLine("quantas vezes mandou a próxima ação: " + robot.controladora.quantasVezesFoiExecutado);
+                telemetryPacket.addLine("sampleID: "+ robot.controladoraBASKET.sampleID);
+                telemetryPacket.addLine("estadoAutonomo: "+ robot.controladoraBASKET.estadoSample);
+                telemetryPacket.addLine("quantas vezes mandou a próxima ação: " + robot.controladoraBASKET.quantasVezesFoiExecutado);
                 if(encerrar){
                     return false;
                 }

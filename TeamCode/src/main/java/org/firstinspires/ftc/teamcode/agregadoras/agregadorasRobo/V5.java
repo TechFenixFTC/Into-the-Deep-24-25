@@ -9,18 +9,15 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.ServoController;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Controller.Controladora;
+import org.firstinspires.ftc.teamcode.Controller.Controladora5mais0_sugando;
 import org.firstinspires.ftc.teamcode.subsystems.Sensors.Vision.Limelight;
 import org.firstinspires.ftc.teamcode.subsystems.SubsistemasSuperiores.LinearVertical.LinearVertical;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.SubsistemasInferiores;
-import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Inferior.UnderGrounSubystemStates;
 import org.firstinspires.ftc.teamcode.subsystems.agregadorasSubsistemas.Superior.SubsistemasSuperiores;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Controller.OrdersManager;
@@ -48,7 +45,8 @@ public class V5 {
             lastSample = false;
     public static double deposit_y = -44, deposit_x = -42;
     public double heading;
-    public Controladora controladora;
+    public Controladora controladoraBASKET;
+    public Controladora5mais0_sugando controladoraSPECIMEN;
     public V5(HardwareMap hardwareMap, Telemetry telemetry) {
         md = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
 
@@ -74,7 +72,8 @@ public class V5 {
         this.outtakeIntakeSuperior = new SubsistemasSuperiores(hardwareMap, telemetry);
         carteiro = new OrdersManager(telemetry);
         this.limelight = new Limelight(hardwareMap);
-        this.controladora = new Controladora();
+        this.controladoraBASKET = new Controladora();
+        this.controladoraSPECIMEN = new Controladora5mais0_sugando();
     }
 
     /*
@@ -133,13 +132,17 @@ public class V5 {
         );
     }
     public void  runStatesSpecimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
-        outtakeIntakeSuperior.runStatesSpecimen(carteiro, runtime, robot, gamepad);
+        if(!LinearVertical.hang){
+            outtakeIntakeSuperior.runStatesSpecimen(carteiro, runtime, robot, gamepad);
+        }
         intakeInferior.runStatesSpecimen(carteiro, runtime, robot, gamepad);
     }
 
     public void runStatesSample(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad) {
+        if(!LinearVertical.hang){
+            outtakeIntakeSuperior.runStatesSample(carteiro, runtime, robot, gamepad);
+        }
 
-        outtakeIntakeSuperior.runStatesSample(carteiro, runtime, robot, gamepad);
         intakeInferior.runStatesSample(carteiro, runtime, robot, gamepad);
 
     }

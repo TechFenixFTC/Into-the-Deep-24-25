@@ -192,7 +192,7 @@ public class Controladora {
                         
                         new InstantAction(() -> estadoSample = AutonomoStates.ReadyToCollect),
                         GoToReadyToCollectSample3(robot.md.pose, robot),
-        new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
+                    new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
                 )
         );
 
@@ -369,7 +369,7 @@ public class Controladora {
     }
     public Action GoToCollectSample3(Pose2d pose2d, V5 robot) {
         Action move = robot.md.actionBuilder(pose2d)
-                .splineToSplineHeading(new Pose2d(AutSample0mais4Red.XCollect3 + limelightCorrection, AutSample0mais4Red.YCollect3 - 4, Math.toRadians(AutSample0mais4Red.HCollect3 + 7)), Math.toRadians(90), null, new ProfileAccelConstraint(-10, 10))
+                .splineToSplineHeading(new Pose2d(AutSample0mais4Red.XCollect3 + limelightCorrection, AutSample0mais4Red.YCollect3 - 4, Math.toRadians(AutSample0mais4Red.HCollect3 + 3)), Math.toRadians(90), null, new ProfileAccelConstraint(-10, 10))
                 .splineToSplineHeading(new Pose2d(AutSample0mais4Red.XCollect3 + limelightCorrection, AutSample0mais4Red.YCollect3 - 2, Math.toRadians(AutSample0mais4Red.HCollect3 - 7)), Math.toRadians(90), null, new ProfileAccelConstraint(-10, 10))
                 .splineToSplineHeading(new Pose2d(AutSample0mais4Red.XCollect3 + limelightCorrection, AutSample0mais4Red.YCollect3, Math.toRadians(AutSample0mais4Red.HCollect3)), Math.toRadians(90), null, new ProfileAccelConstraint(-10, 10))
                 .build();
@@ -560,9 +560,9 @@ public class Controladora {
         };
     }
 
-    /************************************\
+    /***************************\
      *   Verificações
-     \*************************************/
+     \**************************/
 
     public Action LimelightCalculateCorrection(double targetZ, V5 robot) {
         return new Action() {
