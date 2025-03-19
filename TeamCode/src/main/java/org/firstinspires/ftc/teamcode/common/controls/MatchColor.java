@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.common.controls;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.subsystems.SubsistemasInferiores.Sugar.IntakeSuccao;
+import org.firstinspires.ftc.teamcode.robot.subsistemas.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.common.configSample.BlueSample;
 import org.firstinspires.ftc.teamcode.common.configSample.RedSample;
 import org.firstinspires.ftc.teamcode.common.configSample.YellowSample;

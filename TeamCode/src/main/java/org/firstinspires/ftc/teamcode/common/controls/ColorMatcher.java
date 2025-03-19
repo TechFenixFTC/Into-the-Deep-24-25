@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.common.controls;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.Sensors.SensorCor;
+import org.firstinspires.ftc.teamcode.robot.Sensors.SensorCor;
 
 
 public class ColorMatcher {
