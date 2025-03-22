@@ -9,12 +9,12 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
+//import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
 
 @Disabled
 @TeleOp(name = "DistanceSensorTeste")
 public class DistanceSensorTeste extends OpMode {
-    private V2 robot;
+    //private V2 robot;
     double drive;
     double turn;
     double strafe;

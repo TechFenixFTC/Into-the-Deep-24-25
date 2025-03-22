@@ -7,11 +7,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.HardwareNames;
-import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
+//import org.firstinspires.ftc.teamcode.agregadoras.agregadorasRobo.V2;
 import org.firstinspires.ftc.teamcode.common.controls.ColorMatcher;
 
 public class SensorCor {
-    private V2 robot;
+    //private V2 robot;
     private ColorRangeSensor sensorColor;
     int red,green,alpha,blue;
     double distance;

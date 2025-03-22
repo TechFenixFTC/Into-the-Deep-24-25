@@ -40,7 +40,7 @@ public class IntakeSuccao{
     public static double posicaoReadyIntakeAlcapao = 0.55;
     public static double posicaoIntakeAlcapao = 0.625;
 
-    public static double posicaoTransferAngulacao = 0.528, posicaoIntakeAgulacao = 0.370, posicaoEjetarAngulacao = 0.528;
+    public static double posicaoTransferAngulacao = 0.528, posicaoIntakeAgulacao = 0.370, posicaoEjetarAngulacao = 0.420;
     // pos antiga do sugar ang 0.362
     private HashMap<SugarAngulationStates , Double> mapAngulation = new HashMap<>();
     public  SugarAngulationStates sugarAngulationStates  = SugarAngulationStates.INITIAL;
@@ -59,8 +59,8 @@ public class IntakeSuccao{
         mapAngulation.put(SugarAngulationStates.INTAKE, posicaoIntakeAgulacao);
         mapAngulation.put(SugarAngulationStates.TRANSFER, posicaoTransferAngulacao);
         mapAngulation.put(SugarAngulationStates.INITIAL, posicaoTransferAngulacao);
-        mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, posicaoEjetarAngulacao);
-        mapAngulation.put(SugarAngulationStates.EJECTED, posicaoTransferAngulacao);
+        mapAngulation.put(SugarAngulationStates.READY_TOINTAKE, posicaoTransferAngulacao);
+        mapAngulation.put(SugarAngulationStates.EJECTED, posicaoEjetarAngulacao);
 
 
         mapAlcapao.put(AlcapaoStates.TOTALOPEN, 0.0);
@@ -70,6 +70,7 @@ public class IntakeSuccao{
         mapAlcapao.put(AlcapaoStates.INITIAL,0.834);
         mapAlcapao.put(AlcapaoStates.INTAKE_SPECIMEN,0.632);
         mapAlcapao.put(AlcapaoStates.READY_TOINTAKE_SPECIMEN,0.632);
+        mapAlcapao.put(AlcapaoStates.TOTALCLOSE, 1.0);
         mapAlcapao.put(AlcapaoStates.TRASNFER, 1.0);
     }
     public Action verifyColorSensor(){
@@ -86,23 +87,9 @@ public class IntakeSuccao{
             }
         };
     }
-    public Action GotoReadyToIntakeSpecimen(){
-        return new InstantAction(()->{
-            sugarAngulationStates  = SugarAngulationStates.READY_TOINTAKE;
-            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
 
-        });
-    }
 
-    public Action GotoIntakeSpecimen(){
-        return new InstantAction(()->{
-            sugarAngulationStates  = SugarAngulationStates.INTAKE;
-            alcapaoStates = AlcapaoStates.READY_TOINTAKE;
-            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
-            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
-
-        });
-    }
+    //GotoReadyToIntakeSpecimen
     public Action GotoReadyToIntakeSample(){
         return new InstantAction(()->{
             sugarAngulationStates  = SugarAngulationStates.READY_TOINTAKE;
@@ -117,6 +104,35 @@ public class IntakeSuccao{
     public Action GotoIntakeSample(){
         return new InstantAction(()->{
             sugarAngulationStates  = SugarAngulationStates.INTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE_SAMPLE;
+            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
+
+        });
+    }
+
+    public Action GotoReadyToIntakeSpecimen(){
+        return new InstantAction(()->{
+            sugarAngulationStates  = SugarAngulationStates.READY_TOINTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE_SAMPLE;
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
+            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+
+
+        });
+    }
+    public Action GotoIntakeSpecimen(){
+        return new InstantAction(()->{
+            sugarAngulationStates  = SugarAngulationStates.INTAKE;
+            alcapaoStates = AlcapaoStates.INTAKE_SAMPLE;
+            angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
+
+        });
+    }
+    public Action GotoEjectSample(){
+        return new InstantAction(()->{
+            sugarAngulationStates  = SugarAngulationStates.EJECTED;
             alcapaoStates = AlcapaoStates.INTAKE_SAMPLE;
             angulacao.setPosition(mapAngulation.get(sugarAngulationStates));
             alcapao.setPosition(mapAlcapao.get(alcapaoStates));
@@ -160,6 +176,13 @@ public class IntakeSuccao{
 
         });
     }
+    public Action totalCloseAlcapao(){
+        return new InstantAction(()->{
+            alcapaoStates = AlcapaoStates.TOTALCLOSE;
+            alcapao.setPosition(mapAlcapao.get(alcapaoStates));
+        });
+    }
+
 
     public Action IntakeSamplePositionAlcapao(){
         return new InstantAction(()->{

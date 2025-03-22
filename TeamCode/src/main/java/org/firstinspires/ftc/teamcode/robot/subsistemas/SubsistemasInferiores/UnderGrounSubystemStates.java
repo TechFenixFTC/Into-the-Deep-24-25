@@ -5,4 +5,5 @@ public enum UnderGrounSubystemStates {
     INTAKE,
     TRANSFER,
     INITIAL,
+    EJETING
 }

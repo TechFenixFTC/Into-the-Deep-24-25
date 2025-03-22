@@ -93,6 +93,7 @@ public class LinearVertical {
 
         if(motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrenteTopo && targetPosition > 2700 && motorR.getCurrentPosition() > 2600) {
             targetPosition -= 20;
+            motorR.setPower(0.4);
         }
         if ((motorR.getCurrent(CurrentUnit.AMPS) > valorDeSurtoDeCorrente && targetPosition < 1800 && targetPosition > 0) ) {
             targetPosition = (targetPosition + motorR.getCurrentPosition()) / 2; // Aproxima suavemente do valor atual

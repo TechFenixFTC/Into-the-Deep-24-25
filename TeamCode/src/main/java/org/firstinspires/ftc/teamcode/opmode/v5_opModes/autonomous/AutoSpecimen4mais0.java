@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.common.roadrunner.MecanumDrive;
 @Config
 @Autonomous(name = "AutonomoSpecimen4+0 estavel ", group = "Autonomous")
 public class AutoSpecimen4mais0 extends LinearOpMode {
+    //AutoSpecimen5mais0SungandoBASE
     V5 robot;
     Action push;
     public static int target = 0,
