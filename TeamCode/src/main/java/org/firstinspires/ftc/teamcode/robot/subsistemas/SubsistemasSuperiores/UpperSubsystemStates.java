@@ -5,6 +5,10 @@ public enum UpperSubsystemStates {
     OUTTAKE,
     OUTTAKE_CHAMBER,
     INTAKE_CHAMBER,
+
     INITIAL,
-    READY_TO_HANG
+    READY_TO_HANG,
+
+    FRONT_OUTTAKE_CHAMBER
+
 }

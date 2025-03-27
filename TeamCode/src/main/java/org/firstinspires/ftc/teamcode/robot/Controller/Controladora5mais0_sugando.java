@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -24,13 +25,14 @@ import org.firstinspires.ftc.teamcode.common.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.subsistemas.SubsistemasInferiores.Horizontal.LinearHorizontalStates;
 import org.firstinspires.ftc.teamcode.robot.subsistemas.SubsistemasInferiores.Sugar.IntakeSuccao;
 import org.firstinspires.ftc.teamcode.robot.subsistemas.SubsistemasInferiores.UnderGrounSubystemStates;
+import org.firstinspires.ftc.teamcode.robot.subsistemas.SubsistemasSuperiores.UpperSubsystemStates;
 import org.firstinspires.ftc.teamcode.robot.subsistemas.common.Garra.GarraOpeningStates;
 
 import java.util.ArrayList;
 
 public class Controladora5mais0_sugando {
     double limelightCorrection = 0;
-    public AutonomoStates estadoSample = AutonomoStates.Initial;
+    public AutonomoStates estadoSample = AutonomoStates.INITIAL;
     public int sampleID = 1, samplesNotCollected = 0;
     ArrayList<Integer> samplesIdNotCollected = new ArrayList<>();
 
@@ -57,46 +59,50 @@ public class Controladora5mais0_sugando {
         robot.md.updatePoseEstimate();
         Action proximaAction = null;
 
-        if(estadoSample == AutonomoStates.Initial && sampleID == 1 ) {//todo porque isso funciona?
-            estadoSample = AutonomoStates.ReadyToCollect;
-            proximaAction = goToReadyToCollect(sampleID,robot);
+        if(estadoSample == AutonomoStates.INITIAL && sampleID == 1) {
+            //todo função para readyAndDeposit
+            proximaAction = depositAndIntakeSpecimen(robot);
         }
-        else if(estadoSample == AutonomoStates.ReadyToCollect && sampleID >= 2){
-            estadoSample = AutonomoStates.Collect;
-            proximaAction = CollectSample(sampleID,robot);
+        else if(estadoSample == AutonomoStates.READY_TO_COLLECT && sampleID >= 2  && sampleID <=4){
+            proximaAction = readyToCollect(sampleID , robot);
         }
-        else if(estadoSample == AutonomoStates.Collect && sampleID >= 2){
-            estadoSample = AutonomoStates.Ejetar;
-            proximaAction = entregar(sampleID, robot);
+        else if(estadoSample == AutonomoStates.COLLECT && sampleID >= 2){
+            //todo função para coletar
+            proximaAction = collectSample(sampleID,robot);
         }
-        else if(estadoSample == AutonomoStates.Ejetar && sampleID >= 2){
-            estadoSample = AutonomoStates.ReadyToCollect;
-            proximaAction = goToReadyToCollect(sampleID, robot);
+        else if(estadoSample == AutonomoStates.EJETAR && sampleID >= 2){
+            if(robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake()){
+                proximaAction = ejeting(sampleID, robot);
+            }
+            else {
+                samplesNotCollected++;
+                samplesIdNotCollected.add(sampleID);
+                sampleID++;
+
+                proximaAction = readyToCollect(sampleID , robot);
+                if(sampleID > 5){// todo: dont go to sub with "goReadyCollectS5"
+                    proximaAction = new InstantAction(() -> {});
+                }
+            }
+
+        }
+
+        else if(estadoSample == AutonomoStates.INTAKE_SPECIMEN && sampleID >= 2){
+            //todo função para intakeSpecimen
+            proximaAction = intakeSpecimen(sampleID,robot);
+        }
+        else if(estadoSample ==  AutonomoStates.OUTTAKE_SPECIMEN && sampleID >= 2){
+            //todo função para outtakeSpecimen
+            proximaAction = outtakeSpecimen(sampleID,robot);
         }
 
 
         // todo: caso dê errado
         return proximaAction;
     }
-    public Action entregar(int idSample, V5 robot){
-        estadoSample = AutonomoStates.Ejetar;
-        robot.md.updatePoseEstimate();
 
-        if(idSample == 2){
-            return entregarSample2(robot.md.pose, robot);
-        }
-        if(idSample == 3){
-            return entregarSample3(robot.md.pose, robot);
-        }
-        if(idSample == 4){
-            return entregarSample4(robot.md.pose, robot);
-        }
-
-        // default
-        return new SequentialAction();
-    }
-    public Action CollectSample(int idSample, V5 robot){
-        estadoSample = AutonomoStates.Collect;
+    public Action collectSample(int idSample, V5 robot){
+        estadoSample = AutonomoStates.COLLECT;
         robot.md.updatePoseEstimate();
         if(idSample == 2){
             return coletarSample2(robot.md.pose, robot);
@@ -109,34 +115,209 @@ public class Controladora5mais0_sugando {
         }
         // default
         return new SequentialAction();
-    }
-
-    public Action goToReadyToCollect(int idSample, V5 robot){ /*todo: para quando não conseguir pegar nenhuma sample, ir pra outra*/
-        estadoSample = AutonomoStates.ReadyToCollect;
-
+    }//todo rever as funções
+    public Action ejeting(int idSample, V5 robot){
+        estadoSample = AutonomoStates.EJETAR;
         robot.md.updatePoseEstimate();
         if(idSample == 2){
-            return preparaPraColetarSample2(robot.md.pose, robot);
+            return ejetingSample2(robot.md.pose, robot);
         }
+
         if(idSample == 3){
-            return preparaPraColetarSample3(robot.md.pose, robot);
+            return ejetingSample3(robot.md.pose, robot);
         }
         if(idSample == 4){
+            return ejetingSample4(robot.md.pose, robot);
+        }
+
+        // default
+        return new SequentialAction();
+    }//todo rever as funções
+
+    public Action readyToCollect(int idSample, V5 robot){
+        estadoSample = AutonomoStates.COLLECT;
+        robot.md.updatePoseEstimate();
+        if(idSample == 2 ){
+            return preparaPraColetarSample2(robot.md.pose, robot);
+        }
+        if(idSample == 3 ){
+            return preparaPraColetarSample3(robot.md.pose, robot);
+        }
+        if(idSample == 4 ){
             return preparaPraColetarSample4(robot.md.pose, robot);
+        }
+
+        //default
+        return new SequentialAction();
+    }
+    public Action depositAndIntakeSpecimen(V5 robot){
+        estadoSample = AutonomoStates.OUTTAKE_INTAKE;
+        robot.md.updatePoseEstimate();
+
+        return new SequentialAction(
+            new ParallelAction(
+                new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.FRONT_OUTTAKE_CHAMBER),
+                //todo move pra deposito
+                new SequentialAction(
+                    robot.md.actionBuilder(robot.md.pose).waitSeconds(0.750).build(),
+                    new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE)
+                )
+            ),
+            esperarPelaColletaDoSampleNoSubmersible(3,robot),
+            new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL),
+            //todo move pra readyToCollect
+            new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE),//collect
+            new InstantAction(() -> estadoSample = AutonomoStates.COLLECT)
+
+
+        );
+    }
+    public  Action intakeSpecimen(int idSample, V5 robot){
+        if(estadoSample == AutonomoStates.INTAKE_SPECIMEN && idSample == 2){
+            return intakeOne(robot.md.pose,robot);
+        }
+        if(estadoSample == AutonomoStates.INTAKE_SPECIMEN && idSample > 2){
+            return intakeDefault(robot.md.pose,robot);
+        }
+        // default
+        return new SequentialAction();
+    }
+    public Action outtakeSpecimen(int idSample, V5 robot){
+        if(estadoSample == AutonomoStates.OUTTAKE_SPECIMEN && idSample == 2){
+            outtakeOne(robot.md.pose, robot);
+        }
+        if(estadoSample == AutonomoStates.OUTTAKE_SPECIMEN && idSample > 2){
+            outtakeDefault(robot.md.pose, robot);
         }
         // default
         return new SequentialAction();
     }
 
 
-/************************************\
-*   Ações específicas do 5 mais 0
-\*************************************/
 
-
-    /******************************\
-     *   Wait To Condition
+     /*****************************\
+     *   Wait To Condition         *
      \*****************************/
+
+    //todo actions para esperar cuspir
+     public  Action esperarPeloInicioDoCollect(double tempoLimite, V5 robot){
+         // adaptação do esperarPelInicioDoOuttake para funcionar cm o intake specimen
+         // por enquanto só para intake
+         return new Action() {
+
+             boolean SampleFicouAgarrada                       = false;
+
+             boolean temSampleMasNaoTaBoaParaPegar             = robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake() && !robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+
+
+             double tempoLimiteParaTerminarAAction = tempoLimite;
+
+             double lembrarPowerSugador = IntakeSuccao.power_Sugador;
+             boolean podeTerminar = false, started = false;
+             ElapsedTime tempoAtual = new ElapsedTime(), tempoForcando = new ElapsedTime();
+
+             @Override
+             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                 telemetryPacket.addLine("Tempo: "+ tempoAtual.time());
+                 telemetryPacket.put("corrente sugador", robot.intakeInferior.intakeSuccao.sugador.getCurrent(CurrentUnit.AMPS));
+                 if(!started){
+                     tempoAtual.reset();
+                     started = true;
+                 }
+
+                 //todo segunda condição para terminar (detecção de sample)
+                 if(temSampleMasNaoTaBoaParaPegar){
+                     podeTerminar = true;
+                 }
+                 //todo terceira condição pra terminar (tempo)
+                 podeTerminar = tempoAtual.time() > tempoLimiteParaTerminarAAction;
+
+
+                 if(podeTerminar){
+                     if (sampleID < 4) robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
+                     else robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
+                     IntakeSuccao.power_Sugador = lembrarPowerSugador;
+                     return false;
+                 }
+                 return true ;
+             }
+         };
+     }
+
+    public  Action esperarPelaColletaDoSampleNoSubmersible(double tempoLimite, V5 robot){
+        // verificar se um action já terminou para passar o estado para outra
+        // por enquanto só para intake
+        return new Action() {
+            boolean OuttakeSuperiorFuncionou                  = false;
+            boolean LinearHorizontalTaRetraido                = robot.intakeInferior.linearHorizontalMotor.linearHorizontalInferiorState ==LinearHorizontalStates.RETRACTED;
+            boolean EstadoDosInferioresEstaInicial            =  robot.intakeInferior.underGrounSubystemStates == UnderGrounSubystemStates.INITIAL;
+            boolean SampleFicouAgarrada                       = false;
+            boolean naoTemSample                              = robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.getSampleColor().equals("Não há samples no intake");
+            boolean temSampleMasNaoTaBoaParaPegar             = robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake() && !robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.sampleNaPosicaoCorreta();
+
+            boolean IntakeForcando                            = (robot.intakeInferior.intakeSuccao.sugador.getCurrent(CurrentUnit.AMPS) > AutSample0mais4Red.currMax);
+            double tempoLimiteParaTerminarAAction = tempoLimite;
+
+            double lembrarPowerSugador = IntakeSuccao.power_Sugador;
+            boolean podeTerminar = false, started = false;
+            ElapsedTime tempoAtual = new ElapsedTime(), tempoForcando = new ElapsedTime();
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                telemetryPacket.addLine("Tempo: "+ tempoAtual.time());
+                telemetryPacket.put("corrente sugador", robot.intakeInferior.intakeSuccao.sugador.getCurrent(CurrentUnit.AMPS));
+                if(!started){
+                    tempoAtual.reset();
+                    started = true;
+                }
+                OuttakeSuperiorFuncionou       = robot.outtakeIntakeSuperior.upperSubsystemStates == UpperSubsystemStates.OUTTAKE; // garra já abriu
+                double tempoRestante           = tempoLimite - tempoAtual.time();
+
+                if((temSampleMasNaoTaBoaParaPegar && LinearHorizontalTaRetraido  && EstadoDosInferioresEstaInicial) || (LinearHorizontalTaRetraido && EstadoDosInferioresEstaInicial && naoTemSample)){
+                    if(tempoAtual.time() > 1.900){
+                        // robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
+                    }
+
+                }
+                if(IntakeForcando) {
+                    if(tempoForcando.time() < 0.15){
+                        IntakeSuccao.power_Sugador = 1;
+                    }
+                    else if(tempoForcando.time() < 0.35){
+                        IntakeSuccao.power_Sugador = -0.2;
+                    }else{
+                        tempoForcando.reset();
+                        IntakeSuccao.power_Sugador = lembrarPowerSugador;
+                    }
+                }else{
+                    tempoForcando.reset();
+                    IntakeSuccao.power_Sugador = lembrarPowerSugador;
+                }
+
+                if(OuttakeSuperiorFuncionou){
+                    IntakeSuccao.power_Sugador = lembrarPowerSugador;
+                    return  false;
+                }
+
+                podeTerminar = tempoAtual.time() > tempoLimiteParaTerminarAAction;
+                if(IntakeForcando) podeTerminar = tempoAtual.time() > tempoLimiteParaTerminarAAction + 1;
+
+                if(tempoAtual.time() >= tempoLimiteParaTerminarAAction - 1.4 && robot.intakeInferior.linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.EXTENDED && !robot.intakeInferior.linearHorizontalMotor.isBusy){
+                    robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.READY_TOINTAKE;
+                }
+                if(tempoAtual.time() >= tempoLimiteParaTerminarAAction && IntakeForcando && !podeTerminar){
+                    robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
+                }
+                if(podeTerminar ){
+                    if (sampleID < 4) robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE;
+                    else robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INITIAL;
+                    IntakeSuccao.power_Sugador = lembrarPowerSugador;
+                    return false;
+                }
+                return true ;
+            }
+        };
+    }
     public  Action esperarPeloInicioDoEntregar(double tempoLimite, V5 robot){
         // adaptação do esperarPelInicioDoOuttake para funcionar cm o intake specimen
         // por enquanto só para intake
@@ -262,41 +443,48 @@ public class Controladora5mais0_sugando {
     }
 
     /************************************\
-     *   Trajetória das Entregas
+     *   Trajetória dos ejetings //todo adicionar a mudança de estados dos subsistemas
      \*************************************/
-    public Action entregarSample2(Pose2d pose2d, V5 robot){
+
+    public Action ejetingSample2(Pose2d pose2d, V5 robot){
+        Action move = robot.md.actionBuilder(robot.md.pose)
+                .splineToLinearHeading(new Pose2d(AutoSpecimen5mais0Sugando.XEntregarSample1,AutoSpecimen5mais0Sugando.YEntregarSample1,Math.toRadians(AutoSpecimen5mais0Sugando.HEntregarSample2)),Math.toRadians(-90))
+                .build();
+        return  new SequentialAction(
+                move,
+                new InstantAction(()->{estadoSample = AutonomoStates.EJETAR;}),
+                //todo action pra esperar o ejetamento e que tbm faz a mudança de estados
+                new InstantAction(() -> sampleID+= 1)
+
+        );
+
+    }
+    public Action ejetingSample3(Pose2d pose2d, V5 robot){
         Action move = robot.md.actionBuilder(robot.md.pose)
                 .splineToLinearHeading(new Pose2d(AutoSpecimen5mais0Sugando.XEntregarSample2,AutoSpecimen5mais0Sugando.YEntregarSample2,Math.toRadians(AutoSpecimen5mais0Sugando.HEntregarSample2)),Math.toRadians(-90))
                 .build();
         return  new SequentialAction(
-                new InstantAction(()->{estadoSample = AutonomoStates.Collect;}),
                 move,
+                new InstantAction(()->{estadoSample = AutonomoStates.EJETAR;}),
+                //todo action pra esperar o ejetamento e que tbm faz a mudança de estados
                 new InstantAction(() -> sampleID+= 1)
 
         );
 
     }
-    public Action entregarSample3(Pose2d pose2d, V5 robot){
+    public Action ejetingSample4(Pose2d pose2d, V5 robot){
         Action move = robot.md.actionBuilder(robot.md.pose)
                 .splineToLinearHeading(new Pose2d(AutoSpecimen5mais0Sugando.XEntregarSampl3,AutoSpecimen5mais0Sugando.YEntregarSample3,Math.toRadians(AutoSpecimen5mais0Sugando.HEntregarSample3)),Math.toRadians(-90))
                 .build();
         return  new SequentialAction(
-                new InstantAction(()->{estadoSample = AutonomoStates.Collect;}),
                 move,
+                new InstantAction(()->{estadoSample = AutonomoStates.EJETAR;}),
+                //todo action pra esperar o ejetamento e que tbm faz a mudança de estados
                 new InstantAction(() -> sampleID+= 1)
         );
 
     }
-    public Action entregarSample4(Pose2d pose2d , V5 robot) {
-        Action move = robot.md.actionBuilder(robot.md.pose)
-                .splineToLinearHeading(new Pose2d(AutoSpecimen5mais0Sugando.XEntregarSample4,AutoSpecimen5mais0Sugando.YEntregarSample4,Math.toRadians(AutoSpecimen5mais0Sugando.HEntregarSample4)),Math.toRadians(-90))
-                .build();
-        return  new SequentialAction(
-                new InstantAction(()->{estadoSample = AutonomoStates.Collect;}),
-                move,
-                new InstantAction(() -> sampleID+= 1)
-        );
-    }
+
 
      /*****************************************\
      * Trajetórias - GoToReadyToCollect (Padrão)
@@ -310,7 +498,8 @@ public class Controladora5mais0_sugando {
 
         return new SequentialAction(
                 new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE),
-                move
+                move,
+                new InstantAction(() ->estadoSample = AutonomoStates.COLLECT)
         );
 
     }
@@ -320,7 +509,9 @@ public class Controladora5mais0_sugando {
                 .splineToLinearHeading(new Pose2d(AutoSpecimen5mais0Sugando.XReadCollect3,AutoSpecimen5mais0Sugando.YReadCollect3,Math.toRadians(AutoSpecimen5mais0Sugando.HReadCollect3)),Math.toRadians(90))
                 .build();
         return  new SequentialAction(
-
+            new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE),
+            move,
+            new InstantAction(() ->estadoSample = AutonomoStates.COLLECT)
 
         );
 
@@ -331,14 +522,80 @@ public class Controladora5mais0_sugando {
                 .splineToLinearHeading(new Pose2d(AutoSpecimen5mais0Sugando.XReadCollect4,AutoSpecimen5mais0Sugando.YReadCollect4,Math.toRadians(AutoSpecimen5mais0Sugando.HReadCollect4)),Math.toRadians(90))
                 .build();
         return  new SequentialAction(
-
-
+            new InstantAction(() -> robot.intakeInferior.underGrounSubystemStates = UnderGrounSubystemStates.INTAKE),
+            move,
+            new InstantAction(() ->estadoSample = AutonomoStates.COLLECT)
         );
 
     }
 
+
+     /***********************************\
+     *             INTAKE
+     \**********************************/
+
+     public Action intakeOne(Pose2d pose2d, V5 robot){
+         Action move = robot.md.actionBuilder(pose2d)
+                 //todo criar rota (COM AS VARIAVEIS ESTATICAS) do primeiro intake depois de empurrar todos os samples
+                 .build();
+
+         return new SequentialAction(
+                 new SequentialAction(
+                         //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
+                         new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER)
+                 ),
+                 move
+         );
+     }
+    public Action intakeDefault(Pose2d pose2d, V5 robot){
+        Action move = robot.md.actionBuilder(pose2d)
+                //todo criar rota (COM AS VARIAVEIS ESTATICAS) pro intake speciem normal
+                .build();
+
+        return new SequentialAction(
+                new SequentialAction(
+                        //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
+                        new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INTAKE_CHAMBER)
+                ),
+                move
+        );
+    }
+
+
+    /***********************************\
+     *             OUTTAKE
+     \**********************************/
+
+
+    public Action outtakeOne(Pose2d pose2d, V5 robot){
+        Action move = robot.md.actionBuilder(pose2d)
+                //todo criar rota (COM AS VARIAVEIS ESTATICAS) do primeiro outtake depois de empurrar todos os samples
+                .build();
+
+        return new SequentialAction(
+                new SequentialAction(
+                        //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
+                        new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.OUTTAKE_CHAMBER)
+                ),
+                move
+        );
+    }
+    public Action outtakeDefault(Pose2d pose2d, V5 robot){
+        Action move = robot.md.actionBuilder(pose2d)
+                //todo criar rota (COM AS VARIAVEIS ESTATICAS) pro outtake speciem normal
+                .build();
+
+        return new SequentialAction(
+                new SequentialAction(
+                        //robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
+                        new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.OUTTAKE_CHAMBER)
+                ),
+                move
+        );
+    }
+
     /******************************************\
-     *   Trajetórias - GoToCollect
+     *    GoToCollect    //todo adicionar a mudança de estados dos subsistemas
      \*******************************************/
     public Action coletarSample2(Pose2d pose2d, V5 robot){
 
@@ -351,7 +608,7 @@ public class Controladora5mais0_sugando {
                 //.waitSeconds(5)
                 .build();
         return  new SequentialAction(
-                new InstantAction(()->{estadoSample = AutonomoStates.Collect;}),
+                new InstantAction(()->{estadoSample = AutonomoStates.COLLECT;}),
                 move,
                 esperarPeloInicioDoEntregar(2.5,robot)
 
@@ -367,7 +624,7 @@ public class Controladora5mais0_sugando {
                 .splineToSplineHeading(new Pose2d(AutoSpecimen5mais0Sugando.XCollect3, AutoSpecimen5mais0Sugando.YCollect3, Math.toRadians(AutoSpecimen5mais0Sugando.HCollect3)), Math.toRadians(90),null, new ProfileAccelConstraint(-10, 10))
                 .build();
         return  new SequentialAction(
-                new InstantAction(()->{estadoSample = AutonomoStates.Collect;}),
+                new InstantAction(()->{estadoSample = AutonomoStates.COLLECT;}),
                 move,
                 esperarPeloInicioDoEntregar(2.5,robot)
         );
@@ -381,7 +638,7 @@ public class Controladora5mais0_sugando {
                 .splineToSplineHeading(new Pose2d(AutoSpecimen5mais0Sugando.XCollect4, AutoSpecimen5mais0Sugando.YCollect4, Math.toRadians(AutoSpecimen5mais0Sugando.HCollect4)), Math.toRadians(90),null, new ProfileAccelConstraint(-10, 10))
                 .build();
         return  new SequentialAction(
-                new InstantAction(()->{estadoSample = AutonomoStates.Collect;}),
+                new InstantAction(()->{estadoSample = AutonomoStates.COLLECT;}),
                 move,
                 esperarPeloInicioDoEntregar(2.5,robot)
         );
@@ -427,47 +684,6 @@ public class Controladora5mais0_sugando {
                 esperarPeloInicioDoEntregar(2.5, robot)
         );
     }
-
-    /************************************\
-     *        Wait To Condition
-     \***********************************/
-    public Action esperarLevantarAngulacao(double runtime,double tempolimite,V5 robot){
-        return new Action() {
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-                boolean horizontalEstaRetraido = robot.intakeInferior.linearHorizontalMotor.linearHorizontalInferiorState == LinearHorizontalStates.EXTENDED;
-                boolean intakeFuncionou        = robot.controladoraSPECIMEN.estadoSample == AutonomoStates.Ejetar;
-                boolean podeDescerAngulcao     = robot.controladoraSPECIMEN.estadoSample == AutonomoStates.Collect;
-                boolean podeSubirAngulacao     = robot.controladoraSPECIMEN.estadoSample == AutonomoStates.Ejetar;
-
-                if(podeDescerAngulcao){
-                    //todo agulação
-                    //robot.intakeInferior.intakeSuccao.angulacao.setPosition(robot.intakeInferior.intakeSuccao.mapAngulation);
-
-
-                }
-                if(podeSubirAngulacao){
-                    if(robot.carteiro.hasOrder("angulacaoReadyInitial")){
-                        robot.carteiro.addOrder(
-                                robot.intakeInferior.intakeSuccao.GotoReadyToIntakeSample(),
-                                0,
-                                "angulacaoReadyIntake",
-                                runtime
-                        );
-                        robot.intakeInferior.estaEjetando = true;
-                    }
-                }
-
-
-                return true;
-            }
-        };
-    }
-
-
-
 
     /************************************\
      *           Verificações

@@ -145,7 +145,7 @@ public class TeleoperadoV6Azul extends OpMode {
         this.linearVertical(robot.outtakeIntakeSuperior.linearVertical,gamepadEx2, robot.carteiro);
         //this.bracoGarra(robot.outtakeIntakeSuperior.braco,gamepadEx2,robot.carteiro);
         //this.IntakeSuccao(robot,robot.intakeInferior.intakeSuccao,robot.carteiro,gamepadEx2);
-        //this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
+        this.garraSuperior(robot.outtakeIntakeSuperior.braco,robot.outtakeIntakeSuperior.garraSuperior,robot.carteiro,gamepadEx2);
         //fullAutoOuttakeChamber(robot.carteiro);
         this.hang(gamepadEx1, robot.carteiro);
 
@@ -380,7 +380,7 @@ public class TeleoperadoV6Azul extends OpMode {
         if (gamepad.getButton(GamepadKeys.Button.LEFT_BUMPER)){
             carteiro.addOrder(robot.outtakeIntakeSuperior.garraSuperior.gerenciadorDeRotacaoDaGarraNoTeleop(getRuntime(), robot.v5Mode),0.0,"garra superior",getRuntime());
 
-        }
+        }/*
         if(gamepad.getRightY() > 0){
             garra.upSetPoint(gamepad.getRightY());
         }
@@ -393,7 +393,7 @@ public class TeleoperadoV6Azul extends OpMode {
         }
         else if(gamepad.getRightX() < -0.5  ){
             garra.downSetPointRot(gamepad.getRightX());
-        }
+        }*/
     }
     private void IntakeSuccao(V5 robot, IntakeSuccao intakeSuccao, OrdersManager carteiro, GamepadEx gamepad){
 

@@ -40,7 +40,7 @@ public class LinearVertical {
     public int position;
     public double power;
     public static int targetPosition = 0;
-    public static  int alturaOuttakeChamber = 1150;
+    public static  int alturaOuttakeChamber = 546;
     public static double p = 0.0002, i = 0, d = 0.000,f = 0, ll = 0, kll = 0,valorDeSurtoDeCorrente = 3.8, valorDeSurtoDeCorrenteTopo = 0.9;
     PIDController controller = new PIDController(p, i, d);
 
@@ -211,6 +211,7 @@ public class LinearVertical {
             telemetry.addData("VERTICAL-Posição Motor Left: ",motorL.getCurrentPosition());
             telemetry.addData("VERTICAL-Posição Motor Right: ",motorR.getCurrentPosition());
             telemetry.addData("VERTICAL-alvo: ",targetPosition);
+            telemetry.addData("VERTICAL-estado hang: ",hang);
             telemetry.addData("VERTICAL-Corrente motorR",motorR.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("VERTICAL-Corrente motorL",motorL.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("VERTICAL- chegou na posição alvo e estabilizou", chegouNoTarget());

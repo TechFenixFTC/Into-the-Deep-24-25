@@ -128,11 +128,9 @@ public class SubsistemasInferiores {
 
 
   }
-
     public void InitialSpecimen(OrdersManager carteiro, double runtime, V5 robot, GamepadEx gamepad){
 
     }
-
     public void IntakeSpecimen(OrdersManager carteiro,double runtime, V5 robot, GamepadEx gamepad){
         // todo: caso alguém olhe essa função, aqui é miguel avisando que comecei a fazer isso e ainda não terminei
 
@@ -274,7 +272,7 @@ public class SubsistemasInferiores {
     }
 
 
-    // todo: implementar
+    // todo auto
     public void runStatesSpecimenAutonomo(OrdersManager carteiro, double runtime, V5 robot) {
         if(underGrounSubystemStates == UnderGrounSubystemStates.INITIAL || underGrounSubystemStates == UnderGrounSubystemStates.TRANSFER) {
             InitiaSpecimenAut(carteiro, runtime, robot);

@@ -44,6 +44,7 @@ public class AutoSpecimen5mais0Sugando extends LinearOpMode {
             XReadCollect4 = 50 ,   YReadCollect4 = -35 , HReadCollect4 = 50, //todo cansedo okey
 
             //todo ejetar
+            XEntregarSample1 = 35 , YEntregarSample1 = -45 , HEntregarSample1 = -60, //todo cansado okey
             XEntregarSample2 = 35 , YEntregarSample2 = -45 , HEntregarSample2 = -60, //todo cansado okey
 
             XEntregarSampl3 = 45 , YEntregarSample3 = -45 , HEntregarSample3 = -60, // todo cansado okey

@@ -67,14 +67,14 @@ public class SubsistemasSuperiores {
         public void goToIntakeCHAMBER(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToIntakeCHAMBER(),0.0,"braco superior",runtime);
             carteiro.addOrder(garraSuperior.goToIntakeSpecimen(),0.0,"garra superior",runtime);
-            carteiro.addOrder(linearVertical.ElevadorGoTo(-700),0.0,"linear vertical",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(-200),0.0,"linear vertical",runtime);
 
         }
         public void goToInitial(OrdersManager carteiro , double runtime){
             carteiro.addOrder(braco.goToInital(),0.0,"braco superior",runtime);
             carteiro.addOrder(garraSuperior.goToIntakeSpecimen(),0.0,"garra superior",runtime);
             carteiro.addOrder(garraSuperior.abrirGarra(),0.0,"Abrir",runtime);
-            carteiro.addOrder(linearVertical.ElevadorGoTo(-700),0.0,"linear vertical",runtime);
+            carteiro.addOrder(linearVertical.ElevadorGoTo(-200),0.0,"linear vertical",runtime);
 
         }
         public void goToOuttakeCHAMBER(OrdersManager carteiro , double runtime){
@@ -94,7 +94,7 @@ public class SubsistemasSuperiores {
                 carteiro.addOrder(braco.goToOuttakeBASKET(), 0.49 + delay,"braco garra superior", runtime);
             }
             if (!carteiro.hasOrder("vertical")) {
-                carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0.46 + delay,"vertical", runtime);
+                carteiro.addOrder(linearVertical.ElevadorGoTo(1500), 0.46 + delay,"vertical", runtime);
             }
             if (!carteiro.hasOrder("garra superior")) {
                 carteiro.addOrder(garraSuperior.goToOuttakeSample(), 0.9 + delay,"garra superior", runtime);
@@ -129,7 +129,7 @@ public class SubsistemasSuperiores {
                 returnedAction = new SequentialAction(
                         garraSuperior.goToTransfer(),
                         new MecanumDrive(hardwaremap, new Pose2d(0,0,0)).actionBuilder(new Pose2d(0,0,0)).waitSeconds(0.2).build(),
-                        linearVertical.ElevadorGoTo(-700),
+                        linearVertical.ElevadorGoTo(-200),
                         braco.goToReadyToTransfer()
                 );
             }
@@ -266,7 +266,7 @@ public class SubsistemasSuperiores {
             /*todo: Precisa resetar o Linear?*/
             if((!verticalEstaRetraido || estaApertandoParaResetar)|| runtime <= 0.1) {
                 if(!carteiro.hasOrder("resetarOvertical")) {
-                    carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
+                    carteiro.addOrder(linearVertical.ElevadorGoTo(-200), 0, "resetarOvertical", runtime);
                 }
             }
         }
@@ -314,7 +314,7 @@ public class SubsistemasSuperiores {
            /*todo: Precisa resetar o Linear?*/
             if((!verticalEstaResetado || estaApertandoParaResetar)|| runtime <= 0.1) {
                 if(!carteiro.hasOrder("resetarOvertical")) {
-                    carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
+                    carteiro.addOrder(linearVertical.ElevadorGoTo(-200), 0, "resetarOvertical", runtime);
                 }
             }
            /*todo: precisa por os servos pra transfer?*/
@@ -393,7 +393,7 @@ public class SubsistemasSuperiores {
             }
           /*todo: Mandar Subir o Linear quando a garra pegar o sample*/
             if(!verticalJaFoiMandadoProAlto && garraTaFechada && !voltandoPraPegarUmaSample){
-                carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0, "Sobe o LinearVertical", runtime);
+                carteiro.addOrder(linearVertical.ElevadorGoTo(1500), 0, "Sobe o LinearVertical", runtime);
             }
           /*todo: Mover o Braço pra Posição De Outake*/
             /*todo: Manual braco*/
@@ -493,7 +493,7 @@ public class SubsistemasSuperiores {
             /*todo: Precisa resetar o Linear?*/
             if(!verticalEstaResetado || runtime <= 0.1) {
                 if(!carteiro.hasOrder("resetarOvertical") && !LinearVertical.isBusy && !verticalEstaResetado && !linearVertical.hang) {
-                    carteiro.addOrder(linearVertical.ElevadorGoTo(-800), 0, "resetarOvertical", runtime);
+                    carteiro.addOrder(linearVertical.ElevadorGoTo(-200), 0, "resetarOvertical", runtime);
                 }
             }
             /*todo: precisa por os servos pra transfer?*/
@@ -591,7 +591,7 @@ public class SubsistemasSuperiores {
             }
             /*todo: Mandar Subir o Linear quando a garra pegar o sample*/
             if(!verticalJaFoiMandadoProAlto && garraTaFechada && !voltandoPraPegarUmaSample &&!linearVertical.hang){
-                carteiro.addOrder(linearVertical.ElevadorGoTo(3100), 0, "Sobe o LinearVertical", runtime);
+                carteiro.addOrder(linearVertical.ElevadorGoTo(1500), 0, "Sobe o LinearVertical", runtime);
             }
             /*todo: Mover o Braço pra Posição De Outake*/
             if(!bracoTaEmOutake && verticalPodeVerificarSeNaoPegou && !temSampleIntakeInferiorAinda && !voltandoPraPegarUmaSample){

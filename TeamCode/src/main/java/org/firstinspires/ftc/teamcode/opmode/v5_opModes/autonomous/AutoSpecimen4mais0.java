@@ -260,7 +260,7 @@ public class AutoSpecimen4mais0 extends LinearOpMode {
         );
 
     }
-    public Action deposit2() {
+    public Action  deposit2() {
         return new SequentialAction(
                 new ParallelAction(
                         robot.outtakeIntakeSuperior.braco.goToOuttakeCHAMBER(),

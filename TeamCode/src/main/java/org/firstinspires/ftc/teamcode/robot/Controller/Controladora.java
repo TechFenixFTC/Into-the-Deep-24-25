@@ -35,7 +35,7 @@ import java.util.ArrayList;
 
 public class Controladora {
     double limelightCorrection = 0;
-    public AutonomoStates estadoSample = AutonomoStates.Initial;
+    public AutonomoStates estadoSample = AutonomoStates.INITIAL;
     public int sampleID = 1, samplesNotCollected = 0;
     ArrayList<Integer> samplesIdNotCollected = new ArrayList<>();
 
@@ -61,11 +61,11 @@ public class Controladora {
         quantasVezesFoiExecutado++;
         robot.md.updatePoseEstimate();
         Action proximaAction = null;
-        if(estadoSample == AutonomoStates.Initial && sampleID == 1 ){
+        if(estadoSample == AutonomoStates.INITIAL && sampleID == 1 ){
             //todo adicionar ID
             proximaAction = depositAndGoToReadyToCollect(1,robot);
         }
-        else if(estadoSample == AutonomoStates.Collect && sampleID >= 2){
+        else if(estadoSample == AutonomoStates.COLLECT && sampleID >= 2){
             if(robot.intakeInferior.intakeSuccao.colorSensorSugar.colorMatcher.temUmaSampleNoIntake()){
                 proximaAction = depositAndGoToReadyToCollect(sampleID, robot);
             }
@@ -80,10 +80,10 @@ public class Controladora {
                 }
             }
         }
-        else if(estadoSample == AutonomoStates.Deposit && sampleID >= 2){
+        else if(estadoSample == AutonomoStates.DEPOSIT && sampleID >= 2){
             proximaAction = goToReadyToCollect(sampleID, robot);
         }
-        else if(estadoSample == AutonomoStates.ReadyToCollect && sampleID >= 2){
+        else if(estadoSample == AutonomoStates.READY_TO_COLLECT && sampleID >= 2){
             proximaAction = CollectSample(sampleID,robot);
         }
         // todo: caso dê errado
@@ -111,7 +111,7 @@ public class Controladora {
         return new SequentialAction();
     }
     public Action CollectSample(int idSample, V5 robot){
-        estadoSample = AutonomoStates.Collect;
+        estadoSample = AutonomoStates.COLLECT;
         robot.md.updatePoseEstimate();
         if(idSample == 2){
             return GoToCollectSample2(robot.md.pose, robot);
@@ -130,7 +130,7 @@ public class Controladora {
         return new SequentialAction();
     }
     public Action goToReadyToCollect(int idSample, V5 robot){ /*todo: para quando não conseguir pegar nenhuma sample, ir pra outra*/
-        estadoSample = AutonomoStates.ReadyToCollect;
+        estadoSample = AutonomoStates.READY_TO_COLLECT;
 
         robot.md.updatePoseEstimate();
         if(idSample == 2){
@@ -167,9 +167,9 @@ public class Controladora {
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
                                 new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
                         ),
-                        new InstantAction(() -> estadoSample = AutonomoStates.Deposit),
+                        new InstantAction(() -> estadoSample = AutonomoStates.DEPOSIT),
                         new InstantAction(() -> sampleID += 1),
-                        new InstantAction(() -> estadoSample = AutonomoStates.ReadyToCollect),
+                        new InstantAction(() -> estadoSample = AutonomoStates.READY_TO_COLLECT),
                         GoToReadyToCollectSample2(robot.md.pose, robot)
 
 
@@ -190,7 +190,7 @@ public class Controladora {
                 new InstantAction(() -> sampleID+= 1),
                 new ParallelAction(
                         
-                        new InstantAction(() -> estadoSample = AutonomoStates.ReadyToCollect),
+                        new InstantAction(() -> estadoSample = AutonomoStates.READY_TO_COLLECT),
                         GoToReadyToCollectSample3(robot.md.pose, robot),
                     new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
                 )
@@ -213,7 +213,7 @@ public class Controladora {
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
                                 new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
                         ),
-                        new InstantAction(() -> estadoSample = AutonomoStates.ReadyToCollect),
+                        new InstantAction(() -> estadoSample = AutonomoStates.READY_TO_COLLECT),
                         GoToReadyToCollectSample4(robot.md.pose, robot)
                 )
         );
@@ -236,7 +236,7 @@ public class Controladora {
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
                                 new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
                         ),
-                        new InstantAction(() -> estadoSample = AutonomoStates.ReadyToCollect),
+                        new InstantAction(() -> estadoSample = AutonomoStates.READY_TO_COLLECT),
                         GoToReadyToCollectSample5(robot.md.pose, robot)
                 )
         );
@@ -259,7 +259,7 @@ public class Controladora {
                                 robot.md.actionBuilder(robot.md.pose).waitSeconds(0.500).build(),
                                 new InstantAction(() -> robot.outtakeIntakeSuperior.upperSubsystemStates = UpperSubsystemStates.INITIAL)
                         ),
-                        new InstantAction(() -> estadoSample = AutonomoStates.ReadyToCollect),
+                        new InstantAction(() -> estadoSample = AutonomoStates.READY_TO_COLLECT),
                         GoToReadyToCollectSample5(robot.md.pose, robot)
                 )
         );
